@@ -84,78 +84,124 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Dashboard Overview</h1>
-                <p className="text-slate-500 mt-2 font-medium">Welcome back, Administrator. Here&apos;s your real-time school analytics.</p>
+        <div className="space-y-12 pb-20">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Intelligence Hub</h1>
+                    <p className="text-slate-500 mt-3 font-medium text-lg italic">Accessing real-time institutional analytics...</p>
+                </div>
+                <div className="flex items-center space-x-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                    <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest">Global Overview</div>
+                    <div className="px-4 py-2 text-slate-400 text-xs font-black uppercase tracking-widest hover:text-slate-600 cursor-pointer transition-colors">Detail Logs</div>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {dashboardStats.map((stat) => (
-                    <div key={stat.name} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 group">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className={`p-3 rounded-2xl ${stat.bgColor} group-hover:scale-110 transition-transform`}>
-                                <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {dashboardStats.map((stat, idx) => (
+                    <div
+                        key={stat.name}
+                        className="bg-white p-8 rounded-[40px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-500 group relative overflow-hidden"
+                        style={{ animationDelay: `${idx * 100}ms` }}
+                    >
+                        <div className={`absolute top-0 right-0 w-32 h-32 ${stat.bgColor.replace('50', '500')}/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700`} />
+                        <div className="flex items-start justify-between mb-8 relative z-10">
+                            <div className={`p-4 rounded-3xl ${stat.bgColor} group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
+                                <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
                             </div>
-                            <div className="flex items-center text-green-600 text-sm font-bold bg-green-50 px-2 py-1 rounded-lg">
-                                <TrendingUp className="w-4 h-4 mr-1" />
+                            <div className="flex items-center text-blue-600 text-[10px] font-black tracking-widest bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100/50">
+                                <TrendingUp className="w-3 h-3 mr-1.5" />
                                 LIVE
                             </div>
                         </div>
-                        <div>
-                            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">{stat.name}</p>
-                            <h3 className="text-3xl font-extrabold text-slate-900 mt-1">{stat.value}</h3>
+                        <div className="relative z-10">
+                            <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{stat.name}</p>
+                            <h3 className="text-5xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
                         </div>
                     </div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-slate-900">School Subjects & Performance</h2>
-                        <button className="text-blue-600 text-sm font-bold hover:underline">View All</button>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div className="lg:col-span-2 bg-white p-10 rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+                    <div className="flex items-center justify-between mb-10">
+                        <div>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Active Curriculum</h2>
+                            <p className="text-sm font-medium text-slate-400 mt-1">Academic Performance Tracking</p>
+                        </div>
+                        <button className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all border border-slate-200/50">
+                            <ArrowUpRight className="w-5 h-5 text-slate-400" />
+                        </button>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {subjects.map((subject) => (
-                            <div key={subject.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200">
-                                <div className="flex items-center space-x-4">
-                                    <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-slate-100 text-lg font-bold text-blue-600 shadow-sm">
+                            <div key={subject.id} className="group flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 border border-transparent hover:border-slate-100 cursor-pointer">
+                                <div className="flex items-center space-x-6">
+                                    <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center border border-slate-100 text-xl font-black text-blue-600 shadow-sm group-hover:rotate-6 transition-transform">
                                         {subject.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-slate-900">{subject.name}</h4>
-                                        <p className="text-xs text-slate-500 font-medium uppercase tracking-tight">Active Curriculum</p>
+                                        <h4 className="text-lg font-black text-slate-900 leading-none mb-1 group-hover:text-blue-600 transition-colors">{subject.name}</h4>
+                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Departmental Standards</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-sm font-bold text-slate-900">{subject.grades.length} Grades Recorded</div>
-                                    <div className="text-xs text-slate-400 font-medium">Latest: {subject.grades[0]?.score || 0}%</div>
+                                    <div className="text-sm font-black text-slate-900">{subject.grades.length} Submissions</div>
+                                    <div className="mt-1 flex items-center justify-end">
+                                        <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden mr-3">
+                                            <div
+                                                className="h-full bg-blue-600 rounded-full"
+                                                style={{ width: `${subject.grades[0]?.score || 0}%` }}
+                                            />
+                                        </div>
+                                        <span className="text-xs font-black text-blue-600">{subject.grades[0]?.score || 0}%</span>
+                                    </div>
                                 </div>
                             </div>
                         ))}
                         {subjects.length === 0 && (
-                            <p className="text-center py-8 text-slate-400 font-medium italic">No subjects found in system.</p>
+                            <div className="text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200">
+                                <BookOpen className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                                <p className="text-slate-400 font-bold italic">Awaiting Curriculum Data Deployment</p>
+                            </div>
                         )}
                     </div>
                 </div>
 
-                <div className="bg-slate-900 p-8 rounded-3xl text-white relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 -mt-8 -mr-8 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all"></div>
-                    <h2 className="text-xl font-bold mb-6 relative z-10">Quick Management</h2>
-                    <div className="space-y-3 relative z-10">
-                        <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm backdrop-blur-md border border-white/10">
-                            Enroll New Student <ArrowUpRight className="w-4 h-4" />
-                        </button>
-                        <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm backdrop-blur-md border border-white/10">
-                            Onboard Faculty <ArrowUpRight className="w-4 h-4" />
-                        </button>
-                        <button className="w-full flex items-center justify-between p-4 bg-white/10 hover:bg-white/20 rounded-2xl transition-all font-bold text-sm backdrop-blur-md border border-white/10">
-                            Schedule New Class <ArrowUpRight className="w-4 h-4" />
-                        </button>
-                        <button className="w-full flex items-center justify-between p-4 bg-blue-600 hover:bg-blue-500 rounded-2xl transition-all font-bold text-sm shadow-lg shadow-blue-500/20 mt-4">
-                            System Reports
-                        </button>
+                <div className="space-y-8">
+                    <div className="bg-slate-900 p-10 rounded-[48px] text-white relative overflow-hidden group shadow-2xl">
+                        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-48 h-48 bg-blue-500/20 rounded-full blur-[80px] group-hover:bg-blue-500/30 transition-all duration-1000"></div>
+                        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-48 h-48 bg-purple-500/10 rounded-full blur-[80px]"></div>
+
+                        <h2 className="text-2xl font-black mb-10 relative z-10 tracking-tight">Rapid Actions</h2>
+                        <div className="space-y-4 relative z-10">
+                            {[
+                                { label: 'Enroll Student', color: 'bg-white/5 hover:bg-white/10' },
+                                { label: 'Register Teacher', color: 'bg-white/5 hover:bg-white/10' },
+                                { label: 'New Classroom', color: 'bg-white/5 hover:bg-white/10' }
+                            ].map((btn) => (
+                                <button key={btn.label} className={`w-full flex items-center justify-between p-5 ${btn.color} rounded-x-3xl rounded-[24px] transition-all font-bold text-sm backdrop-blur-md border border-white/5 group/btn`}>
+                                    {btn.label} <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
+                                </button>
+                            ))}
+                            <button className="w-full flex items-center justify-center p-6 bg-blue-600 hover:bg-blue-500 rounded-[28px] transition-all font-black text-sm shadow-xl shadow-blue-500/40 mt-6 active:scale-95">
+                                GENERATE SYSTEM REPORT
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-10 rounded-[48px] text-white shadow-xl relative overflow-hidden">
+                        <div className="relative z-10">
+                            <h3 className="text-xl font-black mb-2 leading-tight tracking-tight">System Status</h3>
+                            <p className="text-white/70 text-sm font-medium mb-8 leading-relaxed">All modules are operating within normal educational parameters.</p>
+                            <div className="flex -space-x-3">
+                                {[1, 2, 3, 4].map(i => (
+                                    <div key={i} className="w-10 h-10 rounded-full border-4 border-indigo-600 bg-slate-200 overflow-hidden shadow-lg">
+                                        <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" className="w-full h-full object-cover" />
+                                    </div>
+                                ))}
+                                <div className="w-10 h-10 rounded-full border-4 border-indigo-600 bg-white/20 backdrop-blur-sm flex items-center justify-center text-[10px] font-black">+12</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

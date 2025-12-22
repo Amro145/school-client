@@ -1,5 +1,8 @@
 import { fetchGraphQL } from '@/services/graphql';
 
+export const runtime = 'edge';
+
+
 export default async function TestConnectionPage() {
     const query = `
     query {

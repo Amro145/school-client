@@ -36,35 +36,61 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white selection:bg-blue-100">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-slate-50 to-white -z-10" />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6">
-            Smart <span className="text-blue-600">School</span> Management
+        {/* Animated Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from),_transparent_50%)] from-blue-50/50" />
+        <div className="absolute top-1/2 left-0 w-72 h-72 bg-purple-200/20 rounded-full blur-3xl -z-10 animate-float" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -z-10" />
+
+        <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between relative z-10">
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+              <GraduationCap className="text-white w-6 h-6" />
+            </div>
+            <span className="text-2xl font-black text-slate-900 tracking-tighter">EDUDASH</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="#features" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">Features</Link>
+            <Link href="#about" className="text-sm font-semibold text-slate-600 hover:text-blue-600 transition-colors">About</Link>
+            <Link href="/login" className="px-6 py-2.5 bg-slate-900 text-white rounded-full text-sm font-bold hover:bg-slate-800 transition-all shadow-lg hover:shadow-slate-200">Get Started</Link>
+          </div>
+        </nav>
+
+        <main className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center relative z-10">
+          <div className="inline-flex items-center px-4 py-1.5 mb-8 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold animate-bounce-slow">
+            ✨ Empowering the next generation of learners
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black text-slate-900 tracking-tighter leading-[0.9] mb-8">
+            Modernize Your <br />
+            <span className="gradient-text">Institution.</span>
           </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-12">
-            A comprehensive, modern solution for educational institutions.
-            Streamlining communication, data management, and academic tracking.
+          <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto mb-16 font-medium leading-relaxed">
+            The all-in-one platform for schools to manage students,
+            track performance, and streamline communication.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 px-2">
             {roles.map((role) => (
               <div
                 key={role.title}
-                className={`flex flex-col p-8 rounded-3xl border-2 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl ${role.color}`}
+                className={`group flex flex-col p-8 rounded-[40px] border border-slate-100 bg-white/50 backdrop-blur-xl transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:-translate-y-2`}
               >
-                <div className="mb-6 flex justify-center">{role.icon}</div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-4">{role.title}</h2>
-                <p className="text-slate-600 mb-8 flex-grow leading-relaxed">
+                <div className="mb-8 flex justify-center transform group-hover:scale-110 transition-transform duration-500">
+                  <div className={`p-5 rounded-3xl ${role.color.split(' ')[0]} shadow-inner`}>
+                    {role.icon}
+                  </div>
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 mb-4">{role.title}</h2>
+                <p className="text-slate-500 mb-10 flex-grow font-medium leading-relaxed">
                   {role.description}
                 </p>
                 <Link
                   href={role.href}
-                  className={`inline-flex items-center justify-center px-6 py-3 rounded-xl text-white font-semibold transition-colors duration-200 ${role.buttonColor}`}
+                  className={`inline-flex items-center justify-center px-8 py-4 rounded-2xl text-white font-bold transition-all duration-300 shadow-xl ${role.buttonColor} hover:scale-[1.02] active:scale-95`}
                 >
-                  Enter Portal <ArrowRight className="ml-2 w-4 h-4" />
+                  Enter Portal <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </div>
             ))}
@@ -72,21 +98,39 @@ export default function LandingPage() {
         </main>
       </div>
 
-      {/* Social Proof/Stats Section (Optional) */}
-      <section className="bg-slate-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-slate-400 font-medium">
-            <p>1000+ Students</p>
-            <p>50+ Classes</p>
-            <p>200+ Subjects</p>
-            <p>50+ Teachers</p>
+      {/* Stats Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="glass rounded-[48px] p-12 md:p-20 border-slate-200/50 shadow-2xl overflow-hidden relative">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
+            <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12">
+              {[
+                { label: 'Students', value: '1,200+' },
+                { label: 'Active Classes', value: '45' },
+                { label: 'Subject Tracks', value: '180+' },
+                { label: 'Certified Teachers', value: '85' },
+              ].map((stat) => (
+                <div key={stat.label} className="text-center">
+                  <p className="text-4xl md:text-5xl font-black text-slate-900 mb-2">{stat.value}</p>
+                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest leading-none">{stat.label}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 text-center text-slate-500 border-t border-slate-100">
-        <p>&copy; 2024 School Management System. Built for Modern Education.</p>
+      <footer className="py-16 text-center border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col items-center">
+          <div className="flex items-center space-x-2 mb-6 grayscale opacity-50">
+            <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
+              <GraduationCap className="text-white w-5 h-5" />
+            </div>
+            <span className="text-xl font-black text-slate-900 tracking-tighter">EDUDASH</span>
+          </div>
+          <p className="text-slate-400 font-medium">&copy; 2024 EduDash. Elevating educational standards world-wide.</p>
+        </div>
       </footer>
     </div>
   );

@@ -57,98 +57,117 @@ export default function StudentsListPage() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-700">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Students Management</h1>
-                    <p className="text-slate-500 mt-2 font-medium">Manage student credentials, class assignments, and grade history.</p>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Student Directory</h1>
+                    <p className="text-slate-500 mt-3 font-medium text-lg italic">Comprehensive management of institutional learners...</p>
                 </div>
                 <Link
                     href="/admin/students/new"
-                    className="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-blue-700 transition-all flex items-center justify-center shadow-lg shadow-blue-500/20 active:scale-95"
+                    className="relative group overflow-hidden"
                 >
-                    <Plus className="w-5 h-5 mr-2" /> Add New Student
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative bg-blue-600 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
+                        <Plus className="w-5 h-5 mr-3" /> Enroll New Candidate
+                    </div>
                 </Link>
             </div>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-                <div className="p-6 border-b border-slate-50 relative group">
-                    <div className="absolute left-10 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                        <Search className="w-5 h-5" />
+            <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+                <div className="p-8 border-b border-slate-50 relative group glass">
+                    <div className="absolute left-14 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                        <Search className="w-6 h-6" />
                     </div>
                     <input
                         type="text"
-                        placeholder="Search student directories..."
-                        className="w-full pl-12 pr-6 py-4 bg-slate-50 rounded-2xl border-none focus:ring-4 focus:ring-blue-100 placeholder-slate-400 transition-all font-medium text-slate-900 outline-none"
+                        placeholder="Scan directory by name, ID or email index..."
+                        className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
                     />
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-slate-50 text-slate-500 text-xs font-bold uppercase tracking-widest border-b border-slate-100">
-                                <th className="px-8 py-5">Profile & Name</th>
-                                <th className="px-8 py-5">Assigned Class</th>
-                                <th className="px-8 py-5">Contact & Role</th>
-                                <th className="px-8 py-5">Grade  %</th>
-                                <th className="px-8 py-5 text-right">Actions</th>
+                            <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
+                                <th className="px-10 py-6">Identity & Profile</th>
+                                <th className="px-10 py-6">Academic Class</th>
+                                <th className="px-10 py-6">Connectivity Info</th>
+                                <th className="px-10 py-6 text-center">Academic Standing</th>
+                                <th className="px-10 py-6 text-right">Administrative Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100">
-                            {students?.map((student) => (
-                                <tr key={student.id} className="hover:bg-slate-50/50 transition-colors group">
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm group-hover:scale-110 transition-transform">
-                                                <UserCircle className="w-7 h-7" />
+                        <tbody className="divide-y divide-slate-50">
+                            {students?.map((student, idx) => (
+                                <tr key={student.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
+                                    <td className="px-10 py-8">
+                                        <div className="flex items-center space-x-5">
+                                            <div className="relative">
+                                                <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                    <UserCircle className="w-8 h-8" />
+                                                </div>
+                                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full" title="Active Account" />
                                             </div>
                                             <div>
-                                                <Link href={`/admin/students/${student.id}`}>
-                                                    <span className="block font-bold text-slate-900">{student.userName}</span>
+                                                <Link href={`/admin/students/${student.id}`} className="block font-black text-slate-900 text-lg hover:text-blue-600 transition-colors leading-none mb-1.5">
+                                                    {student.userName}
                                                 </Link>
-                                                <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-1 inline-block">ID: #{student.id}</span>
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">UID: {student.id}</span>
+                                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">STUDENT</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center text-slate-700 font-bold bg-slate-100/50 px-3 py-1.5 rounded-xl w-fit">
-                                            <BookOpen className="w-4 h-4 mr-2 text-slate-400" />
-                                            {student.class?.name || 'Waitlisted'}
+                                    <td className="px-10 py-8">
+                                        <div className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit group-hover:border-blue-100 transition-colors">
+                                            <div className="w-2 h-2 rounded-full bg-blue-600 mr-3" />
+                                            {student.class?.name || 'Provisionally Waitlisted'}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center text-slate-600 font-medium text-sm">
-                                                <Mail className="w-4 h-4 mr-2 text-slate-300" />
+                                    <td className="px-10 py-8 text-sm">
+                                        <div className="space-y-1.5">
+                                            <div className="flex items-center text-slate-600 font-bold group-hover:text-slate-900 transition-colors">
+                                                <Mail className="w-4 h-4 mr-2.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
                                                 {student.email}
                                             </div>
-                                            <div className="text-[11px] text-slate-400 font-bold uppercase ml-6">{student.role}</div>
+                                            <div className="text-[10px] text-slate-400 font-black uppercase tracking-wider pl-6.5">Official Communications Only</div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6">
-                                        <div className="flex items-center space-x-2">
-                                            <div className="flex -space-x-2 overflow-hidden">
+                                    <td className="px-10 py-8">
+                                        <div className="flex flex-col items-center">
+                                            <div className="flex -space-x-3 hover:space-x-1 transition-all">
                                                 {student.grades.length > 0 ? (
-                                                    student.grades.slice(0, 3).map((grade) => (
-                                                        <div key={grade.id} className="inline-block h-8 w-8 rounded-full ring-2 ring-white bg-green-500 text-white flex items-center justify-center text-[10px] font-bold">
-                                                            {grade.score}%
+                                                    student.grades.slice(0, 4).map((grade) => (
+                                                        <div
+                                                            key={grade.id}
+                                                            className={`inline-block h-10 w-10 rounded-2xl ring-4 ring-white shadow-lg flex items-center justify-center text-[10px] font-black text-white ${grade.score >= 80 ? 'bg-indigo-600' : grade.score >= 60 ? 'bg-blue-600' : 'bg-slate-400'
+                                                                } transform transition-transform hover:-translate-y-2 cursor-default`}
+                                                            title={`Subject Grade: ${grade.score}%`}
+                                                        >
+                                                            {grade.score}
                                                         </div>
                                                     ))
                                                 ) : (
-                                                    <span className="text-xs text-slate-400 font-medium italic">No scores yet</span>
+                                                    <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Records Pending</div>
+                                                )}
+                                                {student.grades.length > 4 && (
+                                                    <div className="h-10 w-10 rounded-2xl ring-4 ring-white bg-white border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 shadow-lg">
+                                                        +{student.grades.length - 4}
+                                                    </div>
                                                 )}
                                             </div>
-                                            {student.grades.length > 3 && (
-                                                <span className="text-xs font-bold text-slate-400">+{student.grades.length - 3}</span>
+                                            {student.grades.length > 0 && (
+                                                <div className="mt-3 text-[10px] font-black text-blue-600 uppercase tracking-widest">Real-time Performance Metrics</div>
                                             )}
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 text-right">
-                                        <div className="flex items-center justify-end space-x-2">
-                                            <button className="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-blue-100">
+                                    <td className="px-10 py-8 text-right">
+                                        <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
                                                 <GraduationCap className="w-5 h-5" />
                                             </button>
-                                            <button className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shadow-sm border border-transparent hover:border-red-100">
+                                            <button className="p-4 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-red-100 active:scale-95">
                                                 <Trash2 className="w-5 h-5" />
                                             </button>
                                         </div>
@@ -159,18 +178,10 @@ export default function StudentsListPage() {
                     </table>
                 </div>
 
-                {students.length === 0 && !loading && (
-                    <div className="p-16 text-center">
-                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <Users className="w-10 h-10 text-slate-200" />
-                        </div>
-                        <h3 className="text-lg font-bold text-slate-900">No students found</h3>
-                        <p className="text-slate-500 mt-1 font-medium">The student directory is currently empty.</p>
-                    </div>
-                )}
-
-                <div className="p-6 bg-slate-50/50 border-t border-slate-100 text-center">
-                    <button className="bg-white text-slate-600 border border-slate-200 px-6 py-2 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors shadow-sm active:scale-95">Load Advanced Filter</button>
+                <div className="p-8 bg-slate-50/30 border-t border-slate-100 text-center glass">
+                    <button className="bg-white text-slate-800 border border-slate-200 px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-xl shadow-slate-200/50 active:scale-95">
+                        Initialize Advanced Filter Engines
+                    </button>
                 </div>
             </div>
         </div>

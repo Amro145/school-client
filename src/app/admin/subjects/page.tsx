@@ -60,119 +60,112 @@ export default function SubjectsListPage() {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-20">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
-                    <div className="inline-flex items-center px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest mb-4">
-                        Curriculum Management
-                    </div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Academic Subjects</h1>
-                    <p className="text-slate-500 mt-3 font-bold text-lg">Define learning objectives, faculty assignments, and classroom linkage.</p>
+                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Curriculum Index</h1>
+                    <p className="text-slate-500 mt-3 font-medium text-lg italic">Defining institutional learning pathways and faculty assignments...</p>
                 </div>
                 <Link
                     href="/admin/subjects/new"
-                    className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black hover:bg-slate-800 transition-all flex items-center justify-center shadow-2xl shadow-slate-200 active:scale-95 group"
+                    className="relative group overflow-hidden"
                 >
-                    <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-300" /> Create New Subject
+                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="relative bg-slate-900 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
+                        <Plus className="w-5 h-5 mr-3" /> Architect New Subject
+                    </div>
                 </Link>
             </div>
 
-            <div className="bg-white rounded-[3rem] border border-slate-100 shadow-2xl shadow-slate-200/50 overflow-hidden">
-                <div className="p-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="relative flex-grow max-w-2xl group">
-                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors">
-                            <Search className="w-5 h-5" />
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Filter by subject identity, faculty, or code..."
-                            className="w-full pl-14 pr-8 py-5 bg-slate-50/50 rounded-[2rem] border-2 border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 transition-all font-bold text-slate-900 placeholder-slate-400 outline-none"
-                        />
+            <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+                <div className="p-8 border-b border-slate-50 relative group glass">
+                    <div className="absolute left-14 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                        <Search className="w-6 h-6" />
                     </div>
-                    <div className="flex items-center space-x-3">
-                        <button className="p-4 bg-slate-50 rounded-2xl text-slate-500 hover:text-slate-900 transition-colors">
-                            <Layers className="w-5 h-5" />
-                        </button>
-                        <button className="p-4 bg-slate-50 rounded-2xl text-slate-500 hover:text-slate-900 transition-colors">
-                            <BarChart3 className="w-5 h-5" />
-                        </button>
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Scan curriculum by subject name, faculty lead or academic class..."
+                        className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
+                    />
                 </div>
 
-                <div className="overflow-x-auto px-4">
-                    <table className="w-full text-left border-separate border-spacing-y-2">
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left">
                         <thead>
-                            <tr className="text-slate-400 text-xs font-black uppercase tracking-[0.2em]">
-                                <th className="px-8 py-5">Subject Identity</th>
-                                <th className="px-8 py-5">Lead Faculty</th>
-                                <th className="px-8 py-5">Assigned Class</th>
-                                <th className="px-8 py-5">Assessment Analytics</th>
-                                <th className="px-8 py-5 text-right w-20">Actions</th>
+                            <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
+                                <th className="px-10 py-6">Subject Specification</th>
+                                <th className="px-10 py-6">Lead Instructor</th>
+                                <th className="px-10 py-6">Target Cohort</th>
+                                <th className="px-10 py-6 text-center">Outcome Analytics</th>
+                                <th className="px-10 py-6 text-right">Operational Status</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className="divide-y divide-slate-50">
                             {subjects?.map((subject) => {
                                 const avgScore = subject.grades?.length > 0
                                     ? Math.round(subject.grades.reduce((acc, g) => acc + g.score, 0) / subject.grades.length)
                                     : null;
 
                                 return (
-                                    <tr key={subject.id} className="group cursor-pointer">
-                                        <td className="px-8 py-6 bg-white border-y border-l border-slate-50 rounded-l-[2rem] group-hover:bg-slate-50/50 transition-colors">
-                                            <div className="flex items-center space-x-4">
-                                                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform">
-                                                    <BookOpen className="w-7 h-7" />
+                                    <tr key={subject.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
+                                        <td className="px-10 py-8">
+                                            <div className="flex items-center space-x-5">
+                                                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                    <BookOpen className="w-8 h-8" />
                                                 </div>
                                                 <div>
-                                                    <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors">{subject.name}</span>
-                                                    <span className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1 inline-block">Ref: {subject.id}</span>
+                                                    <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{subject.name}</span>
+                                                    <div className="flex items-center space-x-2">
+                                                        <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {subject.id}</span>
+                                                        <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">ACTIVE</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 bg-white border-y border-slate-50 group-hover:bg-slate-50/50 transition-colors">
-                                            <div className="flex items-center space-x-3 text-slate-700 font-black">
-                                                <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
-                                                    <User className="w-4 h-4 text-slate-400" />
+                                        <td className="px-10 py-8">
+                                            <div className="flex items-center space-x-3 text-slate-900 font-black">
+                                                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:border-blue-100 transition-colors">
+                                                    <User className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
                                                 </div>
-                                                <span>{subject.teacher?.userName || 'TBA'}</span>
+                                                <span className="group-hover:translate-x-1 transition-transform">{subject.teacher?.userName || 'Pending Assignment'}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 bg-white border-y border-slate-50 group-hover:bg-slate-50/50 transition-colors">
-                                            <div className="inline-flex items-center px-4 py-2 bg-indigo-50/50 text-indigo-700 rounded-xl font-black text-sm border border-indigo-100/50">
-                                                <Layers className="w-4 h-4 mr-2 opacity-50" />
-                                                {subject.class?.name || 'Open Enrollment'}
+                                        <td className="px-10 py-8">
+                                            <div className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm group-hover:border-blue-100 transition-colors">
+                                                <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
+                                                {subject.class?.name || 'Cross-Institutional'}
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 bg-white border-y border-slate-50 group-hover:bg-slate-50/50 transition-colors">
-                                            <div className="flex items-center space-x-3">
+                                        <td className="px-10 py-8">
+                                            <div className="flex flex-col items-center">
                                                 {avgScore !== null ? (
                                                     <>
-                                                        <div className="flex-grow w-24 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                            <div
-                                                                className={`h-full rounded-full transition-all duration-1000 ${avgScore > 80 ? 'bg-emerald-500' : avgScore > 60 ? 'bg-amber-500' : 'bg-rose-500'
-                                                                    }`}
-                                                                style={{ width: `${avgScore}%` }}
-                                                            />
+                                                        <div className="flex items-center space-x-4 w-full max-w-[140px]">
+                                                            <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                                <div
+                                                                    className={`h-full rounded-full transition-all duration-1000 ${avgScore > 80 ? 'bg-emerald-500' : avgScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                                                    style={{ width: `${avgScore}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className={`font-black text-sm tabular-nums ${avgScore > 80 ? 'text-emerald-600' : avgScore > 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                                                                {avgScore}%
+                                                            </span>
                                                         </div>
-                                                        <span className={`font-black text-sm ${avgScore > 80 ? 'text-emerald-600' : avgScore > 60 ? 'text-amber-600' : 'text-rose-600'
-                                                            }`}>
-                                                            {avgScore}%
-                                                        </span>
+                                                        <div className="text-[10px] text-slate-400 font-black mt-2 uppercase tracking-widest">
+                                                            Avg from {subject.grades?.length || 0} Learners
+                                                        </div>
                                                     </>
                                                 ) : (
-                                                    <span className="text-xs text-slate-400 font-bold italic">Awaiting Results</span>
+                                                    <div className="px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Awaiting Data</div>
                                                 )}
                                             </div>
-                                            <div className="text-[10px] text-slate-400 font-black mt-1 uppercase tracking-tighter">
-                                                Based on {subject.grades?.length || 0} Assessments
-                                            </div>
                                         </td>
-                                        <td className="px-8 py-6 bg-white border-y border-r border-slate-50 rounded-r-[2rem] group-hover:bg-slate-50/50 transition-colors">
-                                            <div className="flex items-center justify-end space-x-1 opacity-0 group-hover:opacity-100 transition-all">
-                                                <button className="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all">
+                                        <td className="px-10 py-8 text-right">
+                                            <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
                                                     <Eye className="w-5 h-5" />
                                                 </button>
-                                                <button className="p-3 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all">
+                                                <button className="p-4 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-red-100 active:scale-95">
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>
                                             </div>
@@ -185,23 +178,28 @@ export default function SubjectsListPage() {
                 </div>
 
                 {subjects?.length === 0 && !loading && (
-                    <div className="py-24 text-center">
-                        <div className="w-32 h-32 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 animate-bounce transition-all duration-1000">
-                            <BookOpen className="w-16 h-16 text-slate-200" />
+                    <div className="py-32 text-center bg-white relative overflow-hidden group">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-50 rounded-full blur-[100px] opacity-30 group-hover:scale-150 transition-transform duration-1000" />
+                        <div className="relative z-10">
+                            <div className="w-32 h-32 bg-slate-50 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+                                <BookOpen className="w-16 h-16 text-slate-200" />
+                            </div>
+                            <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-4">Educational Void</h3>
+                            <p className="text-slate-500 max-w-sm mx-auto font-medium text-lg leading-relaxed mb-10 italic">The academic catalog is currently empty and requires initial curriculum architecting.</p>
+                            <Link
+                                href="/admin/subjects/new"
+                                className="inline-flex items-center justify-center bg-blue-600 text-white px-12 py-5 rounded-[24px] font-black text-sm uppercase tracking-widest hover:bg-blue-700 transition-all shadow-2xl active:scale-95"
+                            >
+                                <Plus className="w-6 h-6 mr-3" /> Initialize Core Subject
+                            </Link>
                         </div>
-                        <h3 className="text-3xl font-black text-slate-900 tracking-tight">Empty Curriculum</h3>
-                        <p className="text-slate-500 mt-2 font-bold max-w-sm mx-auto text-lg leading-relaxed">No subjects have been registered in the academic directory yet.</p>
-                        <Link
-                            href="/admin/subjects/new"
-                            className="mt-8 inline-flex items-center justify-center bg-blue-600 text-white px-10 py-4 rounded-2xl font-black hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:scale-95"
-                        >
-                            <Plus className="w-6 h-6 mr-3" /> Initialize First Subject
-                        </Link>
                     </div>
                 )}
 
-                <div className="p-8 bg-slate-50/30 border-t border-slate-50 text-center">
-                    <p className="text-slate-400 font-bold text-sm">System synchronized with Academic Core Node Beta v1.2</p>
+                <div className="p-8 bg-slate-50/30 border-t border-slate-100 text-center glass">
+                    <button className="bg-white text-slate-800 border border-slate-200 px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-xl shadow-slate-200/50 active:scale-95">
+                        Synchronize Knowledge Nodes
+                    </button>
                 </div>
             </div>
         </div>
