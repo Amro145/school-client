@@ -33,10 +33,26 @@ interface Student {
     }[];
 }
 
+interface Teacher {
+    id: string;
+    userName: string;
+    email: string;
+    role: string;
+    subjectsTaught: {
+        id: string;
+        name: string;
+        grades: {
+            id: string;
+            score: number;
+        }[];
+    }[];
+}
+
 interface AdminState {
     stats: AdminDashboardStats | null;
     subjects: Subject[];
     students: Student[];
+    teachers: Teacher[];
     loading: boolean;
     error: string | null;
 }
@@ -45,6 +61,7 @@ const initialState: AdminState = {
     stats: null,
     subjects: [],
     students: [],
+    teachers: [],
     loading: false,
     error: null,
 };
@@ -136,6 +153,50 @@ export const fetchMyStudents = createAsyncThunk(
     }
 );
 
+export const fetchMyTeachers = createAsyncThunk(
+    'admin/fetchMyTeachers',
+    async (_, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated to fetch teachers');
+        }
+
+        const query = `
+      query MyQuery {
+        myTeachers {
+          id
+          userName
+          email
+          role
+          subjectsTaught {
+            id
+            name
+            grades {
+              id
+              score
+            }
+          }
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', { query });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.myTeachers;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch teachers');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -166,6 +227,19 @@ const adminSlice = createSlice({
                 state.students = action.payload;
             })
             .addCase(fetchMyStudents.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Teachers Data
+            .addCase(fetchMyTeachers.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchMyTeachers.fulfilled, (state, action) => {
+                state.loading = false;
+                state.teachers = action.payload;
+            })
+            .addCase(fetchMyTeachers.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
