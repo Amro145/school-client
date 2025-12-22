@@ -43,7 +43,7 @@ export function getData(): FullData {
     return data;
 }
 
-export function saveData(_newData: FullData) {
+export function saveData() {
     console.warn("saveData called but persistence via 'fs' is not supported in Cloudflare Edge. Use D1/KV for persistence.");
     // In a production app on Cloudflare, you'd perform an API call or D1 operation here.
 }

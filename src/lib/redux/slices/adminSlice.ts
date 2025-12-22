@@ -12,6 +12,14 @@ interface AdminDashboardStats {
 interface Subject {
     id: string;
     name: string;
+    teacher: {
+        id: string;
+        userName: string;
+    } | null;
+    class: {
+        id: string;
+        name: string;
+    } | null;
     grades: {
         id: string;
         score: number;
@@ -30,6 +38,10 @@ interface Student {
     grades: {
         id: string;
         score: number;
+        subject?: {
+            id: string;
+            name: string;
+        };
     }[];
 }
 
@@ -53,6 +65,7 @@ interface AdminState {
     subjects: Subject[];
     students: Student[];
     teachers: Teacher[];
+    currentStudent: Student | null;
     loading: boolean;
     error: string | null;
 }
@@ -62,6 +75,7 @@ const initialState: AdminState = {
     subjects: [],
     students: [],
     teachers: [],
+    currentStudent: null,
     loading: false,
     error: null,
 };
@@ -197,6 +211,103 @@ export const fetchMyTeachers = createAsyncThunk(
     }
 );
 
+export const fetchSubjects = createAsyncThunk(
+    'admin/fetchSubjects',
+    async (_, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated to fetch subjects');
+        }
+
+        const query = `
+      query MyQuery {
+        subjects {
+          id
+          name
+          teacher {
+            id
+            userName
+          }
+          class {
+            id
+            name
+          }
+          grades {
+            id
+            score
+          }
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', { query });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.subjects;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch subjects');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const fetchStudentById = createAsyncThunk(
+    'admin/fetchStudentById',
+    async (id: number, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated to fetch student details');
+        }
+
+        const query = `
+      query MyQuery($id: Int!) {
+        student(id: $id) {
+          id
+          userName
+          email
+          role
+          class {
+            id
+            name
+          }
+          grades {
+            id
+            score
+            subject {
+              id
+              name
+            }
+          }
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query,
+                variables: { id }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.student;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch student');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -240,6 +351,33 @@ const adminSlice = createSlice({
                 state.teachers = action.payload;
             })
             .addCase(fetchMyTeachers.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Subjects Data
+            .addCase(fetchSubjects.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSubjects.fulfilled, (state, action) => {
+                state.loading = false;
+                state.subjects = action.payload;
+            })
+            .addCase(fetchSubjects.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Student Profile Data
+            .addCase(fetchStudentById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.currentStudent = null;
+            })
+            .addCase(fetchStudentById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentStudent = action.payload;
+            })
+            .addCase(fetchStudentById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });

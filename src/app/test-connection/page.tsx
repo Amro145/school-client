@@ -19,8 +19,8 @@ export default async function TestConnectionPage() {
         // it will fail if the resolver uses ensureAdmin(currentUser).
         // However, this verifies the fetch flow and CORS for preflight.
         data = await fetchGraphQL(query);
-    } catch (e: any) {
-        error = e.message;
+    } catch (e: unknown) {
+        error = e instanceof Error ? e.message : 'Unknown error';
     }
 
     return (

@@ -132,6 +132,14 @@
       "dest": "/admin/classes/[id]?nxtPid=$nxtPid"
     },
     {
+      "src": "^/admin/students/(?<nxtPid>[^/]+?)(?:\\.rsc)(?:/)?$",
+      "dest": "/admin/students/[id].rsc?nxtPid=$nxtPid"
+    },
+    {
+      "src": "^/admin/students/(?<nxtPid>[^/]+?)(?:/)?$",
+      "dest": "/admin/students/[id]?nxtPid=$nxtPid"
+    },
+    {
       "src": "^/admin/subjects/(?<nxtPid>[^/]+?)(?:\\.rsc)(?:/)?$",
       "dest": "/admin/subjects/[id].rsc?nxtPid=$nxtPid"
     },
@@ -151,7 +159,7 @@
       "handle": "hit"
     },
     {
-      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|JU_QVwl9nBZVwkjtFvDbI)/.+",
+      "src": "/_next/static/(?:[^/]+/pages|pages|chunks|runtime|css|image|media|6zCflmeOVQVhR5ldtdJfm)/.+",
       "headers": {
         "cache-control": "public,max-age=31536000,immutable"
       },

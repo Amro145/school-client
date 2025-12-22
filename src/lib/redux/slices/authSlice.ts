@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/axios';
 import Cookies from 'js-cookie';
+import axios from 'axios';
 
 interface User {
     id: string;
@@ -27,10 +28,10 @@ const initialState: AuthState = {
 
 export const loginUser = createAsyncThunk(
     'auth/login',
-    async ({ email, password }: any, { rejectWithValue }) => {
-        const mutation = `
-      mutation {
-        login(email: "${email}", password: "${password}") {
+    async ({ email, password }: Record<string, string>, { rejectWithValue }) => {
+        const query = `
+      mutation login($email: String!, $password: String!) {
+        login(email: $email, password: $password) {
           token
           user {
             id
@@ -43,7 +44,10 @@ export const loginUser = createAsyncThunk(
     `;
 
         try {
-            const response = await api.post('', { query: mutation });
+            const response = await api.post('', {
+                query,
+                variables: { email, password }
+            });
 
             if (response.data.errors) {
                 return rejectWithValue(response.data.errors[0].message);
@@ -55,11 +59,11 @@ export const loginUser = createAsyncThunk(
             Cookies.set('auth_token', token, { expires: 7, secure: true, sameSite: 'strict' });
 
             return { token, user };
-        } catch (error: any) {
-            if (error.response?.data?.errors) {
-                return rejectWithValue(error.response.data.errors[0].message);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
             }
-            return rejectWithValue(error.message || 'Login failed');
+            return rejectWithValue('Login failed');
         }
     }
 );

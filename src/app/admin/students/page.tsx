@@ -103,7 +103,9 @@ export default function StudentsListPage() {
                                                 <UserCircle className="w-7 h-7" />
                                             </div>
                                             <div>
-                                                <span className="block font-bold text-slate-900">{student.userName}</span>
+                                                <Link href={`/admin/students/${student.id}`}>
+                                                    <span className="block font-bold text-slate-900">{student.userName}</span>
+                                                </Link>
                                                 <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider mt-1 inline-block">ID: #{student.id}</span>
                                             </div>
                                         </div>

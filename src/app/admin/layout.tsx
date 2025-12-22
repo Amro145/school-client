@@ -54,7 +54,7 @@ export default function AdminLayout({
                         </Link>
                     </div>
 
-                    <nav className="flex-grow px-4 space-y-2">
+                    <nav className="grow px-4 space-y-2">
                         {sidebarItems.map((item) => {
                             const isActive = pathname === item.href;
                             return (
@@ -85,7 +85,7 @@ export default function AdminLayout({
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-grow md:ml-72 min-h-screen">
+                <main className="grow md:ml-72 min-h-screen">
                     {/* Mobile Header */}
                     <header className="md:hidden bg-white border-b border-slate-200 px-4 py-4 flex items-center justify-between sticky top-0 z-50">
                         <Link href="/admin" className="flex items-center space-x-2">
@@ -107,7 +107,7 @@ export default function AdminLayout({
                         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 md:hidden" onClick={() => setIsMobileMenuOpen(false)}>
                             <div className="w-72 bg-white h-full p-8" onClick={e => e.stopPropagation()}>
                                 <div className="flex flex-col h-full">
-                                    <nav className="flex-grow space-y-2">
+                                    <nav className="grow space-y-2">
                                         {sidebarItems.map((item) => {
                                             const isActive = pathname === item.href;
                                             return (
