@@ -1,0 +1,82 @@
+{
+    "students": [
+        {
+            "id": "s1",
+            "name": "Alice Johnson",
+            "email": "alice@school.com",
+            "classId": "c1",
+            "grades": {
+                "sub1": 85,
+                "sub2": 90
+            }
+        },
+        {
+            "id": "s2",
+            "name": "Bob Smith",
+            "email": "bob@school.com",
+            "classId": "c1",
+            "grades": {
+                "sub1": 75,
+                "sub2": 80
+            }
+        },
+        {
+            "id": "s3",
+            "name": "Charlie Brown",
+            "email": "charlie@school.com",
+            "classId": "c2",
+            "grades": {
+                "sub3": 95,
+                "sub4": 88
+            }
+        }
+    ],
+    "teachers": [
+        {
+            "id": "t1",
+            "name": "John Doe",
+            "email": "john.doe@school.com"
+        },
+        {
+            "id": "t2",
+            "name": "Jane Wilson",
+            "email": "jane.wilson@school.com"
+        }
+    ],
+    "classes": [
+        {
+            "id": "c1",
+            "name": "Grade 10-A"
+        },
+        {
+            "id": "c2",
+            "name": "Grade 11-B"
+        }
+    ],
+    "subjects": [
+        {
+            "id": "sub1",
+            "name": "Mathematics",
+            "classId": "c1",
+            "teacherId": "t1"
+        },
+        {
+            "id": "sub2",
+            "name": "Physics",
+            "classId": "c1",
+            "teacherId": "t1"
+        },
+        {
+            "id": "sub3",
+            "name": "Chemistry",
+            "classId": "c2",
+            "teacherId": "t2"
+        },
+        {
+            "id": "sub4",
+            "name": "History",
+            "classId": "c2",
+            "teacherId": "t2"
+        }
+    ]
+}
