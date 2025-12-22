@@ -7,13 +7,14 @@ import { fetchMyTeachers } from '@/lib/redux/slices/adminSlice';
 import {
     Plus,
     Mail,
-    Search,
+
     Loader2,
     AlertCircle,
     UserCircle,
     GraduationCap,
     Users,
-    Trash2
+    Trash2,
+    Eye
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -150,7 +151,7 @@ export default function TeachersListPage() {
                         <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between glass">
                             <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3 bg-white rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             <div className="flex items-center space-x-2">
-                                <button className="p-3 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all"><Search className="w-5 h-5" /></button>
+                                <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
                                 <button className="p-3 text-slate-400 hover:text-red-500 hover:bg-white rounded-xl transition-all"><Trash2 className="w-5 h-5" /></button>
                             </div>
                         </div>
