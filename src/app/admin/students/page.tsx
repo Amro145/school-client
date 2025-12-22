@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchMyStudents } from '@/lib/redux/slices/adminSlice';
+import { fetchMyStudents, setPage } from '@/lib/redux/slices/adminSlice';
 import {
     Plus,
     Trash2,
@@ -16,15 +16,40 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
 export const runtime = 'edge';
+
+const LIMIT = 10;
 
 export default function StudentsListPage() {
     const dispatch = useDispatch<AppDispatch>();
-    const { students, loading, error } = useSelector((state: RootState) => state.admin);
+    const { students, loading, error, totalStudentsCount, currentPage } = useSelector((state: RootState) => state.admin);
+    const [searchTerm, setSearchTerm] = React.useState('');
+    const [debouncedSearch, setDebouncedSearch] = React.useState('');
+
+    // Handle debouncing
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchTerm);
+            if (searchTerm !== debouncedSearch) {
+                dispatch(setPage(1));
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm, dispatch, debouncedSearch]);
 
     useEffect(() => {
-        dispatch(fetchMyStudents());
-    }, [dispatch]);
+        dispatch(fetchMyStudents({ page: currentPage, limit: LIMIT, search: debouncedSearch }));
+    }, [dispatch, currentPage, debouncedSearch]);
+
+    const totalPages = Math.ceil(totalStudentsCount / LIMIT);
+
+    const handlePageChange = (newPage: number) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            dispatch(fetchMyStudents({ page: newPage, limit: LIMIT, search: debouncedSearch }));
+        }
+    };
 
     if (loading && students.length === 0) {
         return (
@@ -45,7 +70,7 @@ export default function StudentsListPage() {
                     <h3 className="text-lg font-bold text-red-900">Data Retrieval Failed</h3>
                     <p className="text-red-700 mt-1">{error}</p>
                     <button
-                        onClick={() => dispatch(fetchMyStudents())}
+                        onClick={() => dispatch(fetchMyStudents({ page: currentPage, limit: LIMIT, search: debouncedSearch }))}
                         className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition"
                     >
                         Retry Fetch
@@ -76,11 +101,13 @@ export default function StudentsListPage() {
             <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="p-8 border-b border-slate-50 relative group glass">
                     <div className="absolute left-14 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
-                        <Search className="w-6 h-6" />
+                        {loading && searchTerm !== debouncedSearch ? <Loader2 className="w-6 h-6 animate-spin text-blue-500" /> : <Search className="w-6 h-6" />}
                     </div>
                     <input
                         type="text"
                         placeholder="Scan directory by name, ID or email index..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
                     />
                 </div>
@@ -177,11 +204,60 @@ export default function StudentsListPage() {
                     </table>
                 </div>
 
-                <div className="p-8 bg-slate-50/30 border-t border-slate-100 text-center glass">
-                    <button className="bg-white text-slate-800 border border-slate-200 px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-xl shadow-slate-200/50 active:scale-95">
-                        Initialize Advanced Filter Engines
-                    </button>
-                </div>
+                {totalPages > 1 && (
+                    <div className="p-8 bg-slate-50/30 border-t border-slate-100 flex items-center justify-between glass">
+                        <div className="text-slate-400 text-xs font-black uppercase tracking-widest">
+                            Showing Page {currentPage} of {totalPages} ({totalStudentsCount} records)
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1 || loading}
+                                className="p-4 bg-white text-slate-800 border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-slate-200/50 active:scale-95"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <div className="flex items-center px-4 space-x-1">
+                                {[...Array(totalPages)].map((_, i) => {
+                                    const pageNum = i + 1;
+                                    // Only show current page, first, last, and one on each side
+                                    if (
+                                        pageNum === 1 ||
+                                        pageNum === totalPages ||
+                                        (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                                    ) {
+                                        return (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => handlePageChange(pageNum)}
+                                                disabled={loading}
+                                                className={`h-10 w-10 flex items-center justify-center rounded-xl text-xs font-black transition-all ${currentPage === pageNum
+                                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                                                    : 'bg-white text-slate-400 border border-slate-100 hover:bg-slate-50'
+                                                    }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        );
+                                    } else if (
+                                        (pageNum === 2 && currentPage > 3) ||
+                                        (pageNum === totalPages - 1 && currentPage < totalPages - 2)
+                                    ) {
+                                        return <span key={pageNum} className="text-slate-300 font-black">...</span>;
+                                    }
+                                    return null;
+                                })}
+                            </div>
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages || loading}
+                                className="p-4 bg-white text-slate-800 border border-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xl shadow-slate-200/50 active:scale-95"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

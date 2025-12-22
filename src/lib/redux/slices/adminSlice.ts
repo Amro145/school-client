@@ -69,6 +69,8 @@ interface AdminState {
     stats: AdminDashboardStats | null;
     subjects: Subject[];
     students: Student[];
+    totalStudentsCount: number;
+    currentPage: number;
     teachers: Teacher[];
     classRooms: ClassRoom[];
     currentStudent: Student | null;
@@ -80,6 +82,8 @@ const initialState: AdminState = {
     stats: null,
     subjects: [],
     students: [],
+    totalStudentsCount: 0,
+    currentPage: 1,
     teachers: [],
     classRooms: [],
     currentStudent: null,
@@ -132,15 +136,16 @@ export const fetchAdminDashboardData = createAsyncThunk(
 
 export const fetchMyStudents = createAsyncThunk(
     'admin/fetchMyStudents',
-    async (_, { rejectWithValue, getState }) => {
+    async (params: { page: number, limit: number, search?: string }, { rejectWithValue, getState, signal }) => {
         const { auth } = getState() as RootState;
         if (!auth.isAuthenticated) {
             return rejectWithValue('User must be authenticated to fetch students');
         }
 
+        const offset = (params.page - 1) * params.limit;
         const query = `
-      query MyQuery {
-        myStudents {
+      query MyQuery($limit: Int, $offset: Int, $search: String) {
+        myStudents(limit: $limit, offset: $offset, search: $search) {
           id
           userName
           email
@@ -154,18 +159,33 @@ export const fetchMyStudents = createAsyncThunk(
             score
           }
         }
+        totalStudentsCount
       }
     `;
 
         try {
-            const response = await api.post('', { query });
+            const response = await api.post('', {
+                query,
+                variables: {
+                    limit: params.limit,
+                    offset: offset,
+                    search: params.search || ""
+                }
+            }, { signal });
 
             if (response.data.errors) {
                 return rejectWithValue(response.data.errors[0].message);
             }
 
-            return response.data.data.myStudents;
+            return {
+                students: response.data.data.myStudents,
+                totalCount: response.data.data.totalStudentsCount,
+                page: params.page
+            };
         } catch (error: unknown) {
+            if (axios.isCancel(error)) {
+                return rejectWithValue('Request canceled');
+            }
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch students');
             }
@@ -387,7 +407,11 @@ export const createNewUser = createAsyncThunk(
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
-    reducers: {},
+    reducers: {
+        setPage: (state, action) => {
+            state.currentPage = action.payload;
+        }
+    },
     extraReducers: (builder) => {
         builder
             // Dashboard Data
@@ -411,9 +435,12 @@ const adminSlice = createSlice({
             })
             .addCase(fetchMyStudents.fulfilled, (state, action) => {
                 state.loading = false;
-                state.students = action.payload;
+                state.students = action.payload.students;
+                state.totalStudentsCount = action.payload.totalCount;
+                state.currentPage = action.payload.page;
             })
             .addCase(fetchMyStudents.rejected, (state, action) => {
+                if (action.payload === 'Request canceled') return;
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             })
@@ -484,5 +511,7 @@ const adminSlice = createSlice({
             });
     },
 });
+
+export const { setPage } = adminSlice.actions;
 
 export default adminSlice.reducer;
