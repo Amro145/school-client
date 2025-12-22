@@ -1,31 +1,51 @@
-import Link from 'next/link';
-import { Metadata } from 'next';
+"use client";
 
-export const metadata: Metadata = {
-    title: "Classes Management | EduDash",
-    description: "Monitor class performance, students, and subjects.",
-};
-import { getData, calculateSuccessRate } from '@/lib/data';
-import { Plus, ChevronRight, BookOpen, Users } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/lib/redux/store';
+import { fetchClassRooms, handleDeleteClassRoom } from '@/lib/redux/slices/adminSlice';
+import { Plus, ChevronRight, BookOpen, Users, Loader2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import DeleteActionButton from '@/components/DeleteActionButton';
+
+export const runtime = "edge";
 
 export default function ClassesListPage() {
-    const data = getData();
+    const dispatch = useDispatch<AppDispatch>();
+    const { classRooms, loading, error } = useSelector((state: RootState) => state.admin);
 
-    const classesWithStats = data.classes.map(cls => {
-        const classStudents = data.students.filter(s => s.classId === cls.id);
-        const classSubjects = data.subjects.filter(sub => sub.classId === cls.id);
+    useEffect(() => {
+        dispatch(fetchClassRooms());
+    }, [dispatch]);
 
-        // Calculate success rate for students in this class
-        const allGrades = classStudents.flatMap(s => Object.values(s.grades));
-        const successRate = calculateSuccessRate(allGrades);
+    if (loading && classRooms.length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+                <p className="text-slate-500 font-medium italic">Synchronizing institutional cohorts...</p>
+            </div>
+        );
+    }
 
-        return {
-            ...cls,
-            studentCount: classStudents.length,
-            subjectCount: classSubjects.length,
-            successRate
-        };
-    });
+    if (error) {
+        return (
+            <div className="bg-red-50 border border-red-100 p-8 rounded-3xl flex items-start space-x-4">
+                <div className="p-3 bg-red-100 rounded-2xl">
+                    <AlertCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                    <h3 className="text-lg font-bold text-red-900">Sync Failure</h3>
+                    <p className="text-red-700 mt-1">{error}</p>
+                    <button
+                        onClick={() => dispatch(fetchClassRooms())}
+                        className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition"
+                    >
+                        Retry Connection
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20">
@@ -38,7 +58,7 @@ export default function ClassesListPage() {
                     href="/admin/classes/new"
                     className="relative group overflow-hidden"
                 >
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                     <div className="relative bg-blue-600 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
                         <Plus className="w-5 h-5 mr-3" /> Construct New Cohort
                     </div>
@@ -51,65 +71,48 @@ export default function ClassesListPage() {
                         <thead>
                             <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
                                 <th className="px-10 py-6">Cohort Identification</th>
-                                <th className="px-10 py-6">Student Density</th>
-                                <th className="px-10 py-6 text-center">Curriculum Scope</th>
-                                <th className="px-10 py-6">Success Trajectory</th>
-                                <th className="px-10 py-6 text-right">Operational Status</th>
+                                <th className="px-10 py-6">Operational Status</th>
+                                <th className="px-10 py-6 text-right">Administrative Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {classesWithStats.map((cls) => (
+                            {classRooms.map((cls) => (
                                 <tr key={cls.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
                                     <td className="px-10 py-8">
                                         <div className="flex items-center space-x-5">
-                                            <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                            <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                                                 <BookOpen className="w-8 h-8" />
                                             </div>
                                             <div>
                                                 <h3 className="text-lg font-black text-slate-900 leading-none mb-1.5 group-hover:text-blue-600 transition-colors">{cls.name}</h3>
                                                 <div className="flex items-center space-x-2">
                                                     <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ID: {cls.id}</span>
-                                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ACTIVE</span>
+                                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">COHORT</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-8">
-                                        <div className="flex items-center text-slate-900 font-black">
-                                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-100 transition-colors">
-                                                <Users className="w-5 h-5 text-slate-400 group-hover:text-blue-600" />
-                                            </div>
-                                            {cls.studentCount} <span className="text-slate-400 font-bold ml-1.5 uppercase tracking-tighter text-xs">Learners</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-8 text-center">
-                                        <div className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm group-hover:border-blue-100 transition-colors">
-                                            {cls.subjectCount} <span className="text-slate-400 font-bold ml-2 uppercase tracking-tighter text-xs">Subjects</span>
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-8">
-                                        <div className="flex flex-col">
-                                            <div className="flex items-center space-x-4 w-full max-w-[160px]">
-                                                <div className="flex-grow h-2.5 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                                                    <div
-                                                        className={`h-full rounded-full transition-all duration-1000 ${cls.successRate >= 85 ? 'bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.3)]' : cls.successRate >= 70 ? 'bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.3)]' : 'bg-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.3)]'}`}
-                                                        style={{ width: `${cls.successRate}%` }}
-                                                    />
-                                                </div>
-                                                <span className={`font-black text-sm tabular-nums ${cls.successRate >= 85 ? 'text-emerald-600' : cls.successRate >= 70 ? 'text-blue-600' : 'text-rose-600'}`}>
-                                                    {cls.successRate}%
-                                                </span>
-                                            </div>
-                                            <div className="mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate Score Metric</div>
+                                        <div className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl font-black text-[10px] uppercase tracking-widest">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
+                                            Active System Node
                                         </div>
                                     </td>
                                     <td className="px-10 py-8 text-right">
-                                        <Link
-                                            href={`/admin/classes/${cls.id}`}
-                                            className="inline-flex items-center justify-center p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95 group/btn"
-                                        >
-                                            <ChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
-                                        </Link>
+                                        <div className="flex items-center justify-end space-x-3">
+                                            <Link
+                                                href={`/admin/classes/${cls.id}`}
+                                                className="inline-flex items-center justify-center p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95 group/btn"
+                                            >
+                                                <ChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
+                                            </Link>
+                                            <DeleteActionButton
+                                                userId={cls.id}
+                                                userName={cls.name}
+                                                warning="Deleting a classroom might affect assigned students and subjects. Are you sure?"
+                                                action={handleDeleteClassRoom}
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -117,11 +120,13 @@ export default function ClassesListPage() {
                     </table>
                 </div>
 
-                <div className="p-10 bg-slate-50/30 border-t border-slate-100 text-center glass">
-                    <button className="bg-white text-slate-800 border border-slate-200 px-12 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all shadow-xl shadow-slate-200/50 active:scale-95">
-                        Initialize Advanced Analytics Node
-                    </button>
-                </div>
+                {classRooms.length === 0 && !loading && (
+                    <div className="p-20 text-center">
+                        <Users className="w-16 h-16 text-slate-200 mx-auto mb-6" />
+                        <h3 className="text-xl font-bold text-slate-900">No Cohorts Established</h3>
+                        <p className="text-slate-500 mt-2">Begin by constructing your school's first academic cohort.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

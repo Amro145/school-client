@@ -559,6 +559,42 @@ export const handleDeleteUser = createAsyncThunk(
     }
 );
 
+export const handleDeleteClassRoom = createAsyncThunk(
+    'admin/deleteClassRoom',
+    async (id: string | number, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation DeleteClassRoom($id: Int!) {
+        deleteClassRoom(id: $id) {
+          id
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: { id: typeof id === 'string' ? parseInt(id) : id }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return id;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete classroom');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -708,26 +744,44 @@ const adminSlice = createSlice({
             .addCase(handleDeleteUser.fulfilled, (state, action) => {
                 state.loading = false;
                 const deletedId = action.payload.toString();
-                
+
                 // Identify if it was a student before filtering
                 const wasStudent = state.students.some(s => s.id.toString() === deletedId);
                 const wasTeacher = state.teachers.some(t => t.id.toString() === deletedId);
 
                 state.students = state.students.filter(student => student.id.toString() !== deletedId);
                 state.teachers = state.teachers.filter(teacher => teacher.id.toString() !== deletedId);
-                
+
                 if (wasStudent) {
                     state.totalStudentsCount = Math.max(0, state.totalStudentsCount - 1);
                     if (state.stats) {
                         state.stats.totalStudents = Math.max(0, state.stats.totalStudents - 1);
                     }
                 }
-                
+
                 if (wasTeacher && state.stats) {
                     state.stats.totalTeachers = Math.max(0, state.stats.totalTeachers - 1);
                 }
             })
             .addCase(handleDeleteUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Delete ClassRoom
+            .addCase(handleDeleteClassRoom.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(handleDeleteClassRoom.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = action.payload.toString();
+                state.classRooms = state.classRooms.filter(c => c.id.toString() !== deletedId);
+
+                if (state.stats) {
+                    state.stats.totalClassRooms = Math.max(0, state.stats.totalClassRooms - 1);
+                }
+            })
+            .addCase(handleDeleteClassRoom.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
