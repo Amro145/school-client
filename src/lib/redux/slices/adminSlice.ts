@@ -60,11 +60,17 @@ interface Teacher {
     }[];
 }
 
+interface ClassRoom {
+    id: string;
+    name: string;
+}
+
 interface AdminState {
     stats: AdminDashboardStats | null;
     subjects: Subject[];
     students: Student[];
     teachers: Teacher[];
+    classRooms: ClassRoom[];
     currentStudent: Student | null;
     loading: boolean;
     error: string | null;
@@ -75,6 +81,7 @@ const initialState: AdminState = {
     subjects: [],
     students: [],
     teachers: [],
+    classRooms: [],
     currentStudent: null,
     loading: false,
     error: null,
@@ -308,6 +315,75 @@ export const fetchStudentById = createAsyncThunk(
     }
 );
 
+export const fetchClassRooms = createAsyncThunk(
+    'admin/fetchClassRooms',
+    async (_, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const query = `
+      query MyQuery {
+        classRooms {
+          id
+          name
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', { query });
+            if (response.data.errors) return rejectWithValue(response.data.errors[0].message);
+            return response.data.data.classRooms;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class rooms');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const createNewUser = createAsyncThunk(
+    'admin/createUser',
+    async (userData: { userName: string, email: string, role: string, password: string, classId?: number }, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
+        createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
+          id
+          userName
+          email
+          role
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: userData
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.createUser;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create user');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -378,6 +454,31 @@ const adminSlice = createSlice({
                 state.currentStudent = action.payload;
             })
             .addCase(fetchStudentById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // ClassRooms Data
+            .addCase(fetchClassRooms.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchClassRooms.fulfilled, (state, action) => {
+                state.loading = false;
+                state.classRooms = action.payload;
+            })
+            .addCase(fetchClassRooms.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create User
+            .addCase(createNewUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewUser.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createNewUser.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
