@@ -3,12 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npx wrangler pages dev .next --compatibility-flag=nodejs_compat --port 8787",
+    "dev": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat --port 8787",
     "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
+    "build:cloudflare": "next build && npx @cloudflare/next-on-pages",
+    "dev:cloudflare": "wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat --watch",
     "pages:build": "npx @cloudflare/next-on-pages",
-    "preview": "npm run pages:build && wrangler pages dev"
+    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --port 8787"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",

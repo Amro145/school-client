@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-    baseURL: 'https://schoolapi.amroaltayeb14.workers.dev/graphql',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql',
     headers: {
         'Content-Type': 'application/json',
     },

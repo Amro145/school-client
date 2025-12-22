@@ -114,7 +114,9 @@ export default function SubjectsListPage() {
                                                     <BookOpen className="w-8 h-8" />
                                                 </div>
                                                 <div>
-                                                    <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{subject.name}</span>
+                                                    <Link href={`/admin/subjects/${subject.id}`}>
+                                                        <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{subject.name}</span>
+                                                    </Link>
                                                     <div className="flex items-center space-x-2">
                                                         <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {subject.id}</span>
                                                         <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">ACTIVE</span>
