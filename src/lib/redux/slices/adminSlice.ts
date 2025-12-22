@@ -444,6 +444,48 @@ export const createNewSubject = createAsyncThunk(
     }
 );
 
+export const createNewTeacher = createAsyncThunk(
+    'admin/createTeacher',
+    async (teacherData: { userName: string, email: string, password: string }, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!) {
+        createUser(userName: $userName, email: $email, role: $role, password: $password) {
+          id
+          userName
+          email
+          role
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: {
+                    ...teacherData,
+                    role: 'teacher'
+                }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.createUser;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create teacher');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -558,6 +600,18 @@ const adminSlice = createSlice({
                 state.loading = false;
             })
             .addCase(createNewSubject.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create Teacher
+            .addCase(createNewTeacher.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewTeacher.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createNewTeacher.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
