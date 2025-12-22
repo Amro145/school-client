@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSubjectById, resetSubject } from '@/lib/redux/slices/subjectSlice';
 import { RootState, AppDispatch } from '@/lib/redux/store';
@@ -236,14 +236,15 @@ export default function SubjectDetailPage() {
                     </table>
                 </div>
 
-                <div className="py-24 text-center bg-white">
-                    <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-inner">
-                        <Layers className="w-12 h-12 text-slate-200" />
+                {(!currentSubject.grades || currentSubject.grades.length === 0) && (
+                    <div className="py-24 text-center bg-white">
+                        <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-inner">
+                            <Layers className="w-12 h-12 text-slate-200" />
+                        </div>
+                        <h3 className="text-2xl font-black text-slate-900 tracking-tight">Outcome Data Unavailable</h3>
+                        <p className="text-slate-400 max-w-sm mx-auto font-medium mt-2 italic">Evaluation scores for this subject node have not been synchronized yet.</p>
                     </div>
-                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">Outcome Data Unavailable</h3>
-                    <p className="text-slate-400 max-w-sm mx-auto font-medium mt-2 italic">Evaluation scores for this subject node have not been synchronized yet.</p>
-                </div>
-                
+                )}
 
                 <div className="p-10 bg-slate-50/30 border-t border-slate-100 text-center glass">
                     <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Subject Performance Analytics Node</p>

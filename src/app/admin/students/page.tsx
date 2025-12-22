@@ -66,7 +66,7 @@ export default function StudentsListPage() {
                     href="/admin/students/new"
                     className="relative group overflow-hidden"
                 >
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                     <div className="relative bg-blue-600 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-blue-700 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
                         <Plus className="w-5 h-5 mr-3" /> Enroll New Candidate
                     </div>
@@ -102,7 +102,7 @@ export default function StudentsListPage() {
                                     <td className="px-10 py-8">
                                         <div className="flex items-center space-x-5">
                                             <div className="relative">
-                                                <div className="w-14 h-14 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                                                     <UserCircle className="w-8 h-8" />
                                                 </div>
                                                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full" title="Active Account" />
@@ -140,7 +140,7 @@ export default function StudentsListPage() {
                                                     student.grades.slice(0, 4).map((grade) => (
                                                         <div
                                                             key={grade.id}
-                                                            className={`inline-block h-10 w-10 rounded-2xl ring-4 ring-white shadow-lg flex items-center justify-center text-[10px] font-black text-white ${grade.score >= 80 ? 'bg-indigo-600' : grade.score >= 60 ? 'bg-blue-600' : 'bg-slate-400'
+                                                            className={`flex h-10 w-10 rounded-2xl ring-4 ring-white shadow-lg items-center justify-center text-[10px] font-black text-white ${grade.score >= 80 ? 'bg-indigo-600' : grade.score >= 60 ? 'bg-blue-600' : 'bg-slate-400'
                                                                 } transform transition-transform hover:-translate-y-2 cursor-default`}
                                                             title={`Subject Grade: ${grade.score}%`}
                                                         >

@@ -186,8 +186,6 @@ export default function CreateUserPage() {
                                     className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="student">STUDENT NODE</option>
-                                    <option value="teacher">INSTRUCTOR NODE</option>
-                                    <option value="admin">SYSTEM ADMINISTRATOR</option>
                                 </select>
                             </div>
                         </div>

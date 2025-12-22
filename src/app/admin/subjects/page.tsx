@@ -69,7 +69,7 @@ export default function SubjectsListPage() {
                     href="/admin/subjects/new"
                     className="relative group overflow-hidden"
                 >
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                    <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                     <div className="relative bg-slate-900 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-slate-800 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
                         <Plus className="w-5 h-5 mr-3" /> Architect New Subject
                     </div>
@@ -109,7 +109,7 @@ export default function SubjectsListPage() {
                                     <tr key={subject.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
                                         <td className="px-10 py-8">
                                             <div className="flex items-center space-x-5">
-                                                <div className="w-14 h-14 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                <div className="w-14 h-14 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                                                     <BookOpen className="w-8 h-8" />
                                                 </div>
                                                 <div>
@@ -142,7 +142,7 @@ export default function SubjectsListPage() {
                                                 {avgScore !== null ? (
                                                     <>
                                                         <div className="flex items-center space-x-4 w-full max-w-[140px]">
-                                                            <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                            <div className="grow h-2 bg-slate-100 rounded-full overflow-hidden">
                                                                 <div
                                                                     className={`h-full rounded-full transition-all duration-1000 ${avgScore > 80 ? 'bg-emerald-500' : avgScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`}
                                                                     style={{ width: `${avgScore}%` }}
