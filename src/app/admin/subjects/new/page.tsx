@@ -12,7 +12,7 @@ export default function CreateSubjectPage() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
 
-    const { teachers, classRooms, loading: globalLoading, error: globalError } = useSelector((state: RootState) => state.admin);
+    const { teachers, classRooms, loading: globalLoading } = useSelector((state: RootState) => state.admin);
 
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -49,7 +49,7 @@ export default function CreateSubjectPage() {
             } else {
                 setError(resultAction.payload as string || 'Failed to create subject');
             }
-        } catch (err) {
+        } catch {
             setError('An unexpected error occurred');
         } finally {
             setSubmitting(false);

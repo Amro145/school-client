@@ -41,7 +41,7 @@ export default function CreateTeacherPage() {
             } else {
                 setError(resultAction.payload as string || 'Failed to create teacher account');
             }
-        } catch (err) {
+        } catch {
             setError('An unexpected system error occurred');
         } finally {
             setSubmitting(false);

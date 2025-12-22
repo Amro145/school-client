@@ -35,7 +35,7 @@ export default function SetupSchoolPage() {
             } else {
                 setError(resultAction.payload as string || 'Failed to create school');
             }
-        } catch (err) {
+        } catch {
             setError('An unexpected error occurred');
         } finally {
             setSubmitting(false);
@@ -52,7 +52,7 @@ export default function SetupSchoolPage() {
                     </div>
                     <div className="text-center">
                         <h1 className="text-4xl font-black text-slate-900 tracking-tight">Setup Your School</h1>
-                        <p className="text-slate-500 mt-2 font-medium">Welcome, {user?.userName}. Let's get started.</p>
+                        <p className="text-slate-500 mt-2 font-medium">Welcome, {user?.userName}. Let&apos;s get started.</p>
                     </div>
                 </div>
 
