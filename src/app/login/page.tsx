@@ -22,9 +22,15 @@ export default function LoginPage() {
         }
     }, [isAuthenticated, router]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        dispatch(loginUser({ email, password }));
+        try {
+            await dispatch(loginUser({ email, password })).unwrap();
+            // Force a full page reload to absolute /admin to ensure token sync across all axios instances and auth providers
+            window.location.href = '/admin';
+        } catch (err) {
+            console.error('Authorization Failed:', err);
+        }
     };
 
     return (
