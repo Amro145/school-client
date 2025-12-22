@@ -404,6 +404,46 @@ export const createNewUser = createAsyncThunk(
     }
 );
 
+export const createNewSubject = createAsyncThunk(
+    'admin/createSubject',
+    async (subjectData: { classId: number, name: string, teacherId: number }, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation CreateSubject($classId: Int!, $name: String!, $teacherId: Int!) {
+        createSubject(classId: $classId, name: $name, teacherId: $teacherId) {
+          id
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: {
+                    classId: Number(subjectData.classId),
+                    teacherId: Number(subjectData.teacherId),
+                    name: subjectData.name
+                }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.createSubject;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create subject');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -506,6 +546,18 @@ const adminSlice = createSlice({
                 state.loading = false;
             })
             .addCase(createNewUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create Subject
+            .addCase(createNewSubject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewSubject.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createNewSubject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
