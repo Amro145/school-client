@@ -13,10 +13,12 @@ import {
     X,
     ShieldCheck
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/redux/slices/authSlice';
+import { RootState } from '@/lib/redux/store';
 
 const sidebarItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -34,6 +36,19 @@ export default function AdminLayout({
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dispatch = useDispatch();
+    const router = useRouter();
+    const { needsSchoolSetup } = useSelector((state: RootState) => state.auth);
+
+    useEffect(() => {
+        if (needsSchoolSetup && pathname !== '/admin/setup-school') {
+            router.push('/admin/setup-school');
+        }
+    }, [needsSchoolSetup, pathname, router]);
+
+    // If setting up school, show minimal layout or just the child
+    if (pathname === '/admin/setup-school') {
+        return <ProtectedRoute>{children}</ProtectedRoute>;
+    }
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -128,7 +143,7 @@ export default function AdminLayout({
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
                                 <span className="text-xs font-bold text-slate-600">Cloud Status: Optimal</span>
                             </div>
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg">
+                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg">
                                 AD
                             </div>
                         </div>

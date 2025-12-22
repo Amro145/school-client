@@ -68,7 +68,7 @@ export default function CreateSubjectPage() {
             </Link>
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
+                <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
                     <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
                             <BarChart3 className="text-white w-7 h-7" />
@@ -83,14 +83,14 @@ export default function CreateSubjectPage() {
                 <div className="p-8 md:p-12">
                     {error && (
                         <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-center space-x-3 text-sm font-medium animate-in slide-in-from-top-2">
-                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <AlertCircle className="w-5 h-5 shrink-0" />
                             <span>{error}</span>
                         </div>
                     )}
 
                     {success && (
                         <div className="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl flex items-center space-x-3 text-sm font-medium animate-in slide-in-from-top-2">
-                            <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                            <CheckCircle2 className="w-5 h-5 shrink-0" />
                             <span>Subject created successfully! Redirecting...</span>
                         </div>
                     )}
@@ -165,7 +165,7 @@ export default function CreateSubjectPage() {
                             <button
                                 type="submit"
                                 disabled={submitting || isLoadingData}
-                                className="flex-[2] bg-purple-600 text-white font-bold py-4 rounded-2xl hover:bg-purple-700 transition-all hover:shadow-xl hover:shadow-purple-200 active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:hover:shadow-none"
+                                className="flex-2 bg-purple-600 text-white font-bold py-4 rounded-2xl hover:bg-purple-700 transition-all hover:shadow-xl hover:shadow-purple-200 active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:hover:shadow-none"
                             >
                                 {submitting ? (
                                     <>

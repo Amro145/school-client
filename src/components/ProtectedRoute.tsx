@@ -1,16 +1,24 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useRouter, usePathname } from 'next/navigation';
-import { RootState } from '@/lib/redux/store';
+import { RootState, AppDispatch } from '@/lib/redux/store';
+import { fetchMe } from '@/lib/redux/slices/authSlice';
 import { Loader2 } from 'lucide-react';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, loading, user } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
     const pathname = usePathname();
+    const dispatch = useDispatch<AppDispatch>();
+    const { isAuthenticated, loading, user, token } = useSelector((state: RootState) => state.auth);
     const role = user?.role;
+
+    useEffect(() => {
+        if (token && !user && !loading) {
+            dispatch(fetchMe());
+        }
+    }, [token, user, loading, dispatch]);
 
     useEffect(() => {
         if (loading) return;

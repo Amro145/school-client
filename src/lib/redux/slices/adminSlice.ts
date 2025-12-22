@@ -486,6 +486,43 @@ export const createNewTeacher = createAsyncThunk(
     }
 );
 
+export const createNewSchool = createAsyncThunk(
+    'admin/createSchool',
+    async (name: string, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation CreateSchool($name: String!) {
+        createSchool(name: $name) {
+          id
+          name
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: { name }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.createSchool;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create school');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -612,6 +649,18 @@ const adminSlice = createSlice({
                 state.loading = false;
             })
             .addCase(createNewTeacher.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create School
+            .addCase(createNewSchool.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewSchool.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createNewSchool.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
