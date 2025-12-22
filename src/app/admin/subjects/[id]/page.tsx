@@ -3,8 +3,9 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSubjectById, resetSubject } from '@/lib/redux/slices/subjectSlice';
+import { fetchSubjectById, resetSubject, updateGradesBulk } from '@/lib/redux/slices/subjectSlice';
 import { RootState, AppDispatch } from '@/lib/redux/store';
+import { useState } from 'react';
 import Link from 'next/link';
 import {
     ArrowLeft,
@@ -14,7 +15,10 @@ import {
     User,
     Layers,
     Trophy,
-    TrendingUp
+    TrendingUp,
+    Save,
+    Loader2 as Spinner,
+    CheckCircle2
 } from 'lucide-react';
 
 export const runtime = 'edge';
@@ -24,6 +28,13 @@ export default function SubjectDetailPage() {
     const id = params?.id as string;
     const dispatch = useDispatch<AppDispatch>();
     const { currentSubject, loading, error } = useSelector((state: RootState) => state.subject);
+    const { user } = useSelector((state: RootState) => state.auth);
+
+    const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const isAuthorized = user?.role === 'admin' || user?.role === 'teacher';
 
     useEffect(() => {
         if (id) {
@@ -33,6 +44,36 @@ export default function SubjectDetailPage() {
             dispatch(resetSubject());
         };
     }, [id, dispatch]);
+
+    const handleScoreChange = (gradeId: string, newScore: string) => {
+        const score = parseInt(newScore);
+        if (isNaN(score)) return;
+        setModifiedGrades(prev => ({
+            ...prev,
+            [gradeId]: score
+        }));
+    };
+
+    const handleSaveAll = async () => {
+        const gradesToUpdate = Object.entries(modifiedGrades).map(([id, score]) => ({
+            id,
+            score
+        }));
+
+        if (gradesToUpdate.length === 0) return;
+
+        setIsSaving(true);
+        try {
+            await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
+            setModifiedGrades({});
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
+        } catch (err) {
+            console.error('Failed to save grades:', err);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -169,6 +210,23 @@ export default function SubjectDetailPage() {
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
+                        {showSuccess && (
+                            <div className="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
+                                <CheckCircle2 className="w-5 h-5" />
+                                <span className="text-xs font-black uppercase tracking-widest">Grades Synchronized</span>
+                            </div>
+                        )}
+                        {isAuthorized && (
+                            <button
+                                onClick={handleSaveAll}
+                                disabled={isSaving || Object.keys(modifiedGrades).length === 0}
+                                className={`flex items-center space-x-3 px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${Object.keys(modifiedGrades).length > 0 ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-200' : 'bg-slate-100 text-slate-400'
+                                    }`}
+                            >
+                                {isSaving ? <Spinner className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                <span>{isSaving ? 'Syncing...' : 'Save All Changes'}</span>
+                            </button>
+                        )}
                         <div className="px-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-[10px] font-black uppercase tracking-tighter text-slate-500">
                             Academic Integrity: <span className="text-emerald-600">Verified</span>
                         </div>
@@ -202,14 +260,34 @@ export default function SubjectDetailPage() {
                                     <td className="px-12 py-8">
                                         <div className="flex flex-col space-y-3">
                                             <div className="flex items-center justify-between w-full max-w-[200px]">
-                                                <span className={`text-xl font-black tabular-nums ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'}`}>
-                                                    {grade.score}%
-                                                </span>
+                                                {isAuthorized ? (
+                                                    <div className="relative group/input">
+                                                        <input
+                                                            type="number"
+                                                            value={modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}
+                                                            onChange={(e) => handleScoreChange(grade.id, e.target.value)}
+                                                            className={`w-24 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'
+                                                                }`}
+                                                            min="0"
+                                                            max="100"
+                                                        />
+                                                        {modifiedGrades[grade.id] !== undefined && (
+                                                            <span className="absolute -right-16 top-1/2 -translate-y-1/2 text-[10px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-md animate-pulse">
+                                                                Pending
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className={`text-xl font-black tabular-nums ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'
+                                                        }`}>
+                                                        {grade.score}%
+                                                    </span>
+                                                )}
                                             </div>
                                             <div className="w-full max-w-[200px] h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
                                                 <div
                                                     className={`h-full rounded-full transition-all duration-1000 ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 70 ? 'bg-blue-500' : 'bg-rose-500'}`}
-                                                    style={{ width: `${grade.score}%` }}
+                                                    style={{ width: `${modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}%` }}
                                                 />
                                             </div>
                                         </div>

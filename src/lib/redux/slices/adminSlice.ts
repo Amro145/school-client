@@ -595,6 +595,48 @@ export const handleDeleteClassRoom = createAsyncThunk(
     }
 );
 
+export const updateGradesBulk = createAsyncThunk(
+    'admin/updateGradesBulk',
+    async (grades: { id: string | number, score: number }[], { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation updateBulkGrades($grades: [GradeUpdateInput!]!) {
+        updateBulkGrades(grades: $grades) {
+          id
+          score
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: {
+                    grades: grades.map(g => ({
+                        id: g.id.toString(),
+                        score: g.score
+                    }))
+                }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.updateBulkGrades;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update grades');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -782,6 +824,25 @@ const adminSlice = createSlice({
                 }
             })
             .addCase(handleDeleteClassRoom.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Update Bulk Grades
+            .addCase(updateGradesBulk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateGradesBulk.fulfilled, (state, action) => {
+                state.loading = false;
+                if (state.currentStudent) {
+                    const updatedGrades = action.payload as { id: string, score: number }[];
+                    state.currentStudent.grades = state.currentStudent.grades.map(grade => {
+                        const updated = updatedGrades.find(u => u.id.toString() === grade.id.toString());
+                        return updated ? { ...grade, score: updated.score } : grade;
+                    });
+                }
+            })
+            .addCase(updateGradesBulk.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });

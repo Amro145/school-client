@@ -3,7 +3,8 @@
 import React, { useEffect, use } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchStudentById } from '@/lib/redux/slices/adminSlice';
+import { fetchStudentById, updateGradesBulk } from '@/lib/redux/slices/adminSlice';
+import { useState } from 'react';
 import {
     UserCircle,
     Mail,
@@ -15,7 +16,9 @@ import {
     AlertCircle,
     TrendingUp,
     Calendar,
-    ArrowUpRight
+    ArrowUpRight,
+    Save,
+    CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,13 +32,50 @@ export default function StudentProfilePage({ params }: PageProps) {
     const { id } = use(params);
     const dispatch = useDispatch<AppDispatch>();
     const { currentStudent, loading, error } = useSelector((state: RootState) => state.admin);
+    const { user: authUser } = useSelector((state: RootState) => state.auth);
+
+    const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
+    const [isSaving, setIsSaving] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+
+    const isAuthorized = authUser?.role === 'admin' || authUser?.role === 'teacher';
 
     useEffect(() => {
         if (id) {
-            const studentId = Number(id);   
+            const studentId = Number(id);
             dispatch(fetchStudentById(studentId));
         }
     }, [dispatch, id]);
+
+    const handleScoreChange = (gradeId: string, newScore: string) => {
+        const score = parseInt(newScore);
+        if (isNaN(score)) return;
+        setModifiedGrades(prev => ({
+            ...prev,
+            [gradeId]: score
+        }));
+    };
+
+    const handleSaveAll = async () => {
+        const gradesToUpdate = Object.entries(modifiedGrades).map(([id, score]) => ({
+            id,
+            score
+        }));
+
+        if (gradesToUpdate.length === 0) return;
+
+        setIsSaving(true);
+        try {
+            await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
+            setModifiedGrades({});
+            setShowSuccess(true);
+            setTimeout(() => setShowSuccess(false), 3000);
+        } catch (err) {
+            console.error('Failed to save grades:', err);
+        } finally {
+            setIsSaving(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -144,7 +184,25 @@ export default function StudentProfilePage({ params }: PageProps) {
                             <TrendingUp className="w-6 h-6 mr-3 text-blue-600" />
                             Academic Performance
                         </h2>
-                        <div className="text-slate-400 font-bold text-sm">Fall Semester 2025</div>
+                        <div className="flex items-center space-x-4">
+                            {showSuccess && (
+                                <div className="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
+                                    <CheckCircle2 className="w-5 h-5" />
+                                    <span className="text-xs font-black uppercase tracking-widest">Saved</span>
+                                </div>
+                            )}
+                            {isAuthorized && Object.keys(modifiedGrades).length > 0 && (
+                                <button
+                                    onClick={handleSaveAll}
+                                    disabled={isSaving}
+                                    className="flex items-center space-x-2 px-6 py-2 bg-blue-600 text-white rounded-xl font-black text-xs uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg active:scale-95 disabled:opacity-50"
+                                >
+                                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                                    <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+                                </button>
+                            )}
+                            <div className="text-slate-400 font-bold text-sm">Fall Semester 2025</div>
+                        </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -158,16 +216,35 @@ export default function StudentProfilePage({ params }: PageProps) {
                                             </div>
                                             <span className="font-black text-slate-900">{grade.subject?.name || 'N/A'}</span>
                                         </div>
-                                        <div className={`text-2xl font-black ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
-                                            }`}>
-                                            {grade.score}%
-                                        </div>
+                                        {isAuthorized ? (
+                                            <div className="relative group/input">
+                                                <input
+                                                    type="number"
+                                                    value={modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}
+                                                    onChange={(e) => handleScoreChange(grade.id, e.target.value)}
+                                                    className={`w-20 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
+                                                        }`}
+                                                    min="0"
+                                                    max="100"
+                                                />
+                                                {modifiedGrades[grade.id] !== undefined && (
+                                                    <span className="absolute -right-12 top-1/2 -translate-y-1/2 text-[9px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 px-1.5 py-0.5 rounded-md">
+                                                        *
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <div className={`text-2xl font-black ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
+                                                }`}>
+                                                {grade.score}%
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
                                         <div
                                             className={`h-full rounded-full transition-all duration-1000 ${grade.score >= 80 ? 'bg-emerald-500' : grade.score >= 60 ? 'bg-amber-500' : 'bg-rose-500'
                                                 }`}
-                                            style={{ width: `${grade.score}%` }}
+                                            style={{ width: `${modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}%` }}
                                         />
                                     </div>
                                     <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-tight">

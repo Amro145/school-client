@@ -124,7 +124,7 @@ export default function ClassesListPage() {
                     <div className="p-20 text-center">
                         <Users className="w-16 h-16 text-slate-200 mx-auto mb-6" />
                         <h3 className="text-xl font-bold text-slate-900">No Cohorts Established</h3>
-                        <p className="text-slate-500 mt-2">Begin by constructing your school's first academic cohort.</p>
+                        <p className="text-slate-500 mt-2">Begin by constructing your schools first academic cohort.</p>
                     </div>
                 )}
             </div>
