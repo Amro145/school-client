@@ -1,94 +1,103 @@
-"use client";
+'use client';
 
-import { useState, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { ShieldCheck, GraduationCap, Users, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/navigation';
+import { AppDispatch, RootState } from '@/lib/redux/store';
+import { loginUser } from '@/lib/redux/slices/authSlice';
+import { Loader2, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
 
-function LoginForm() {
-    const searchParams = useSearchParams();
+export default function LoginPage() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const role = searchParams.get('role') || 'student';
-    const [loading, setLoading] = useState(false);
+    const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
 
-    const roleConfigs = {
-        student: { title: "Student Login", icon: <GraduationCap className="w-10 h-10 text-blue-500" />, redirect: "/" },
-        teacher: { title: "Teacher Login", icon: <Users className="w-10 h-10 text-purple-500" />, redirect: "/" },
-        admin: { title: "Admin Portal", icon: <ShieldCheck className="w-10 h-10 text-green-500" />, redirect: "/admin" },
-    };
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push('/admin');
+        }
+    }, [isAuthenticated, router]);
 
-    const config = roleConfigs[role as keyof typeof roleConfigs] || roleConfigs.student;
-
-    const handleLogin = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
-        // Mock authentication delay
-        setTimeout(() => {
-            router.push(config.redirect);
-        }, 1500);
+        dispatch(loginUser({ email, password }));
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-            <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-10 border border-slate-100">
-                <div className="flex flex-col items-center mb-8">
-                    <div className="mb-4">{config.icon}</div>
-                    <h1 className="text-3xl font-bold text-slate-900">{config.title}</h1>
-                    <p className="text-slate-500 mt-2">Enter your credentials to continue</p>
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 p-6">
+            <div className="w-full max-w-md bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="bg-slate-900 p-8 text-white text-center">
+                    <h1 className="text-3xl font-extrabold tracking-tight">Welcome Back</h1>
+                    <p className="mt-2 text-slate-400 font-medium">Log in to manage your school system</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                        <input
-                            type="email"
-                            placeholder="e.g. user@school.com"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                            required
-                        />
-                    </div>
+                <div className="p-8">
+                    {error && (
+                        <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-start space-x-3 animate-in fade-in zoom-in-95 duration-300">
+                            <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                            <p className="text-sm font-bold text-red-700">{error}</p>
+                        </div>
+                    )}
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-slate-900 text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-colors flex items-center justify-center disabled:opacity-70"
-                    >
-                        {loading ? (
-                            <>
-                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                Signing in...
-                            </>
-                        ) : (
-                            "Sign In"
-                        )}
-                    </button>
-                </form>
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 px-1">Email Address</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                                    <Mail className="w-5 h-5" />
+                                </div>
+                                <input
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="block w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-medium focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                                    placeholder="name@school.com"
+                                />
+                            </div>
+                        </div>
 
-                <div className="mt-8 text-center">
-                    <button
-                        onClick={() => router.push('/')}
-                        className="text-slate-500 hover:text-slate-700 text-sm font-medium transition-colors"
-                    >
-                        &larr; Back to selection
-                    </button>
+                        <div>
+                            <label className="block text-sm font-bold text-slate-700 mb-2 px-1">Password</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                                    <Lock className="w-5 h-5" />
+                                </div>
+                                <input
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full pl-11 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-medium focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full flex items-center justify-center py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-2xl font-bold text-lg shadow-lg shadow-blue-500/20 transition-all group"
+                        >
+                            {loading ? (
+                                <Loader2 className="w-6 h-6 animate-spin" />
+                            ) : (
+                                <>
+                                    Log In <LogIn className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-8 pt-8 border-t border-slate-100 text-center">
+                        <p className="text-slate-500 font-medium text-sm">
+                            Don&apos;t have an account? <span className="text-blue-600 cursor-not-allowed opacity-50">Contact Admin</span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
-    );
-}
-
-export default function LoginPage() {
-    return (
-        <Suspense fallback={<div>Loading...</div>}>
-            <LoginForm />
-        </Suspense>
     );
 }
