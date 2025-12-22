@@ -1,0 +1,1 @@
+var c={},_=(l,a,s)=>(c.__chunk_1051=(o,r,e)=>{"use strict";e.d(r,{A:()=>t});let t=(0,e(5732).A)("circle-user",[["circle",{cx:"12",cy:"12",r:"10",key:"1mglay"}],["circle",{cx:"12",cy:"10",r:"3",key:"ilqhr7"}],["path",{d:"M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662",key:"154egf"}]])},c);export{_ as __getNamedExports};
