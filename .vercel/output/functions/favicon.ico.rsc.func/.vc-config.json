@@ -646,6 +646,7 @@
     ".next/server/pages/_document.js": ".next/server/pages/_document.js",
     ".next/server/app/_not-found/page.js": ".next/server/app/_not-found/page.js",
     ".next/server/chunks/111.js": ".next/server/chunks/111.js",
+    ".next/server/chunks/605.js": ".next/server/chunks/605.js",
     ".next/server/app/_not-found/page_client-reference-manifest.js": ".next/server/app/_not-found/page_client-reference-manifest.js"
   }
 }
