@@ -2,9 +2,12 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { getData, calculateSuccessRate } from '@/lib/data';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export const runtime = 'edge';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
     const data = getData();
-    const subject = data.subjects.find(s => s.id === params.id);
+    const subject = data.subjects.find(s => s.id === id);
     return {
         title: `${subject?.name || 'Subject'} Performance | EduDash`,
         description: `Detailed performance tracking for ${subject?.name}.`,
@@ -19,9 +22,10 @@ import {
     GraduationCap
 } from 'lucide-react';
 
-export default function SubjectDetailPage({ params }: { params: { id: string } }) {
+export default async function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const data = getData();
-    const subject = data.subjects.find(s => s.id === params.id);
+    const subject = data.subjects.find(s => s.id === id);
 
     if (!subject) notFound();
 

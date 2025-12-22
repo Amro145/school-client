@@ -1,0 +1,13 @@
+name = "school-management-frontend"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".next"
+
+[env.production.vars]
+# API_URL = "https://your-api.workers.dev"
+
+# Example D1 binding
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "school_db"
+# database_id = "your-database-id"

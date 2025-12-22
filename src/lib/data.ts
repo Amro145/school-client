@@ -1,7 +1,10 @@
-import fs from 'fs';
-import path from 'path';
+import fullData from '../data/data.json';
 
-const DATA_FILE_PATH = path.join(process.cwd(), 'src/data/data.json');
+// In Edge runtime, we cannot use fs. We import the JSON directly.
+// Note: This makes the data read-only as writeFileSync won't work on Cloudflare.
+// For persistence on Cloudflare, D1 or KV should be used.
+const data: FullData = fullData as unknown as FullData;
+
 
 export interface Student {
     id: string;
@@ -37,12 +40,12 @@ export interface FullData {
 }
 
 export function getData(): FullData {
-    const jsonData = fs.readFileSync(DATA_FILE_PATH, 'utf8');
-    return JSON.parse(jsonData);
+    return data;
 }
 
-export function saveData(data: FullData) {
-    fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(data, null, 2));
+export function saveData(_newData: FullData) {
+    console.warn("saveData called but persistence via 'fs' is not supported in Cloudflare Edge. Use D1/KV for persistence.");
+    // In a production app on Cloudflare, you'd perform an API call or D1 operation here.
 }
 
 // Success Rate helper

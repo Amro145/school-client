@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     description: "Manage faculty members and their subject assignments.",
 };
 import { getData } from '@/lib/data';
-import { Plus, ChevronRight, Mail, BookOpen, Users } from 'lucide-react';
+import { Plus, ChevronRight, Mail, BookOpen } from 'lucide-react';
 
 export default function TeachersListPage() {
     const data = getData();

@@ -2,9 +2,12 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { getData, calculateSuccessRate } from '@/lib/data';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export const runtime = 'edge';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
     const data = getData();
-    const cls = data.classes.find(c => c.id === params.id);
+    const cls = data.classes.find(c => c.id === id);
     return {
         title: `${cls?.name || 'Class'} Details | EduDash`,
         description: `Performance and curriculum overview for ${cls?.name}.`,
@@ -17,12 +20,12 @@ import {
     Plus,
     BookOpen,
     Users,
-    GraduationCap
 } from 'lucide-react';
 
-export default function ClassDetailPage({ params }: { params: { id: string } }) {
+export default async function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const data = getData();
-    const cls = data.classes.find(c => c.id === params.id);
+    const cls = data.classes.find(c => c.id === id);
 
     if (!cls) notFound();
 

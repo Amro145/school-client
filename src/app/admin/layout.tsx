@@ -51,8 +51,8 @@ export default function AdminLayout({
                                 key={item.name}
                                 href={item.href}
                                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${isActive
-                                        ? 'bg-blue-50 text-blue-600 shadow-sm'
-                                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                    ? 'bg-blue-50 text-blue-600 shadow-sm'
+                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                     }`}
                             >
                                 <item.icon className={`w-5 h-5 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
@@ -105,8 +105,8 @@ export default function AdminLayout({
                                                 href={item.href}
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                                 className={`flex items-center space-x-3 px-4 py-3 rounded-xl font-medium transition-all duration-200 ${isActive
-                                                        ? 'bg-blue-50 text-blue-600'
-                                                        : 'text-slate-500'
+                                                    ? 'bg-blue-50 text-blue-600'
+                                                    : 'text-slate-500'
                                                     }`}
                                             >
                                                 <item.icon className="w-5 h-5" />
@@ -128,7 +128,7 @@ export default function AdminLayout({
     );
 }
 
-function ShieldCheck(props: any) {
+function ShieldCheck(props: React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             {...props}

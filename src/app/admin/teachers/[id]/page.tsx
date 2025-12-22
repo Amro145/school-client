@@ -2,9 +2,12 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { getData, calculateSuccessRate } from '@/lib/data';
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export const runtime = 'edge';
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+    const { id } = await params;
     const data = getData();
-    const teacher = data.teachers.find(t => t.id === params.id);
+    const teacher = data.teachers.find(t => t.id === id);
     return {
         title: `Instructor: ${teacher?.name || 'Teacher'} | EduDash`,
         description: `Faculty profile and subject performance tracking for ${teacher?.name}.`,
@@ -13,15 +16,15 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 import { notFound } from 'next/navigation';
 import {
     ArrowLeft,
-    Users,
     Mail,
     BookOpen,
     ArrowRight
 } from 'lucide-react';
 
-export default function TeacherDetailPage({ params }: { params: { id: string } }) {
+export default async function TeacherDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const data = getData();
-    const teacher = data.teachers.find(t => t.id === params.id);
+    const teacher = data.teachers.find(t => t.id === id);
 
     if (!teacher) notFound();
 
