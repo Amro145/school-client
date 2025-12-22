@@ -14,6 +14,7 @@ import {
     Loader2,
     AlertCircle
 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function AdminDashboard() {
     const dispatch = useDispatch<AppDispatch>();
@@ -195,8 +196,8 @@ export default function AdminDashboard() {
                             <p className="text-white/70 text-sm font-medium mb-8 leading-relaxed">All modules are operating within normal educational parameters.</p>
                             <div className="flex -space-x-3">
                                 {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-10 h-10 rounded-full border-4 border-indigo-600 bg-slate-200 overflow-hidden shadow-lg">
-                                        <img src={`https://i.pravatar.cc/100?u=${i}`} alt="user" className="w-full h-full object-cover" />
+                                    <div key={i} className="w-10 h-10 rounded-full border-4 border-indigo-600 bg-slate-200 overflow-hidden shadow-lg relative">
+                                        <Image src={`https://i.pravatar.cc/100?u=${i}`} alt="user" width={40} height={40} className="w-full h-full object-cover" />
                                     </div>
                                 ))}
                                 <div className="w-10 h-10 rounded-full border-4 border-indigo-600 bg-white/20 backdrop-blur-sm flex items-center justify-center text-[10px] font-black">+12</div>

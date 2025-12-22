@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat --port 8787",
+    "dev": "next dev --port 8787",
     "build": "next build",
-    "build:cloudflare": "next build && npx @cloudflare/next-on-pages",
-    "dev:cloudflare": "wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat --watch",
+    "dev:cloudflare": "wrangler pages dev --port 8787 --compatibility-flag=nodejs_compat -- npx next dev",
     "pages:build": "npx @cloudflare/next-on-pages",
-    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --port 8787"
+    "predev:cloudflare": "npm run clean:port",
+    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --port 8787",
+    "prepreview": "npm run clean:port",
+    "clean:port": "fuser -k 8787/tcp || true"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
@@ -16,7 +18,7 @@
     "drizzle-orm": "^0.45.1",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.562.0",
-    "next": "15.5.2",
+    "next": "^15.5.9",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-redux": "^9.2.0"

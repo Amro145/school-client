@@ -9,7 +9,6 @@ import {
     BookOpen,
     User,
     Layers,
-    BarChart3,
     AlertCircle,
     Search,
     Trash2,
