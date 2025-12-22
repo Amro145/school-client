@@ -15,6 +15,7 @@ import {
     GraduationCap
 } from 'lucide-react';
 import Link from 'next/link';
+import DeleteActionButton from '@/components/DeleteActionButton';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -193,9 +194,7 @@ export default function StudentsListPage() {
                                             <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
                                                 <GraduationCap className="w-5 h-5" />
                                             </button>
-                                            <button className="p-4 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-red-100 active:scale-95">
-                                                <Trash2 className="w-5 h-5" />
-                                            </button>
+                                            <DeleteActionButton userId={student.id} userName={student.userName} />
                                         </div>
                                     </td>
                                 </tr>

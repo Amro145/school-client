@@ -17,6 +17,7 @@ import {
     Eye
 } from 'lucide-react';
 import Link from 'next/link';
+import DeleteActionButton from '@/components/DeleteActionButton';
 
 export const runtime = 'edge';
 
@@ -152,7 +153,7 @@ export default function TeachersListPage() {
                             <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3 bg-white rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             <div className="flex items-center space-x-2">
                                 <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                <button className="p-3 text-slate-400 hover:text-red-500 hover:bg-white rounded-xl transition-all"><Trash2 className="w-5 h-5" /></button>
+                                <DeleteActionButton userId={teacher.id} userName={teacher.userName} />
                             </div>
                         </div>
                     </div>
