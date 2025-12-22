@@ -2,24 +2,25 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/lib/redux/store';
+import { createNewClassRoom } from '@/lib/redux/slices/adminSlice';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BookOpen } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
 
 export default function CreateClassPage() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch<AppDispatch>();
+    const { loading, error } = useSelector((state: RootState) => state.admin);
     const [name, setName] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
 
-        // Mock saving logic
-        // In a real app, we would call an API that writes to data.json
-        setTimeout(() => {
-            setLoading(false);
+        const resultAction = await dispatch(createNewClassRoom(name));
+        if (createNewClassRoom.fulfilled.match(resultAction)) {
             router.push('/admin/classes');
-        }, 1000);
+        }
     };
 
     return (
@@ -41,6 +42,13 @@ export default function CreateClassPage() {
                         <p className="text-slate-500 text-left">Set up a new classroom group for your school.</p>
                     </div>
                 </div>
+
+                {error && (
+                    <div className="mb-8 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center space-x-3 text-rose-600 animate-in shake duration-500">
+                        <AlertCircle className="w-5 h-5" />
+                        <p className="text-sm font-bold uppercase tracking-tight">{error}</p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div>
@@ -66,7 +74,7 @@ export default function CreateClassPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-[2] bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-shadow hover:shadow-lg shadow-blue-200 flex items-center justify-center disabled:opacity-70"
+                            className="flex-2 bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-shadow hover:shadow-lg shadow-blue-200 flex items-center justify-center disabled:opacity-70"
                         >
                             {loading ? (
                                 <>

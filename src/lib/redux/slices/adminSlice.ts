@@ -367,7 +367,7 @@ export const fetchClassRooms = createAsyncThunk(
 
 export const createNewUser = createAsyncThunk(
     'admin/createUser',
-    async (userData: { userName: string, email: string, role: string, password: string, classId?: number }, { rejectWithValue, getState }) => {
+    async (userData: { userName: string, email: string, role: string, password: string, classId?: number | string }, { rejectWithValue, getState }) => {
         const { auth } = getState() as RootState;
         if (!auth.isAuthenticated) {
             return rejectWithValue('User must be authenticated');
@@ -387,7 +387,13 @@ export const createNewUser = createAsyncThunk(
         try {
             const response = await api.post('', {
                 query: mutation,
-                variables: userData
+                variables: {
+                    userName: userData.userName,
+                    email: userData.email,
+                    role: userData.role,
+                    password: userData.password,
+                    classId: userData.classId ? Number(userData.classId) : undefined
+                }
             });
 
             if (response.data.errors) {
@@ -467,7 +473,9 @@ export const createNewTeacher = createAsyncThunk(
             const response = await api.post('', {
                 query: mutation,
                 variables: {
-                    ...teacherData,
+                    userName: teacherData.userName,
+                    email: teacherData.email,
+                    password: teacherData.password,
                     role: 'teacher'
                 }
             });
@@ -631,6 +639,46 @@ export const updateGradesBulk = createAsyncThunk(
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update grades');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const createNewClassRoom = createAsyncThunk(
+    'admin/createClassRoom',
+    async (name: string, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation CreateClassRoom($name: String!, $schoolId: Int) {
+        createClassRoom(name: $name, schoolId: $schoolId) {
+          id
+          name
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: {
+                    name,
+                    schoolId: auth.user?.schoolId ? Number(auth.user.schoolId) : undefined
+                }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return response.data.data.createClassRoom;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create class room');
             }
             return rejectWithValue('An unexpected error occurred');
         }
@@ -843,6 +891,19 @@ const adminSlice = createSlice({
                 }
             })
             .addCase(updateGradesBulk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create New ClassRoom
+            .addCase(createNewClassRoom.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewClassRoom.fulfilled, (state, action) => {
+                state.loading = false;
+                state.classRooms.push(action.payload);
+            })
+            .addCase(createNewClassRoom.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });
