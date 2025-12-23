@@ -20,12 +20,16 @@ import { useRouter } from 'next/navigation';
 import { logout } from '@/lib/redux/slices/authSlice';
 import { RootState } from '@/lib/redux/store';
 
-const sidebarItems = [
+const adminItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Classes', href: '/admin/classes', icon: BookOpen },
     { name: 'Subjects', href: '/admin/subjects', icon: BarChart3 },
     { name: 'Students', href: '/admin/students', icon: GraduationCap },
     { name: 'Teachers', href: '/admin/teachers', icon: Users },
+];
+
+const teacherItems = [
+    { name: 'My Subjects', href: '/admin/teacher', icon: BookOpen },
 ];
 
 export default function AdminLayout({
@@ -37,7 +41,8 @@ export default function AdminLayout({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dispatch = useDispatch();
     const router = useRouter();
-    const { needsSchoolSetup } = useSelector((state: RootState) => state.auth);
+    const { user, needsSchoolSetup } = useSelector((state: RootState) => state.auth);
+    const sidebarItems = user?.role === 'teacher' ? teacherItems : adminItems;
 
     useEffect(() => {
         if (needsSchoolSetup && pathname !== '/admin/setup-school') {
@@ -68,7 +73,9 @@ export default function AdminLayout({
                                 </div>
                                 <div className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 whitespace-nowrap">
                                     <span className="block text-2xl font-black text-slate-900 tracking-tighter leading-none">EDUDASH</span>
-                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Administrator</span>
+                                    <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">
+                                        {user?.role === 'teacher' ? 'Academic Teacher' : 'Administrator'}
+                                    </span>
                                 </div>
                             </Link>
                         </div>
@@ -125,8 +132,12 @@ export default function AdminLayout({
                                 <Menu className="w-6 h-6" />
                             </button>
                             <div className="hidden md:block">
-                                <h2 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">Management Overview</h2>
-                                <p className="text-lg font-bold text-slate-900 tracking-tight">System Terminal</p>
+                                <h2 className="text-sm font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                    {user?.role === 'teacher' ? 'Academic Hub' : 'Management Overview'}
+                                </h2>
+                                <p className="text-lg font-bold text-slate-900 tracking-tight">
+                                    {user?.role === 'teacher' ? 'Evaluation Terminal' : 'System Terminal'}
+                                </p>
                             </div>
                         </div>
 
@@ -135,8 +146,8 @@ export default function AdminLayout({
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
                                 <span className="text-xs font-bold text-slate-600">Cloud Status: Optimal</span>
                             </div>
-                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg">
-                                AD
+                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
+                                {user?.userName.substring(0, 2) || 'AD'}
                             </div>
                         </div>
                     </header>

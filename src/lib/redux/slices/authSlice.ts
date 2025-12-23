@@ -9,6 +9,15 @@ interface User {
     userName: string;
     role: string;
     schoolId: number | null;
+    subjectsTaught?: {
+        id: string;
+        name: string;
+        successRate: number;
+        class: {
+            id: string;
+            name: string;
+        } | null;
+    }[];
 }
 
 interface AuthState {
@@ -91,6 +100,15 @@ export const fetchMe = createAsyncThunk(
           userName
           role
           schoolId
+          subjectsTaught {
+            id
+            name
+            successRate
+            class {
+                id
+                name
+            }
+          }
         }
       }
     `;

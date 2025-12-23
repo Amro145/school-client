@@ -15,14 +15,21 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
     const dispatch = useDispatch<AppDispatch>();
+    const router = useRouter();
     const { stats, topStudents, loading, error } = useSelector((state: RootState) => state.admin);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
-        dispatch(fetchAdminDashboardData());
-    }, [dispatch]);
+        if (user?.role === 'teacher') {
+            router.push('/admin/teacher');
+        } else {
+            dispatch(fetchAdminDashboardData());
+        }
+    }, [dispatch, user, router]);
 
     if (loading) {
         return (
