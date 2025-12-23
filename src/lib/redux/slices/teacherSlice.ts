@@ -2,66 +2,47 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/axios';
 import { RootState } from '../store';
 
-interface StudentGrade {
+// Types derived from the 'me' query structure
+interface Student {
+    id: string;
+    userName: string;
+    email: string;
+}
+
+interface Grade {
     id: string;
     score: number;
-    student: {
-        id: string;
-        userName: string;
-        email: string;
-    };
+    student: Student;
 }
 
-interface SubjectDetail {
+interface ClassRoom {
     id: string;
     name: string;
-    class: {
-        id: string;
-        name: string;
-    } | null;
-    grades: StudentGrade[];
 }
 
-interface TeacherDetail {
+export interface TeacherSubject {
+    id: string;
+    name: string;
+    class: ClassRoom | null;
+    grades: Grade[];
+}
+
+export interface TeacherProfile {
     id: string;
     userName: string;
     email: string;
     role: string;
-    subjectsTaught: SubjectDetail[];
-}
-
-interface StudentPerformance {
-    id: string;
-    userName: string;
-    email: string;
-    class: {
-        name: string;
-    } | null;
-    grades: {
-        id: string;
-        score: number;
-        subject: {
-            id: string;
-            name: string;
-            teacher: {
-                id: string;
-            } | null;
-        };
-    }[];
+    subjectsTaught: TeacherSubject[];
 }
 
 interface TeacherState {
-    currentTeacher: TeacherDetail | null;
-    currentSubject: SubjectDetail | null;
-    currentStudent: StudentPerformance | null;
+    currentTeacher: TeacherProfile | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: TeacherState = {
     currentTeacher: null,
-    currentSubject: null,
-    currentStudent: null,
     loading: false,
     error: null,
 };
@@ -114,86 +95,45 @@ export const fetchTeacherById = createAsyncThunk(
     }
 );
 
-export const fetchSubjectDetails = createAsyncThunk(
-    'teacher/fetchSubjectDetails',
-    async (subjectId: string, { rejectWithValue, getState }) => {
+export const fetchTeacher = createAsyncThunk(
+    'teacher/fetchTeacher',
+    async (_, { rejectWithValue, getState }) => {
         const { auth } = getState() as RootState;
         if (!auth.isAuthenticated) return rejectWithValue('Not authenticated');
 
         const query = `
-            query SubjectDetails($id: Int!) {
-                subject(id: $id) {
+            query MyQuery {
+              me {
+                id
+                userName
+                email
+                role
+                subjectsTaught {
+                  id
+                  name
+                  class {
                     id
                     name
-                    class {
-                        id
-                        name
-                    }
-                    grades {
-                        id
-                        score
-                        student {
-                            id
-                            userName
-                            email
-                        }
-                    }
-                }
-            }
-        `;
-
-        try {
-            const response = await api.post('', {
-                query,
-                variables: { id: parseInt(subjectId) }
-            });
-
-            if (response.data.errors) return rejectWithValue(response.data.errors[0].message);
-            return response.data.data.subject;
-        } catch (error: unknown) {
-            return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
-        }
-    }
-);
-
-export const fetchStudentPerformance = createAsyncThunk(
-    'teacher/fetchStudentPerformance',
-    async (studentId: string, { rejectWithValue, getState }) => {
-        const { auth } = getState() as RootState;
-        if (!auth.isAuthenticated) return rejectWithValue('Not authenticated');
-
-        const query = `
-            query StudentPerformance($id: Int!) {
-                student(id: $id) {
+                  }
+                  grades {
                     id
-                    userName
-                    email
-                    class {
-                        name
+                    score
+                    student{
+                      id
+                      userName
+                      email
                     }
-                    grades {
-                        id
-                        score
-                        subject {
-                            id
-                            name
-                            teacher {
-                                id
-                            }
-                        }
-                    }
+                  }
                 }
+              }
             }
         `;
 
         try {
-            const response = await api.post('', {
-                query,
-                variables: { id: parseInt(studentId) }
-            });
+            const response = await api.post('', { query });
 
             if (response.data.errors) return rejectWithValue(response.data.errors[0].message);
-            return response.data.data.student;
+            return response.data.data.me;
         } catch (error: unknown) {
             return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
         }
@@ -249,30 +189,33 @@ const teacherSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload as string;
             })
-            .addCase(fetchSubjectDetails.pending, (state) => {
+            .addCase(fetchTeacher.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(fetchSubjectDetails.fulfilled, (state, action) => {
+            .addCase(fetchTeacher.fulfilled, (state, action) => {
                 state.loading = false;
-                state.currentSubject = action.payload;
+                state.currentTeacher = action.payload;
             })
-            .addCase(fetchSubjectDetails.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload as string;
-            })
-            .addCase(fetchStudentPerformance.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-                state.currentStudent = null;
-            })
-            .addCase(fetchStudentPerformance.fulfilled, (state, action) => {
-                state.loading = false;
-                state.currentStudent = action.payload;
-            })
-            .addCase(fetchStudentPerformance.rejected, (state, action) => {
+            .addCase(fetchTeacher.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
+            })
+            .addCase(updateSubjectGrades.fulfilled, (state, action) => {
+                if (state.currentTeacher) {
+                    // Update the local state to match the returned score updates
+                    // This avoids a full re-fetch after saving
+                    const updatedGrades = action.payload as { id: string; score: number }[];
+
+                    state.currentTeacher.subjectsTaught.forEach(subject => {
+                        subject.grades.forEach(grade => {
+                            const update = updatedGrades.find(u => u.id === grade.id);
+                            if (update) {
+                                grade.score = update.score;
+                            }
+                        });
+                    });
+                }
             });
     }
 });

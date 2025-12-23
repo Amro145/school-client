@@ -39,9 +39,16 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                 }
             }
 
+            // Teacher restrictions
+            if (role === 'teacher' && pathname.startsWith('/admin')) {
+                router.push('/dashboard');
+            }
+
             if (pathname === '/login' || pathname === '/') {
-                if (role === 'admin' || role === 'teacher' || role === 'student') {
+                if (role === 'admin' || role === 'student') {
                     router.push('/admin');
+                } else if (role === 'teacher') {
+                    router.push('/dashboard');
                 }
             }
         }
