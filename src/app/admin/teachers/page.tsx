@@ -13,7 +13,6 @@ import {
     UserCircle,
     GraduationCap,
     Users,
-    Trash2,
     Eye
 } from 'lucide-react';
 import Link from 'next/link';
@@ -66,7 +65,7 @@ export default function TeachersListPage() {
                     <p className="text-slate-500 mt-3 font-medium text-lg italic">Overseeing academic expertise and teaching staff...</p>
                 </div>
                 <Link
-                    href="/admin/teachers/new"
+                    href="/admin/users/new?role=teacher"
                     className="relative group overflow-hidden"
                 >
                     <div className="absolute -inset-1 bg-linear-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -176,7 +175,7 @@ export default function TeachersListPage() {
                         <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-4">No Faculty Detected</h3>
                         <p className="text-slate-500 max-w-sm mx-auto font-medium text-lg leading-relaxed mb-10 italic">The institutional registry is currently awaiting initial faculty member onboarding.</p>
                         <Link
-                            href="/admin/teachers/new"
+                            href="/admin/users/new?role=teacher"
                             className="inline-flex items-center justify-center bg-slate-900 text-white px-12 py-5 rounded-[24px] font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-2xl hover:-translate-y-1 active:scale-95"
                         >
                             Register First Faculty Member

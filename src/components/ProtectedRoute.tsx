@@ -28,13 +28,20 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                 router.push('/login');
             }
         } else {
+            // Student restrictions
+            if (role === 'student') {
+                const isRestricted = pathname.includes('/admin/subjects') ||
+                    pathname.includes('/admin/teachers') ||
+                    pathname.includes('/admin/classes');
+
+                if (isRestricted) {
+                    router.push('/admin'); // Redirect to dashboard
+                }
+            }
+
             if (pathname === '/login' || pathname === '/') {
-                if (role === 'admin') {
+                if (role === 'admin' || role === 'teacher' || role === 'student') {
                     router.push('/admin');
-                } else if (role === 'teacher') {
-                    router.push('/teacher');
-                } else {
-                    router.push('/student');
                 }
             }
         }

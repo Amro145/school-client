@@ -29,7 +29,14 @@ const adminItems = [
 ];
 
 const teacherItems = [
-    { name: 'My Subjects', href: '/admin/teacher', icon: BookOpen },
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'My Subjects', href: '/admin/subjects', icon: BookOpen },
+    { name: 'My Classes', href: '/admin/classes', icon: Users },
+];
+
+const studentItems = [
+    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'My Profile', href: `/admin/profile`, icon: Users },
 ];
 
 export default function AdminLayout({
@@ -42,7 +49,12 @@ export default function AdminLayout({
     const dispatch = useDispatch();
     const router = useRouter();
     const { user, needsSchoolSetup } = useSelector((state: RootState) => state.auth);
-    const sidebarItems = user?.role === 'teacher' ? teacherItems : adminItems;
+
+    const sidebarItems = user?.role === 'teacher'
+        ? teacherItems
+        : user?.role === 'student'
+            ? studentItems
+            : adminItems;
 
     useEffect(() => {
         if (needsSchoolSetup && pathname !== '/admin/setup-school') {

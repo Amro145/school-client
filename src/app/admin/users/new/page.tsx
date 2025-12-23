@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchClassRooms, createNewUser } from '@/lib/redux/slices/adminSlice';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
     UserPlus,
     Mail,
@@ -24,13 +24,16 @@ export const runtime = 'edge';
 export default function CreateUserPage() {
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const initialRole = searchParams.get('role') || 'student';
+
     const { classRooms, loading, error } = useSelector((state: RootState) => state.admin);
 
     const [formData, setFormData] = useState({
         userName: '',
         email: '',
         password: '',
-        role: 'student',
+        role: initialRole,
         classId: ''
     });
 
@@ -38,7 +41,11 @@ export default function CreateUserPage() {
 
     useEffect(() => {
         dispatch(fetchClassRooms());
-    }, [dispatch]);
+        // Update role if query param changes
+        if (initialRole && initialRole !== formData.role) {
+            setFormData(prev => ({ ...prev, role: initialRole }));
+        }
+    }, [dispatch, initialRole, formData.role]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({

@@ -17,24 +17,37 @@ import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { handleDeleteSubject } from '@/lib/redux/slices/adminSlice';
 
+import { motion, AnimatePresence } from 'framer-motion';
+import { TableSkeleton } from '@/components/SkeletonLoader';
+
 export const runtime = 'edge';
 
 export default function SubjectsListPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { subjects, loading, error } = useSelector((state: RootState) => state.admin);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         dispatch(fetchSubjects());
     }, [dispatch]);
 
+    // Role-based filtering for teachers
+    const filteredSubjects = user?.role === 'teacher'
+        ? subjects.filter(s => s.teacher?.id === user.id)
+        : subjects;
+
     if (loading && subjects.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <div className="relative">
-                    <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                    <BookOpen className="w-6 h-6 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="space-y-12 pb-20">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
+                    <div className="space-y-4">
+                        <div className="h-10 w-64 bg-slate-200 animate-pulse rounded-xl" />
+                        <div className="h-4 w-96 bg-slate-100 animate-pulse rounded-lg" />
+                    </div>
                 </div>
-                <p className="text-slate-500 font-bold tracking-tight animate-pulse">Cataloging Academic Subjects...</p>
+                <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
+                    <TableSkeleton rows={6} />
+                </div>
             </div>
         );
     }
@@ -101,106 +114,115 @@ export default function SubjectsListPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {subjects?.map((subject) => {
-                                const avgScore = subject.grades?.length > 0
-                                    ? Math.round(subject.grades.reduce((acc, g) => acc + g.score, 0) / subject.grades.length)
-                                    : null;
+                            <AnimatePresence>
+                                {filteredSubjects?.map((subject, idx) => {
+                                    const avgScore = subject.grades?.length > 0
+                                        ? Math.round(subject.grades.reduce((acc, g) => acc + g.score, 0) / subject.grades.length)
+                                        : null;
 
-                                return (
-                                    <tr key={subject.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center space-x-5">
-                                                <div className="w-14 h-14 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                                                    <BookOpen className="w-8 h-8" />
-                                                </div>
-                                                <div>
-                                                    <Link href={`/admin/subjects/${subject.id}`}>
-                                                        <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{subject.name}</span>
-                                                    </Link>
-                                                    <div className="flex items-center space-x-2">
-                                                        <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {subject.id}</span>
-                                                        <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">ACTIVE</span>
+                                    return (
+                                        <motion.tr
+                                            key={subject.id}
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            exit={{ opacity: 0, x: 20 }}
+                                            transition={{ delay: idx * 0.05 }}
+                                            className="hover:bg-slate-50/30 transition-all duration-300 group"
+                                        >
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center space-x-5">
+                                                    <div className="w-14 h-14 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                        <BookOpen className="w-8 h-8" />
+                                                    </div>
+                                                    <div>
+                                                        <Link href={`/admin/subjects/${subject.id}`}>
+                                                            <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{subject.name}</span>
+                                                        </Link>
+                                                        <div className="flex items-center space-x-2">
+                                                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {subject.id}</span>
+                                                            <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">ACTIVE</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex items-center space-x-3 text-slate-900 font-black">
-                                                <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:border-blue-100 transition-colors">
-                                                    <User className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center space-x-3 text-slate-900 font-black">
+                                                    <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:border-blue-100 transition-colors">
+                                                        <User className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                                                    </div>
+                                                    {subject.teacher ? (
+                                                        <Link
+                                                            href={`/admin/teachers/${subject.teacher.id}`}
+                                                            className="text-blue-600 hover:underline cursor-pointer group-hover:translate-x-1 transition-all"
+                                                        >
+                                                            {subject.teacher.userName}
+                                                        </Link>
+                                                    ) : (
+                                                        <span className="text-slate-400 italic">Pending Assignment</span>
+                                                    )}
                                                 </div>
-                                                {subject.teacher ? (
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                {subject.class ? (
                                                     <Link
-                                                        href={`/admin/teachers/${subject.teacher.id}`}
-                                                        className="text-blue-600 hover:underline cursor-pointer group-hover:translate-x-1 transition-all"
+                                                        href={`/admin/classes/${subject.class.id}`}
+                                                        className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm hover:border-blue-400 hover:text-blue-600 transition-all"
                                                     >
-                                                        {subject.teacher.userName}
+                                                        <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
+                                                        {subject.class.name}
                                                     </Link>
                                                 ) : (
-                                                    <span className="text-slate-400 italic">Pending Assignment</span>
+                                                    <div className="inline-flex items-center px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl font-black text-sm text-slate-400">
+                                                        <Layers className="w-4 h-4 mr-2.5 opacity-50" />
+                                                        Cross-Institutional
+                                                    </div>
                                                 )}
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            {subject.class ? (
-                                                <Link
-                                                    href={`/admin/classes/${subject.class.id}`}
-                                                    className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm hover:border-blue-400 hover:text-blue-600 transition-all"
-                                                >
-                                                    <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
-                                                    {subject.class.name}
-                                                </Link>
-                                            ) : (
-                                                <div className="inline-flex items-center px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl font-black text-sm text-slate-400">
-                                                    <Layers className="w-4 h-4 mr-2.5 opacity-50" />
-                                                    Cross-Institutional
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-10 py-8">
-                                            <div className="flex flex-col items-center">
-                                                {avgScore !== null ? (
-                                                    <>
-                                                        <div className="flex items-center space-x-4 w-full max-w-[140px]">
-                                                            <div className="grow h-2 bg-slate-100 rounded-full overflow-hidden">
-                                                                <div
-                                                                    className={`h-full rounded-full transition-all duration-1000 ${avgScore > 80 ? 'bg-emerald-500' : avgScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`}
-                                                                    style={{ width: `${avgScore}%` }}
-                                                                />
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="flex flex-col items-center">
+                                                    {avgScore !== null ? (
+                                                        <>
+                                                            <div className="flex items-center space-x-4 w-full max-w-[140px]">
+                                                                <div className="grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                                    <div
+                                                                        className={`h-full rounded-full transition-all duration-1000 ${avgScore > 80 ? 'bg-emerald-500' : avgScore > 60 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                                                                        style={{ width: `${avgScore}%` }}
+                                                                    />
+                                                                </div>
+                                                                <span className={`font-black text-sm tabular-nums ${avgScore > 80 ? 'text-emerald-600' : avgScore > 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                                                                    {avgScore}%
+                                                                </span>
                                                             </div>
-                                                            <span className={`font-black text-sm tabular-nums ${avgScore > 80 ? 'text-emerald-600' : avgScore > 60 ? 'text-amber-600' : 'text-rose-600'}`}>
-                                                                {avgScore}%
-                                                            </span>
-                                                        </div>
-                                                        <div className="text-[10px] text-slate-400 font-black mt-2 uppercase tracking-widest">
-                                                            Avg from {subject.grades?.length || 0} Learners
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Awaiting Data</div>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8 text-right">
-                                            <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
-                                                    <Eye className="w-5 h-5" />
-                                                </button>
-                                                <DeleteActionButton
-                                                    userId={subject.id}
-                                                    userName={subject.name}
-                                                    action={handleDeleteSubject}
-                                                />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                                            <div className="text-[10px] text-slate-400 font-black mt-2 uppercase tracking-widest">
+                                                                Avg from {subject.grades?.length || 0} Learners
+                                                            </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="px-4 py-2 bg-slate-50 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Awaiting Data</div>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8 text-right">
+                                                <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
+                                                        <Eye className="w-5 h-5" />
+                                                    </button>
+                                                    <DeleteActionButton
+                                                        userId={subject.id}
+                                                        userName={subject.name}
+                                                        action={handleDeleteSubject}
+                                                    />
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
+                            </AnimatePresence>
                         </tbody>
                     </table>
                 </div>
 
-                {subjects?.length === 0 && !loading && (
+                {filteredSubjects?.length === 0 && !loading && (
                     <div className="py-32 text-center bg-white relative overflow-hidden group">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-50 rounded-full blur-[100px] opacity-30 group-hover:scale-150 transition-transform duration-1000" />
                         <div className="relative z-10">

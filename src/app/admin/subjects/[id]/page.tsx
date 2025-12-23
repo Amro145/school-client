@@ -48,9 +48,11 @@ export default function SubjectDetailPage() {
     const handleScoreChange = (gradeId: string, newScore: string) => {
         const score = parseInt(newScore);
         if (isNaN(score)) return;
+        // Strictly prevent entering any value greater than 100
+        const validatedScore = Math.min(100, Math.max(0, score));
         setModifiedGrades(prev => ({
             ...prev,
-            [gradeId]: score
+            [gradeId]: validatedScore
         }));
     };
 

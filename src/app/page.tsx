@@ -13,7 +13,7 @@ export default function LandingPage() {
       title: "Login as Student",
       description: "View your grades, classes, and subjects. Track your academic progress effortlessly.",
       icon: <GraduationCap className="w-12 h-12 text-blue-500" />,
-      href: "/login?role=student",
+      href: "/login",
       color: "bg-blue-50 border-blue-100 hover:border-blue-300",
       buttonColor: "bg-blue-600 hover:bg-blue-700"
     },
@@ -21,7 +21,7 @@ export default function LandingPage() {
       title: "Login as Teacher",
       description: "Manage your subjects, update student grades, and track class success rates.",
       icon: <Users className="w-12 h-12 text-purple-500" />,
-      href: "/login?role=teacher",
+      href: "/login",
       color: "bg-purple-50 border-purple-100 hover:border-purple-300",
       buttonColor: "bg-purple-600 hover:bg-purple-700"
     },
@@ -29,7 +29,7 @@ export default function LandingPage() {
       title: "Login as Admin",
       description: "Full control over the system. Manage teachers, students, classes, and subjects.",
       icon: <ShieldCheck className="w-12 h-12 text-green-500" />,
-      href: "/login?role=admin",
+      href: "/login",
       color: "bg-green-50 border-green-100 hover:border-green-300",
       buttonColor: "bg-green-600 hover:bg-green-700"
     }
@@ -40,7 +40,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Animated Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-from),_transparent_50%)] from-blue-50/50" />
+        <div className="absolute top-0 left-0 w-full h-full -z-10 bg-[radial-gradient(circle_at_top_right,var(--tw-gradient-from),transparent_50%)] from-blue-50/50" />
         <div className="absolute top-1/2 left-0 w-72 h-72 bg-purple-200/20 rounded-full blur-3xl -z-10 animate-float" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl -z-10" />
 
@@ -83,7 +83,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 mb-4">{role.title}</h2>
-                <p className="text-slate-500 mb-10 flex-grow font-medium leading-relaxed">
+                <p className="text-slate-500 mb-10 grow font-medium leading-relaxed">
                   {role.description}
                 </p>
                 <Link
@@ -102,7 +102,7 @@ export default function LandingPage() {
       <section className="py-24 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="glass rounded-[48px] p-12 md:p-20 border-slate-200/50 shadow-2xl overflow-hidden relative">
-            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/5 to-purple-600/5" />
+            <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-blue-600/5 to-purple-600/5" />
             <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12">
               {[
                 { label: 'Students', value: '1,200+' },

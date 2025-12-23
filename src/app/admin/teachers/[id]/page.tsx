@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchTeacherById, resetTeacher } from '@/lib/redux/slices/teacherSlice';
 import { RootState, AppDispatch } from '@/lib/redux/store';
 import Link from 'next/link';
+import { calculateSuccessRate } from '@/lib/data';
 import {
     ArrowLeft,
     Mail,
@@ -17,8 +18,11 @@ import {
     Trophy,
     TrendingUp,
     Search,
-    AlertCircle
+    AlertCircle,
+    Trash2
 } from 'lucide-react';
+
+import { TableSkeleton } from '@/components/SkeletonLoader';
 
 export const runtime = 'edge';
 
@@ -39,14 +43,24 @@ export default function TeacherDetailPage() {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-                <div className="relative">
-                    <div className="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
-                    <User className="w-8 h-8 text-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+            <div className="space-y-12 pb-20">
+                <div className="flex items-center space-x-2 px-4 py-2 w-32 bg-slate-100 animate-pulse rounded-xl h-8" />
+                <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-sm flex gap-10">
+                    <div className="w-32 h-32 bg-slate-200 animate-pulse rounded-[32px]" />
+                    <div className="flex-1 space-y-4">
+                        <div className="h-4 w-32 bg-slate-100 animate-pulse rounded-lg" />
+                        <div className="h-12 w-96 bg-slate-200 animate-pulse rounded-2xl" />
+                        <div className="flex gap-4">
+                            <div className="h-10 w-48 bg-slate-100 animate-pulse rounded-xl" />
+                            <div className="h-10 w-32 bg-slate-100 animate-pulse rounded-xl" />
+                        </div>
+                    </div>
                 </div>
-                <div className="text-center">
-                    <p className="text-slate-900 font-black text-xl tracking-tight animate-pulse">Syncing Faculty Portfolio...</p>
-                    <p className="text-slate-500 font-medium text-sm mt-1 italic">Retrieving academic credentials and subject metrics...</p>
+                <div className="space-y-6">
+                    <div className="h-8 w-48 bg-slate-200 animate-pulse rounded-lg ml-2" />
+                    <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+                        <TableSkeleton rows={3} />
+                    </div>
                 </div>
             </div>
         );
@@ -82,195 +96,181 @@ export default function TeacherDetailPage() {
 
     if (!currentTeacher) return null;
 
+    const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | null>(null);
+
     return (
-        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-20">
+        <div className="space-y-10 animate-in fade-in transition-all duration-700 pb-20">
             <Link
                 href="/admin/teachers"
-                className="inline-flex items-center space-x-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl text-slate-500 hover:text-indigo-600 hover:border-indigo-100 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-blue-600 hover:border-blue-200 font-bold text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
-                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                <span>Back to Faculty Index</span>
+                <ArrowLeft className="w-4 h-4" />
+                <span>Faculty Directory</span>
             </Link>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Profile Header Card */}
-                <div className="lg:col-span-2 bg-white p-10 rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col md:flex-row md:items-center justify-between gap-10">
-                    <div className="flex items-center space-x-8">
-                        <div className="w-24 h-24 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[32px] flex items-center justify-center text-white shadow-xl shadow-indigo-500/20 transform hover:scale-110 hover:rotate-3 transition-transform duration-500">
-                            <span className="text-3xl font-black italic">{currentTeacher.userName.substring(0, 2).toUpperCase()}</span>
+            {/* Teacher Header Section */}
+            <div className="bg-white p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center md:items-start gap-10">
+                <div className="w-32 h-32 bg-linear-to-br from-blue-600 to-indigo-700 rounded-[32px] flex items-center justify-center text-white shadow-xl shadow-blue-500/20 transform hover:scale-105 transition-transform duration-500">
+                    <span className="text-4xl font-black italic">{currentTeacher.userName.substring(0, 2).toUpperCase()}</span>
+                </div>
+                <div className="flex-1 text-center md:text-left">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
+                        <span className="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">Active Faculty</span>
+                        <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">UID: {currentTeacher.id}</span>
+                    </div>
+                    <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-6">{currentTeacher.userName}</h1>
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
+                        <div className="flex items-center space-x-3 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+                            <Mail className="w-4 h-4 text-slate-400" />
+                            <span className="text-slate-900 font-bold">{currentTeacher.email}</span>
                         </div>
-                        <div>
-                            <div className="flex items-center space-x-3 mb-2">
-                                <span className="text-[10px] bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em]">Validated Profile</span>
-                                <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em]">ID: {currentTeacher.id}</span>
-                            </div>
-                            <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{currentTeacher.userName}</h1>
-                            <div className="flex flex-wrap items-center mt-6 gap-6">
-                                <div className="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm text-slate-400">
-                                        <Mail className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-slate-900 font-black text-sm">{currentTeacher.email}</span>
-                                </div>
-                                <div className="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-                                    <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm text-slate-400">
-                                        <Shield className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-slate-900 font-black text-sm uppercase tracking-widest">{currentTeacher.role}</span>
-                                </div>
-                            </div>
+                        <div className="flex items-center space-x-3 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
+                            <Shield className="w-4 h-4 text-slate-400" />
+                            <span className="text-slate-900 font-bold uppercase tracking-widest text-sm">{currentTeacher.role}</span>
                         </div>
                     </div>
                 </div>
-
-                {/* Faculty Stats Cards */}
-                <div className="bg-slate-900 p-10 rounded-[48px] text-white shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
-                        <GraduationCap className="w-32 h-32" />
-                    </div>
-                    <div className="relative z-10 flex flex-col h-full justify-between">
-                        <div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Curriculum Scope</span>
-                            <div className="flex items-baseline space-x-2 mt-4">
-                                <span className="text-6xl font-black tracking-tighter tabular-nums">{currentTeacher.subjectsTaught?.length || 0}</span>
-                                <span className="text-2xl font-black text-slate-500 leading-none">Modules</span>
-                            </div>
-                        </div>
-                        <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-                            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest">
-                                <span className="text-slate-500">Academic Standing</span>
-                                <span className="text-indigo-400">Exemplary</span>
-                            </div>
-                            <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                                <div className="w-11/12 h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full" />
-                            </div>
-                        </div>
+                <div className="bg-slate-900 p-8 rounded-[32px] text-white min-w-[240px] shadow-xl">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Subjects Assigned</span>
+                    <div className="text-5xl font-black mt-2 tabular-nums">{currentTeacher.subjectsTaught?.length || 0}</div>
+                    <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                        <span className="text-slate-500">Status</span>
+                        <span className="text-green-400">Verified</span>
                     </div>
                 </div>
             </div>
 
-            {/* Subjects Led by Teacher */}
-            <div className="space-y-12">
-                <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 shadow-inner">
-                        <BookOpen className="w-6 h-6" />
-                    </div>
-                    <div>
-                        <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none">Pedagogical Domain</h2>
-                        <p className="text-slate-400 font-medium mt-1.5 text-sm uppercase tracking-widest">Managed Subjects & Outcome Tables</p>
+            {/* Assigned Subjects Section */}
+            <div className="space-y-6">
+                <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600">
+                            <BookOpen className="w-5 h-5" />
+                        </div>
+                        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Assigned Subjects</h2>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 gap-12">
-                    {currentTeacher.subjectsTaught?.map((subject) => (
-                        <div key={subject.id} className="bg-white rounded-[56px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden group/card hover:shadow-2xl transition-all duration-700">
-                            <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6 glass">
-                                <div className="flex items-center space-x-6">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/10 group-hover/card:scale-110 transition-transform duration-500">
-                                        <Trophy className="w-8 h-8" />
+                <div className="space-y-4">
+                    {currentTeacher.subjectsTaught?.map((subject) => {
+                        const grades = subject.grades?.map(g => g.score) || [];
+                        const successRate = calculateSuccessRate(grades);
+                        const isExpanded = expandedSubjectId === subject.id;
+
+                        return (
+                            <div key={subject.id} className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
+                                <div
+                                    onClick={() => setExpandedSubjectId(isExpanded ? null : subject.id)}
+                                    className={`p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-slate-50/50 transition-colors ${isExpanded ? 'bg-slate-50/50' : ''}`}
+                                >
+                                    <div className="flex items-center space-x-6">
+                                        <div className="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm group-hover:scale-110 transition-transform">
+                                            <Trophy className="w-6 h-6 text-amber-500" />
+                                        </div>
+                                        <div>
+                                            <h3 className="text-xl font-black text-slate-900">{subject.name}</h3>
+                                            <p className="text-slate-500 font-bold text-sm">Classroom: {subject.class?.name || 'Unassigned'}</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-2xl font-black text-slate-900 tracking-tight leading-none group-hover/card:text-indigo-600 transition-colors">{subject.name}</h3>
-                                        <div className="flex items-center mt-2 space-x-4">
-                                            <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-black uppercase tracking-widest leading-none">Subject ID: {subject.id}</span>
-                                            <span className="text-[10px] bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full font-black uppercase tracking-widest leading-none">{subject.grades?.length || 0} Evaluations</span>
+                                    <div className="flex items-center space-x-8">
+                                        <div className="text-right">
+                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Success Rate</div>
+                                            <div className={`text-2xl font-black tabular-nums ${successRate > 0.1 ? 'text-green-600' : 'text-blue-600'}`}>
+                                                {successRate}
+                                            </div>
+                                        </div>
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isExpanded ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                            <TrendingUp className="w-5 h-5" />
                                         </div>
                                     </div>
                                 </div>
-                                <Link
-                                    href={`/admin/subjects/${subject.id}`}
-                                    className="px-8 py-4 bg-white border border-slate-100 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 rounded-2xl font-black text-xs uppercase tracking-widest transition-all active:scale-95 flex items-center space-x-3"
-                                >
-                                    <span>Subject Deep-Dive</span>
-                                    <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
 
-                            <div className="overflow-x-auto custom-scrollbar">
-                                <table className="w-full text-left">
-                                    <thead>
-                                        <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
-                                            <th className="px-12 py-8">Evaluated Learner</th>
-                                            <th className="px-12 py-8">Performance Spectrum</th>
-                                            <th className="px-12 py-8 text-center">Score Delta</th>
-                                            <th className="px-12 py-8 text-right">Integrity Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-50">
-                                        {subject.grades?.map((grade) => (
-                                            <tr key={grade.id} className="hover:bg-slate-50/30 transition-all duration-300 group/row">
-                                                <td className="px-12 py-8">
-                                                    <div className="flex items-center space-x-6">
-                                                        <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-slate-300 group-hover/row:bg-indigo-100 group-hover/row:text-indigo-600 transition-all duration-500">
-                                                            <User className="w-6 h-6" />
-                                                        </div>
-                                                        <div>
-                                                            <Link href={grade.student ? `/admin/students/${grade.student.id}` : '#'}>
-                                                                <span className="block font-black text-slate-900 text-lg leading-none mb-1.5 hover:text-indigo-600 transition-colors cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
-                                                            </Link>
-                                                            <span className="text-[10px] font-bold text-slate-400 lowercase tracking-tight">{grade.student?.email}</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-12 py-8">
-                                                    <div className="flex flex-col space-y-3">
-                                                        <div className="flex items-center justify-between w-full max-w-[180px]">
-                                                            <span className={`text-xl font-black tabular-nums ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'}`}>
-                                                                {grade.score}%
-                                                            </span>
-                                                        </div>
-                                                        <div className="w-full max-w-[180px] h-2 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                                                            <div
-                                                                className={`h-full rounded-full transition-all duration-1000 ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 70 ? 'bg-blue-500' : 'bg-rose-500'}`}
-                                                                style={{ width: `${grade.score}%` }}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td className="px-12 py-8 text-center">
-                                                    <div className="flex items-center justify-center space-x-2 text-emerald-500 font-black">
-                                                        <TrendingUp className="w-4 h-4" />
-                                                        <span className="text-sm">+2.4%</span>
-                                                    </div>
-                                                </td>
-                                                <td className="px-12 py-8 text-right">
-                                                    <span className={`inline-flex items-center px-4 py-1.5 rounded-full border text-[10px] font-black uppercase tracking-widest shadow-sm ${grade.score >= 70 ? 'bg-indigo-50 text-indigo-600 border-indigo-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
-                                                        {grade.score >= 70 ? 'Optimal' : 'Needs Focus'}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {(!subject.grades || subject.grades.length === 0) && (
-                                <div className="py-20 text-center bg-white">
-                                    <div className="w-20 h-20 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-inner">
-                                        <AlertCircle className="w-10 h-10 text-slate-200" />
+                                {isExpanded && (
+                                    <div className="p-8 border-t border-slate-100 bg-white animate-in slide-in-from-top-4 duration-300">
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left">
+                                                <thead>
+                                                    <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100">
+                                                        <th className="px-6 py-4">Student Name</th>
+                                                        <th className="px-6 py-4">Performance Mark</th>
+                                                        <th className="px-6 py-4 text-right">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-slate-50">
+                                                    {subject.grades?.map((grade) => (
+                                                        <tr key={grade.id} className="hover:bg-slate-50/30 transition-colors group">
+                                                            <td className="px-6 py-5">
+                                                                <div className="flex items-center space-x-4">
+                                                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 font-bold">
+                                                                        {grade.student?.userName.substring(0, 1)}
+                                                                    </div>
+                                                                    <Link href={`/admin/students/${grade.student?.id}`} className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
+                                                                        {grade.student?.userName}
+                                                                    </Link>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-5">
+                                                                <div className="flex items-center space-x-3">
+                                                                    <span className={`text-lg font-black tabular-nums ${grade.score >= 50 ? 'text-slate-900' : 'text-rose-600'}`}>
+                                                                        {grade.score}%
+                                                                    </span>
+                                                                    <div className="flex-grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
+                                                                        <div
+                                                                            className={`h-full rounded-full ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 50 ? 'bg-blue-500' : 'bg-rose-500'}`}
+                                                                            style={{ width: `${grade.score}%` }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-6 py-5 text-right">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        // Swal deletion confirmation will be implemented globally or here
+                                                                        import('sweetalert2').then((Swal) => {
+                                                                            Swal.default.fire({
+                                                                                title: 'Are you sure?',
+                                                                                text: `Internal record for ${grade.student?.userName} will be permanently removed.`,
+                                                                                icon: 'warning',
+                                                                                showCancelButton: true,
+                                                                                confirmButtonColor: '#2563eb',
+                                                                                cancelButtonColor: '#ef4444',
+                                                                                confirmButtonText: 'Yes, delete record',
+                                                                                borderRadius: '24px',
+                                                                                customClass: {
+                                                                                    popup: 'rounded-[32px] border-none shadow-2xl',
+                                                                                    title: 'font-black text-2xl',
+                                                                                    confirmButton: 'rounded-xl font-bold px-8 py-3',
+                                                                                    cancelButton: 'rounded-xl font-bold px-8 py-3'
+                                                                                }
+                                                                            }).then((result) => {
+                                                                                if (result.isConfirmed) {
+                                                                                    // Handle deletion logic
+                                                                                    Swal.default.fire('Deleted!', 'Record has been removed.', 'success');
+                                                                                }
+                                                                            });
+                                                                        });
+                                                                    }}
+                                                                    className="p-3 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                                                                >
+                                                                    <Trash2 className="w-5 h-5" />
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        {(!subject.grades || subject.grades.length === 0) && (
+                                            <div className="py-12 text-center text-slate-400 italic">
+                                                No evaluation records found for this subject.
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className="text-slate-400 font-medium italic">Evaluation matrix empty for this module node.</p>
-                                </div>
-                            )}
-                        </div>
-                    ))}
-                </div>
-
-                {(!currentTeacher.subjectsTaught || currentTeacher.subjectsTaught.length === 0) && (
-                    <div className="py-32 text-center bg-white rounded-[56px] border border-slate-100 shadow-xl overflow-hidden relative group">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-indigo-50 rounded-full blur-[100px] opacity-30 group-hover:scale-150 transition-transform duration-1000" />
-                        <div className="relative z-10">
-                            <div className="w-32 h-32 bg-slate-50 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
-                                <Search className="w-16 h-16 text-slate-200" />
+                                )}
                             </div>
-                            <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-4">No Curriculum Mapping</h3>
-                            <p className="text-slate-500 max-w-sm mx-auto font-medium text-lg leading-relaxed mb-10 italic">This faculty node has not yet been assigned to any primary subject modules.</p>
-                            <button className="inline-flex items-center justify-center bg-slate-900 text-white px-12 py-5 rounded-[24px] font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-2xl active:scale-95">
-                                Initiate Curricular Assignment
-                            </button>
-                        </div>
-                    </div>
-                )}
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

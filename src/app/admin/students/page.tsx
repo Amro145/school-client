@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
+import { calculateSuccessRate } from '@/lib/data';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -88,7 +89,7 @@ export default function StudentsListPage() {
                     <p className="text-slate-500 mt-3 font-medium text-lg italic">Comprehensive management of institutional learners...</p>
                 </div>
                 <Link
-                    href="/admin/students/new"
+                    href="/admin/users/new?role=student"
                     className="relative group overflow-hidden"
                 >
                     <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
@@ -175,15 +176,13 @@ export default function StudentsListPage() {
                                             <div className="flex items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100 w-32 relative overflow-hidden group/success">
                                                 <div
                                                     className="absolute inset-y-0 left-0 bg-blue-600/10 transition-all duration-1000"
-                                                    style={{ width: `${student.successRate || 0}%` }}
+                                                    style={{ width: `${(calculateSuccessRate(student.grades?.map(g => g.score) || []) * 100).toFixed(2)}%` }}
                                                 />
-                                                <span className={`text-xl font-black relative z-10 ${(student.successRate || 0) >= 75 ? 'text-green-600' :
-                                                    (student.successRate || 0) >= 50 ? 'text-blue-600' : 'text-amber-600'
-                                                    }`}>
-                                                    {Math.round(student.successRate || 0)}%
+                                                <span className="text-xl font-black relative z-10 text-blue-600">
+                                                    {calculateSuccessRate(student.grades?.map(g => g.score) || [])}
                                                 </span>
                                             </div>
-                                            <div className="mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Academic Standing</div>
+                                            <div className="mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Academic Index</div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-8 text-right">

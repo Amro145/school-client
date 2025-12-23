@@ -15,7 +15,6 @@ import {
     Loader2,
     AlertCircle,
     TrendingUp,
-    Calendar,
     ArrowUpRight,
     Save,
     CheckCircle2
@@ -50,9 +49,11 @@ export default function StudentProfilePage({ params }: PageProps) {
     const handleScoreChange = (gradeId: string, newScore: string) => {
         const score = parseInt(newScore);
         if (isNaN(score)) return;
+        // Strictly prevent entering any value greater than 100
+        const validatedScore = Math.min(100, Math.max(0, score));
         setModifiedGrades(prev => ({
             ...prev,
-            [gradeId]: score
+            [gradeId]: validatedScore
         }));
     };
 
@@ -79,9 +80,25 @@ export default function StudentProfilePage({ params }: PageProps) {
 
     if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-                <p className="text-slate-500 font-bold animate-pulse">Retrieving Student Dossier...</p>
+            <div className="space-y-12 pb-20">
+                <div className="flex items-center justify-between">
+                    <div className="h-8 w-40 bg-slate-100 animate-pulse rounded-xl" />
+                    <div className="flex space-x-3">
+                        <div className="h-10 w-32 bg-slate-100 animate-pulse rounded-xl" />
+                        <div className="h-10 w-32 bg-slate-200 animate-pulse rounded-xl" />
+                    </div>
+                </div>
+                <div className="bg-white rounded-[3rem] border border-slate-50 shadow-sm overflow-hidden h-64 animate-pulse" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                    <div className="lg:col-span-2 space-y-8">
+                        <div className="h-8 w-64 bg-slate-200 animate-pulse rounded-xl" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="h-40 bg-white border border-slate-100 rounded-3xl animate-pulse" />
+                            <div className="h-40 bg-white border border-slate-100 rounded-3xl animate-pulse" />
+                        </div>
+                    </div>
+                    <div className="h-96 bg-white border border-slate-100 rounded-[2.5rem] animate-pulse" />
+                </div>
             </div>
         );
     }
