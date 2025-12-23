@@ -201,7 +201,7 @@ export default function TeacherDetailPage() {
                                                                     <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-400 font-bold">
                                                                         {grade.student?.userName.substring(0, 1)}
                                                                     </div>
-                                                                    <Link href={`/admin/students/${grade.student?.id}`} className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
+                                                                    <Link href={`/students/${grade.student?.id}`} className="font-bold text-slate-900 hover:text-blue-600 transition-colors">
                                                                         {grade.student?.userName}
                                                                     </Link>
                                                                 </div>

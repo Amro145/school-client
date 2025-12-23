@@ -133,7 +133,7 @@ export default function TeachersListPage() {
                                             return (
                                                 <Link
                                                     key={subject.id}
-                                                    href={`/admin/subjects/${subject.id}`}
+                                                    href={`/subjects/${subject.id}`}
                                                     className="bg-white border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 cursor-pointer"
                                                 >
                                                     <span className="text-sm font-black text-slate-700 group-hover/tag:text-blue-600">{subject.name}</span>

@@ -18,5 +18,15 @@
         "framework": "nextjs"
       }
     }
-  ]
+  ],
+  "error": {
+    "name": "Error",
+    "stack": "Error: EEXIST: file already exists, symlink '_not-found.rsc.func' -> '/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.vercel/output/functions/login.rsc.func'",
+    "message": "EEXIST: file already exists, symlink '_not-found.rsc.func' -> '/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.vercel/output/functions/login.rsc.func'",
+    "errno": -17,
+    "code": "EEXIST",
+    "syscall": "symlink",
+    "path": "_not-found.rsc.func",
+    "dest": "/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.vercel/output/functions/login.rsc.func"
+  }
 }

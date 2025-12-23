@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSubjectById, resetSubject, updateGradesBulk } from '@/lib/redux/slices/subjectSlice';
+import { fetchTeacher, updateSubjectGrades } from '@/lib/redux/slices/teacherSlice';
 import { RootState, AppDispatch } from '@/lib/redux/store';
-import { useState } from 'react';
 import Link from 'next/link';
 import {
     ArrowLeft,
@@ -20,36 +20,71 @@ import {
     Loader2 as Spinner,
     CheckCircle2
 } from 'lucide-react';
+import Swal from 'sweetalert2';
 
 export const runtime = 'edge';
 
 export default function SubjectDetailPage() {
     const params = useParams();
+    const router = useRouter();
     const id = params?.id as string;
     const dispatch = useDispatch<AppDispatch>();
-    const { currentSubject, loading, error } = useSelector((state: RootState) => state.subject);
+
     const { user } = useSelector((state: RootState) => state.auth);
+
+    // Admin Selector
+    const { currentSubject: adminSubject, loading: adminLoading, error: adminError } = useSelector((state: RootState) => state.subject);
+    // Teacher Selector
+    const { currentTeacher, loading: teacherLoading, error: teacherError } = useSelector((state: RootState) => state.teacher);
 
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
     const [isSaving, setIsSaving] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const isAuthorized = user?.role === 'admin' || user?.role === 'teacher';
+    const isAdmin = user?.role === 'admin';
+    const isTeacher = user?.role === 'teacher';
 
     useEffect(() => {
         if (id) {
-            dispatch(fetchSubjectById(id));
+            if (isAdmin) {
+                dispatch(fetchSubjectById(id));
+            } else if (isTeacher) {
+                dispatch(fetchTeacher());
+            }
         }
         return () => {
-            dispatch(resetSubject());
+            if (isAdmin) dispatch(resetSubject());
         };
-    }, [id, dispatch]);
+    }, [id, dispatch, isAdmin, isTeacher]);
+
+    // Derived Subject Data
+    let subject: any = null;
+    let loading = false;
+    let error: string | null = null;
+
+    if (isAdmin) {
+        subject = adminSubject;
+        loading = adminLoading;
+        error = adminError;
+    } else if (isTeacher) {
+        // Find subject in subjectsTaught
+        subject = currentTeacher?.subjectsTaught.find(s => s.id.toString() === id) || null;
+        loading = teacherLoading;
+        if (!loading && currentTeacher && !subject) {
+            // Security: Teacher trying to access unauthorized subject
+            router.push('/subjects');
+        }
+    }
 
     const handleScoreChange = (gradeId: string, newScore: string) => {
+        // Allow Teachers and Admins to edit
+        if (!isTeacher && !isAdmin) return;
+
         const score = parseInt(newScore);
-        if (isNaN(score)) return;
+        if (isNaN(score) && newScore !== '') return;
+
         // Strictly prevent entering any value greater than 100
-        const validatedScore = Math.min(100, Math.max(0, score));
+        const validatedScore = newScore === '' ? 0 : Math.min(100, Math.max(0, score));
         setModifiedGrades(prev => ({
             ...prev,
             [gradeId]: validatedScore
@@ -66,12 +101,40 @@ export default function SubjectDetailPage() {
 
         setIsSaving(true);
         try {
-            await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
+            if (isTeacher) {
+                await dispatch(updateSubjectGrades(gradesToUpdate)).unwrap();
+            } else if (isAdmin) {
+                // Ideally Admins can also update if requested, using the bulk action
+                await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
+            }
+
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+            Toast.fire({
+                icon: 'success',
+                title: 'Grades synchronized successfully'
+            });
+
         } catch (err) {
             console.error('Failed to save grades:', err);
+            Swal.fire({
+                title: 'Sync Failed',
+                text: err as string,
+                icon: 'error',
+                customClass: {
+                    popup: 'rounded-[32px] border-none shadow-2xl',
+                    confirmButton: 'rounded-xl font-bold px-8 py-3 bg-rose-600'
+                }
+            });
         } finally {
             setIsSaving(false);
         }
@@ -80,13 +143,9 @@ export default function SubjectDetailPage() {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
-                <div className="relative">
-                    <div className="w-20 h-20 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
-                    <BarChart3 className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                </div>
+                <Spinner className="w-12 h-12 text-blue-600 animate-spin" />
                 <div className="text-center">
                     <p className="text-slate-900 font-black text-xl tracking-tight animate-pulse">Analyzing Subject Metrics...</p>
-                    <p className="text-slate-500 font-medium text-sm mt-1 italic">Retrieving academic performance data from edge nodes...</p>
                 </div>
             </div>
         );
@@ -94,42 +153,26 @@ export default function SubjectDetailPage() {
 
     if (error) {
         return (
-            <div className="max-w-2xl mx-auto mt-12 bg-white border border-rose-100 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
-                <div className="p-6 bg-rose-50 rounded-[32px]">
-                    <AlertCircle className="w-12 h-12 text-rose-500" />
-                </div>
-                <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-slate-900 leading-tight">Data Synchronization Error</h3>
-                    <p className="text-slate-500 font-medium text-lg leading-relaxed">{error}</p>
-                </div>
-                <div className="flex items-center space-x-4">
-                    <button
-                        onClick={() => dispatch(fetchSubjectById(id))}
-                        className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black hover:bg-rose-700 transition-all active:scale-95 shadow-lg shadow-rose-200 uppercase tracking-widest text-xs"
-                    >
-                        Retry Connection
-                    </button>
-                    <Link
-                        href="/admin/subjects"
-                        className="px-10 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black hover:bg-slate-200 transition-all active:scale-95 uppercase tracking-widest text-xs"
-                    >
-                        Return to Index
-                    </Link>
-                </div>
+            <div className="max-w-xl mx-auto mt-20 p-10 bg-white rounded-3xl border border-rose-100 shadow-xl text-center">
+                <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Error Loading Subject</h3>
+                <p className="text-slate-500 mb-6">{error}</p>
+                <Link href="/subjects" className="text-blue-600 font-bold hover:underline">Return to Subjects</Link>
             </div>
-        );
+        )
     }
 
-    if (!currentSubject) return null;
+    if (!subject) return null;
 
-    const avgScore = currentSubject.grades?.length > 0
-        ? Math.round(currentSubject.grades.reduce((acc, g) => acc + g.score, 0) / currentSubject.grades.length)
+    const grades = subject.grades || [];
+    const avgScore = grades.length > 0
+        ? Math.round(grades.reduce((acc: number, g: any) => acc + (g.score || 0), 0) / grades.length)
         : null;
 
     return (
-        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-20">
+        <div className="space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 pb-20 p-4 md:p-8 max-w-7xl mx-auto">
             <Link
-                href="/admin/subjects"
+                href="/subjects"
                 className="inline-flex items-center space-x-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl text-slate-500 hover:text-blue-600 hover:border-blue-100 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -146,18 +189,19 @@ export default function SubjectDetailPage() {
                         <div>
                             <div className="flex items-center space-x-3 mb-2">
                                 <span className="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em]">Subject Node</span>
-                                <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em]">ID: {currentSubject.id}</span>
+                                <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em]">ID: {subject.id}</span>
                             </div>
-                            <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{currentSubject.name}</h1>
+                            <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">{subject.name}</h1>
                             <div className="flex flex-wrap items-center mt-6 gap-6">
                                 <div className="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
                                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                                         <User className="w-4 h-4 text-slate-400" />
                                     </div>
-                                    {currentSubject.teacher ? (
-                                        <Link href={`/admin/teachers/${currentSubject.teacher.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                                            <span className="text-slate-900 font-black text-sm">{currentSubject.teacher.userName}</span>
-                                        </Link>
+                                    {/* Handle teacher display differently if needed, here just showing raw object data or handling null */}
+                                    {subject.teacher || (subject as any).teacherName ? (
+                                        <span className="text-slate-900 font-black text-sm">
+                                            {subject.teacher?.userName || (subject as any).teacherName || 'Faculty'}
+                                        </span>
                                     ) : (
                                         <span className="text-slate-400 font-black text-sm italic">TBA</span>
                                     )}
@@ -166,10 +210,8 @@ export default function SubjectDetailPage() {
                                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                                         <Layers className="w-4 h-4 text-slate-400" />
                                     </div>
-                                    {currentSubject.class ? (
-                                        <Link href={`/admin/classes/${currentSubject.class.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
-                                            <span className="text-slate-900 font-black text-sm">{currentSubject.class.name}</span>
-                                        </Link>
+                                    {subject.class ? (
+                                        <span className="text-slate-900 font-black text-sm">{subject.class.name}</span>
                                     ) : (
                                         <span className="text-slate-400 font-black text-sm italic">Global</span>
                                     )}
@@ -193,7 +235,7 @@ export default function SubjectDetailPage() {
                             <span className="text-6xl font-black tracking-tighter tabular-nums">{avgScore !== null ? avgScore : '--'}</span>
                             <span className="text-2xl font-black text-slate-500 leading-none">%</span>
                         </div>
-                        <p className="text-slate-400 font-medium mt-4 text-sm leading-relaxed">Composite average across {currentSubject.grades?.length || 0} active student nodes.</p>
+                        <p className="text-slate-400 font-medium mt-4 text-sm leading-relaxed">Composite average across {grades.length} active student nodes.</p>
 
                         <div className="mt-8 space-y-3">
                             <div className="h-2 bg-white/5 rounded-full overflow-hidden">
@@ -201,10 +243,6 @@ export default function SubjectDetailPage() {
                                     className={`h-full rounded-full transition-all duration-1000 ${avgScore && avgScore > 80 ? 'bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.5)]' : 'bg-blue-400 shadow-[0_0_12px_rgba(96,165,250,0.5)]'}`}
                                     style={{ width: `${avgScore || 0}%` }}
                                 />
-                            </div>
-                            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-slate-500">
-                                <span>Minimum Scope</span>
-                                <span>Optimal Threshold</span>
                             </div>
                         </div>
                     </div>
@@ -220,7 +258,7 @@ export default function SubjectDetailPage() {
                         </div>
                         <div>
                             <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-none">Intelligence Ledger</h2>
-                            <p className="text-slate-400 font-medium mt-1.5 text-sm uppercase tracking-widest">{currentSubject.grades?.length || 0} Evaluated Student Nodes</p>
+                            <p className="text-slate-400 font-medium mt-1.5 text-sm uppercase tracking-widest">{grades.length} Evaluated Student Nodes</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
@@ -230,7 +268,8 @@ export default function SubjectDetailPage() {
                                 <span className="text-xs font-black uppercase tracking-widest">Grades Synchronized</span>
                             </div>
                         )}
-                        {isAuthorized && (
+                        {/* Only Allow Save if Teacher, or if Admin has edit rights (Requirement said Enable 'Mark Editing' only for Teachers) */}
+                        {isTeacher && (
                             <button
                                 onClick={handleSaveAll}
                                 disabled={isSaving || Object.keys(modifiedGrades).length === 0}
@@ -258,7 +297,7 @@ export default function SubjectDetailPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {currentSubject.grades?.map((grade) => (
+                            {grades.map((grade: any) => (
                                 <tr key={grade.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
                                     <td className="px-12 py-8">
                                         <div className="flex items-center space-x-6">
@@ -266,7 +305,7 @@ export default function SubjectDetailPage() {
                                                 <User className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <Link href={grade.student ? `/admin/students/${grade.student.id}` : '#'}>
+                                                <Link href={grade.student ? `/students/${grade.student.id}` : '#'}>
                                                     <span className="block font-black text-slate-900 text-lg hover:text-blue-600 transition-colors leading-none mb-1.5 cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
                                                 </Link>
                                                 <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {grade.student?.id || grade.id}</span>
@@ -276,14 +315,13 @@ export default function SubjectDetailPage() {
                                     <td className="px-12 py-8">
                                         <div className="flex flex-col space-y-3">
                                             <div className="flex items-center justify-between w-full max-w-[200px]">
-                                                {isAuthorized ? (
+                                                {isTeacher ? (
                                                     <div className="relative group/input">
                                                         <input
                                                             type="number"
                                                             value={modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}
                                                             onChange={(e) => handleScoreChange(grade.id, e.target.value)}
-                                                            className={`w-24 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'
-                                                                }`}
+                                                            className={`w-24 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${grade.score >= 85 ? 'text-emerald-500' : grade.score >= 70 ? 'text-blue-500' : 'text-rose-500'}`}
                                                             min="0"
                                                             max="100"
                                                         />
@@ -330,7 +368,7 @@ export default function SubjectDetailPage() {
                     </table>
                 </div>
 
-                {(!currentSubject.grades || currentSubject.grades.length === 0) && (
+                {(!grades || grades.length === 0) && (
                     <div className="py-24 text-center bg-white">
                         <div className="w-24 h-24 bg-slate-50 rounded-[32px] flex items-center justify-center mx-auto mb-6 shadow-inner">
                             <Layers className="w-12 h-12 text-slate-200" />
@@ -339,18 +377,6 @@ export default function SubjectDetailPage() {
                         <p className="text-slate-400 max-w-sm mx-auto font-medium mt-2 italic">Evaluation scores for this subject node have not been synchronized yet.</p>
                     </div>
                 )}
-
-                <div className="p-10 bg-slate-50/30 border-t border-slate-100 text-center glass">
-                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-6">Subject Performance Analytics Node</p>
-                    <div className="flex flex-wrap justify-center gap-4">
-                        <button className="bg-slate-900 text-white px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-2xl active:scale-95">
-                            Generate Aggregate Report
-                        </button>
-                        <button className="bg-white text-slate-800 border border-slate-200 px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all shadow-xl shadow-slate-200/50 active:scale-95">
-                            Export Raw Data Matrix
-                        </button>
-                    </div>
-                </div>
             </div>
         </div>
     );

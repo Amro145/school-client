@@ -148,7 +148,7 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center space-x-3 bg-white p-2 rounded-3xl shadow-sm border border-slate-100 glass">
                     <div className="px-6 py-2.5 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl">Live Metrics</div>
-                    <Link href="/admin/students" className="px-6 py-2.5 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-colors">Directory Access</Link>
+                    <Link href="/students" className="px-6 py-2.5 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-colors">Directory Access</Link>
                 </div>
             </div>
 
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
                                         <div>
-                                            <Link href={`/admin/students/${student.id}`}>
+                                            <Link href={`/students/${student.id}`}>
                                                 <h4 className="text-xl font-black text-slate-900 leading-none mb-2 hover:text-blue-600 transition-colors cursor-pointer capitalize">{student.userName}</h4>
                                             </Link>
                                             <div className="flex items-center space-x-2">
@@ -238,7 +238,7 @@ export default function AdminDashboard() {
                                             <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Efficiency Score</div>
                                             <div className="text-xl font-black text-slate-900 tabular-nums">{(student.averageScore ?? 0).toFixed(1)}%</div>
                                         </div>
-                                        <Link href={`/admin/students/${student.id}`} className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90">
+                                        <Link href={`/students/${student.id}`} className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90">
                                             <ArrowRight className="w-5 h-5" />
                                         </Link>
                                     </div>
@@ -266,8 +266,8 @@ export default function AdminDashboard() {
 
                         <div className="space-y-4 relative z-10">
                             {[
-                                { label: 'Enroll Student', href: '/admin/students/new', icon: GraduationCap },
-                                { label: 'Register Teacher', href: '/admin/teachers/new', icon: Users },
+                                { label: 'Enroll Student', href: '/admin/users/new?role=student', icon: GraduationCap },
+                                { label: 'Register Teacher', href: '/admin/users/new?role=teacher', icon: Users },
                                 { label: 'New Classroom', href: '/admin/classes/new', icon: BookOpen }
                             ].map((btn) => (
                                 <Link

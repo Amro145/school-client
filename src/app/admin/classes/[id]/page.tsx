@@ -198,7 +198,7 @@ function StudentRow({ student, subjects }: { student: StudentData, subjects: Sub
                         })}
                     </div>
                     <div className="mt-8 pt-6 border-t border-slate-100 flex justify-end">
-                        <Link href={`/admin/students/${student.id}`} className="text-xs font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center">
+                        <Link href={`/students/${student.id}`} className="text-xs font-black text-blue-600 uppercase tracking-widest hover:underline flex items-center">
                             Full Analytic Profile <ArrowLeft className="w-3 h-3 ml-2 rotate-180" />
                         </Link>
                     </div>

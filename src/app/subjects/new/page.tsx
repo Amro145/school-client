@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -8,10 +8,13 @@ import { ArrowLeft, Save, Loader2, BarChart3, AlertCircle, CheckCircle2 } from '
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchMyTeachers, fetchClassRooms, createNewSubject } from '@/lib/redux/slices/adminSlice';
 
+export const runtime = 'edge';
+
 export default function CreateSubjectPage() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
 
+    const { user } = useSelector((state: RootState) => state.auth);
     const { teachers, classRooms, loading: globalLoading } = useSelector((state: RootState) => state.admin);
 
     const [submitting, setSubmitting] = useState(false);
@@ -25,9 +28,13 @@ export default function CreateSubjectPage() {
     });
 
     useEffect(() => {
+        if (user && user.role !== 'admin') {
+            router.push('/subjects');
+            return;
+        }
         dispatch(fetchMyTeachers());
         dispatch(fetchClassRooms());
-    }, [dispatch]);
+    }, [dispatch, user, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,7 +51,7 @@ export default function CreateSubjectPage() {
             if (createNewSubject.fulfilled.match(resultAction)) {
                 setSuccess(true);
                 setTimeout(() => {
-                    router.push('/admin/subjects');
+                    router.push('/subjects');
                 }, 1500);
             } else {
                 setError(resultAction.payload as string || 'Failed to create subject');
@@ -58,17 +65,21 @@ export default function CreateSubjectPage() {
 
     const isLoadingData = globalLoading && teachers.length === 0 && classRooms.length === 0;
 
+    if (user?.role !== 'admin') {
+        return <div className="p-8 text-center text-slate-500">Checking permissions...</div>;
+    }
+
     return (
         <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-500">
             <Link
-                href="/admin/subjects"
+                href="/subjects"
                 className="inline-flex items-center text-slate-500 hover:text-slate-900 font-medium transition-colors"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" /> Back to Subjects
             </Link>
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
                     <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
                             <BarChart3 className="text-white w-7 h-7" />

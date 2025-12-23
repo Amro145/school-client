@@ -23,14 +23,14 @@ import { RootState } from '@/lib/redux/store';
 const adminItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'Classes', href: '/admin/classes', icon: BookOpen },
-    { name: 'Subjects', href: '/admin/subjects', icon: BarChart3 },
-    { name: 'Students', href: '/admin/students', icon: GraduationCap },
+    { name: 'Subjects', href: '/subjects', icon: BarChart3 },
+    { name: 'Students', href: '/students', icon: GraduationCap },
     { name: 'Teachers', href: '/admin/teachers', icon: Users },
 ];
 
 const teacherItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'My Subjects', href: '/admin/subjects', icon: BookOpen },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'My Classes', href: '/admin/classes', icon: Users },
 ];
 
@@ -94,7 +94,7 @@ export default function AdminLayout({
 
                         <nav className="flex-1 px-3 group-hover/sidebar:px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
                             {sidebarItems.map((item) => {
-                                const isActive = pathname === item.href;
+                                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
                                 return (
                                     <Link
                                         key={item.name}

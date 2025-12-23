@@ -65,7 +65,7 @@ export default function CreateUserPage() {
         if (createNewUser.fulfilled.match(resultAction)) {
             setSuccess(true);
             setTimeout(() => {
-                router.push(formData.role === 'teacher' ? '/admin/teachers' : '/admin/students');
+                router.push(formData.role === 'teacher' ? '/admin/teachers' : '/students');
             }, 2000);
         }
     };
