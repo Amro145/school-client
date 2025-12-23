@@ -6,7 +6,6 @@ import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchMyStudents, setPage } from '@/lib/redux/slices/adminSlice';
 import {
     Plus,
-    Trash2,
     Mail,
     Search,
     Loader2,
@@ -120,7 +119,7 @@ export default function StudentsListPage() {
                                 <th className="px-10 py-6">Identity & Profile</th>
                                 <th className="px-10 py-6">Academic Class</th>
                                 <th className="px-10 py-6">Connectivity Info</th>
-                                <th className="px-10 py-6 text-center">Academic Standing</th>
+                                <th className="px-10 py-6 text-center">نسبة النجاح (Success Rate)</th>
                                 <th className="px-10 py-6 text-right">Administrative Actions</th>
                             </tr>
                         </thead>
@@ -173,31 +172,18 @@ export default function StudentsListPage() {
                                     </td>
                                     <td className="px-10 py-8">
                                         <div className="flex flex-col items-center">
-                                            <div className="flex -space-x-3 hover:space-x-1 transition-all">
-                                                {student.grades.length > 0 ? (
-                                                    student.grades.slice(0, 4).map((grade) => (
-                                                        <Link
-                                                            key={grade.id}
-                                                            href={grade.subject ? `/admin/subjects/${grade.subject.id}` : '#'}
-                                                            className={`flex h-10 w-10 rounded-2xl ring-4 ring-white shadow-lg items-center justify-center text-[10px] font-black text-white ${grade.score >= 80 ? 'bg-indigo-600' : grade.score >= 60 ? 'bg-blue-600' : 'bg-slate-400'
-                                                                } transform transition-transform hover:-translate-y-2 cursor-pointer`}
-                                                            title={`Subject: ${grade.subject?.name || 'Unknown'}\nGrade: ${grade.score}%`}
-                                                        >
-                                                            {grade.score}
-                                                        </Link>
-                                                    ))
-                                                ) : (
-                                                    <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Records Pending</div>
-                                                )}
-                                                {student.grades.length > 4 && (
-                                                    <div className="h-10 w-10 rounded-2xl ring-4 ring-white bg-white border border-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 shadow-lg">
-                                                        +{student.grades.length - 4}
-                                                    </div>
-                                                )}
+                                            <div className="flex items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100 w-32 relative overflow-hidden group/success">
+                                                <div
+                                                    className="absolute inset-y-0 left-0 bg-blue-600/10 transition-all duration-1000"
+                                                    style={{ width: `${student.successRate || 0}%` }}
+                                                />
+                                                <span className={`text-xl font-black relative z-10 ${(student.successRate || 0) >= 75 ? 'text-green-600' :
+                                                    (student.successRate || 0) >= 50 ? 'text-blue-600' : 'text-amber-600'
+                                                    }`}>
+                                                    {Math.round(student.successRate || 0)}%
+                                                </span>
                                             </div>
-                                            {student.grades.length > 0 && (
-                                                <div className="mt-3 text-[10px] font-black text-blue-600 uppercase tracking-widest">Real-time Performance Metrics</div>
-                                            )}
+                                            <div className="mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Academic Standing</div>
                                         </div>
                                     </td>
                                     <td className="px-10 py-8 text-right">

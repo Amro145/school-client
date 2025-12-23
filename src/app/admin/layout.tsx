@@ -57,39 +57,41 @@ export default function AdminLayout({
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-[#f8fafc] flex">
+            <div className="min-h-screen bg-[#f8fafc] flex group/sidebar">
                 {/* Sidebar - Desktop */}
-                <aside className="hidden md:flex w-80 flex-col fixed h-full z-30">
-                    <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-slate-200/60 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)]">
-                        <div className="px-8 py-10">
-                            <Link href="/admin" className="flex items-center group">
-                                <div className="w-12 h-12 bg-blue-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform duration-300">
+                <aside className="hidden md:flex flex-col fixed h-full z-30">
+                    <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-slate-200/60 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-500 ease-in-out w-[100px] group-hover/sidebar:w-80 overflow-hidden">
+                        <div className="px-6 group-hover/sidebar:px-8 py-10 transition-all duration-500">
+                            <Link href="/admin" className="flex items-center group/logo overflow-hidden">
+                                <div className="min-w-[50px] w-[50px] h-[50px] bg-blue-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover/logo:scale-105 transition-transform duration-300">
                                     <ShieldCheck className="text-white w-7 h-7" />
                                 </div>
-                                <div className="ml-4">
+                                <div className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 whitespace-nowrap">
                                     <span className="block text-2xl font-black text-slate-900 tracking-tighter leading-none">EDUDASH</span>
                                     <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">Administrator</span>
                                 </div>
                             </Link>
                         </div>
 
-                        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar">
-                            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4">Main Navigation</p>
+                        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto custom-scrollbar overflow-x-hidden">
+                            <p className="px-4 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-4 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 whitespace-nowrap">Main Navigation</p>
                             {sidebarItems.map((item) => {
                                 const isActive = pathname === item.href;
                                 return (
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`flex items-center space-x-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 group ${isActive
+                                        className={`flex items-center space-x-0 group-hover/sidebar:space-x-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 group ${isActive
                                             ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/25 translate-x-1'
                                             : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                                             }`}
                                     >
-                                        <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900'}`} />
-                                        <span className="tracking-tight">{item.name}</span>
+                                        <div className="min-w-[20px] flex items-center justify-center">
+                                            <item.icon className={`w-5 h-5 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900'}`} />
+                                        </div>
+                                        <span className="tracking-tight opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 whitespace-nowrap">{item.name}</span>
                                         {isActive && (
-                                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white/40" />
+                                            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white/40 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500" />
                                         )}
                                     </Link>
                                 );
@@ -100,19 +102,19 @@ export default function AdminLayout({
                         <div className="px-4 py-6 border-t border-slate-100">
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center space-x-3 px-5 py-4 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-300 group font-bold"
+                                className="w-full flex items-center space-x-0 group-hover/sidebar:space-x-3 px-5 py-4 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-300 group font-bold"
                             >
-                                <div className="w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-red-100 transition-colors flex items-center justify-center">
+                                <div className="min-w-[32px] w-8 h-8 rounded-xl bg-slate-50 group-hover:bg-red-100 transition-colors flex items-center justify-center">
                                     <LogOut className="w-4 h-4" />
                                 </div>
-                                <span>Logout Session</span>
+                                <span className="opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-500 whitespace-nowrap">Logout Session</span>
                             </button>
                         </div>
                     </div>
                 </aside>
 
                 {/* Main Content */}
-                <main className="grow md:ml-80 min-h-screen">
+                <main className="grow md:ml-[100px] group-hover/sidebar:md:ml-80 transition-all duration-500 ease-in-out min-h-screen">
                     {/* Header - Glass Effect */}
                     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-6 py-5 md:px-10 flex items-center justify-between">
                         <div className="flex items-center">

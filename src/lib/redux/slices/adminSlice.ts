@@ -35,6 +35,8 @@ interface Student {
         id: string;
         name: string;
     } | null;
+    averageScore?: number;
+    successRate?: number;
     grades: {
         id: string;
         score: number;
@@ -74,6 +76,7 @@ interface AdminState {
     teachers: Teacher[];
     classRooms: ClassRoom[];
     currentStudent: Student | null;
+    topStudents: Student[];
     loading: boolean;
     error: string | null;
 }
@@ -87,6 +90,7 @@ const initialState: AdminState = {
     teachers: [],
     classRooms: [],
     currentStudent: null,
+    topStudents: [],
     loading: false,
     error: null,
 };
@@ -113,6 +117,11 @@ export const fetchAdminDashboardData = createAsyncThunk(
             id
             score
           }
+        }
+        topStudents {
+          id
+          userName
+          averageScore
         }
       }
     `;
@@ -158,6 +167,7 @@ export const fetchMyStudents = createAsyncThunk(
             id
             score
           }
+          successRate
         }
         totalStudentsCount
       }
@@ -740,6 +750,7 @@ const adminSlice = createSlice({
                 state.loading = false;
                 state.stats = action.payload.adminDashboardStats;
                 state.subjects = action.payload.subjects;
+                state.topStudents = action.payload.topStudents;
             })
             .addCase(fetchAdminDashboardData.rejected, (state, action) => {
                 state.loading = false;

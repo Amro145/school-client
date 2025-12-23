@@ -9,7 +9,6 @@ import {
     GraduationCap,
     BookOpen,
     BarChart3,
-    TrendingUp,
     ArrowUpRight,
     Loader2,
     AlertCircle
@@ -19,7 +18,7 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
     const dispatch = useDispatch<AppDispatch>();
-    const { stats, subjects, loading, error } = useSelector((state: RootState) => state.admin);
+    const { stats, topStudents, loading, error } = useSelector((state: RootState) => state.admin);
 
     useEffect(() => {
         dispatch(fetchAdminDashboardData());
@@ -77,8 +76,8 @@ export default function AdminDashboard() {
             textColor: 'text-green-600'
         },
         {
-            name: 'Registered Subjects',
-            value: subjects?.length || 0,
+            name: 'Academic Status',
+            value: 'Optimal',
             icon: BarChart3,
             bgColor: 'bg-orange-50',
             textColor: 'text-orange-600'
@@ -94,11 +93,11 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center space-x-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
                     <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest">Global Overview</div>
-                    <div className="px-4 py-2 text-slate-400 text-xs font-black uppercase tracking-widest hover:text-slate-600 cursor-pointer transition-colors">Detail Logs</div>
+                    <Link href="/admin/students" className="px-4 py-2 text-slate-400 text-xs font-black uppercase tracking-widest hover:text-slate-600 cursor-pointer transition-colors">Directory</Link>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {dashboardStats.map((stat, idx) => (
                     <div
                         key={stat.name}
@@ -110,14 +109,10 @@ export default function AdminDashboard() {
                             <div className={`p-4 rounded-3xl ${stat.bgColor} group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
                                 <stat.icon className={`w-8 h-8 ${stat.textColor}`} />
                             </div>
-                            <div className="flex items-center text-blue-600 text-[10px] font-black tracking-widest bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100/50">
-                                <TrendingUp className="w-3 h-3 mr-1.5" />
-                                LIVE
-                            </div>
                         </div>
                         <div className="relative z-10">
                             <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{stat.name}</p>
-                            <h3 className="text-5xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
+                            <h3 className="text-4xl font-black text-slate-900 tracking-tighter">{stat.value}</h3>
                         </div>
                     </div>
                 ))}
@@ -127,45 +122,45 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-2 bg-white p-10 rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
                     <div className="flex items-center justify-between mb-10">
                         <div>
-                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">Active Curriculum</h2>
-                            <p className="text-sm font-medium text-slate-400 mt-1">Academic Performance Tracking</p>
+                            <h2 className="text-2xl font-black text-slate-900 tracking-tight">الطلاب المتفوقين</h2>
+                            <p className="text-sm font-medium text-slate-400 mt-1">Top Performing Students Breakdown</p>
                         </div>
-                        <button className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all border border-slate-200/50">
+                        <Link href="/admin/students" className="p-3 bg-slate-50 hover:bg-slate-100 rounded-2xl transition-all border border-slate-200/50">
                             <ArrowUpRight className="w-5 h-5 text-slate-400" />
-                        </button>
+                        </Link>
                     </div>
                     <div className="space-y-6">
-                        {subjects.map((subject) => (
-                            <div key={subject.id} className="group flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 border border-transparent hover:border-slate-100 cursor-pointer">
+                        {topStudents.map((student) => (
+                            <div key={student.id} className="group flex items-center justify-between p-6 bg-slate-50/50 rounded-3xl hover:bg-white hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500 border border-transparent hover:border-slate-100 cursor-pointer">
                                 <div className="flex items-center space-x-6">
                                     <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center border border-slate-100 text-xl font-black text-blue-600 shadow-sm group-hover:rotate-6 transition-transform">
-                                        {subject.name.charAt(0)}
+                                        {student.userName.charAt(0)}
                                     </div>
                                     <div>
-                                        <Link href={`/admin/subjects/${subject.id}`}>
-                                            <h4 className="text-lg font-black text-slate-900 leading-none mb-1 hover:text-blue-600 transition-colors cursor-pointer">{subject.name}</h4>
+                                        <Link href={`/admin/students/${student.id}`}>
+                                            <h4 className="text-lg font-black text-slate-900 leading-none mb-1 hover:text-blue-600 transition-colors cursor-pointer">{student.userName}</h4>
                                         </Link>
-                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Departmental Standards</p>
+                                        <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Academic Excellence</p>
                                     </div>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-sm font-black text-slate-900">{subject.grades.length} Submissions</div>
+                                    <div className="text-sm font-black text-slate-900">Avg. Score</div>
                                     <div className="mt-1 flex items-center justify-end">
                                         <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden mr-3">
                                             <div
                                                 className="h-full bg-blue-600 rounded-full"
-                                                style={{ width: `${subject.grades[0]?.score || 0}%` }}
+                                                style={{ width: `${student.averageScore || 0}%` }}
                                             />
                                         </div>
-                                        <span className="text-xs font-black text-blue-600">{subject.grades[0]?.score || 0}%</span>
+                                        <span className="text-xs font-black text-blue-600">{Math.round(student.averageScore || 0)}%</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
-                        {subjects.length === 0 && (
+                        {topStudents.length === 0 && (
                             <div className="text-center py-20 bg-slate-50 rounded-[40px] border-2 border-dashed border-slate-200">
-                                <BookOpen className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                                <p className="text-slate-400 font-bold italic">Awaiting Curriculum Data Deployment</p>
+                                <GraduationCap className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                                <p className="text-slate-400 font-bold italic">Awaiting Academic Performance Data</p>
                             </div>
                         )}
                     </div>
@@ -179,15 +174,18 @@ export default function AdminDashboard() {
                         <h2 className="text-2xl font-black mb-10 relative z-10 tracking-tight">Rapid Actions</h2>
                         <div className="space-y-4 relative z-10">
                             {[
-                                { label: 'Enroll Student', color: 'bg-white/5 hover:bg-white/10' },
-                                { label: 'Register Teacher', color: 'bg-white/5 hover:bg-white/10' },
-                                { label: 'New Classroom', color: 'bg-white/5 hover:bg-white/10' }
+                                { label: 'Enroll Student', href: '/admin/students/new', color: 'bg-white/5 hover:bg-white/10' },
+                                { label: 'Register Teacher', href: '/admin/teachers/new', color: 'bg-white/5 hover:bg-white/10' },
+                                { label: 'New Classroom', href: '/admin/classes/new', color: 'bg-white/5 hover:bg-white/10' }
                             ].map((btn) => (
-                                <button key={btn.label} className={`w-full flex items-center justify-between p-5 ${btn.color} rounded-x-3xl rounded-[24px] transition-all font-bold text-sm backdrop-blur-md border border-white/5 group/btn`}>
+                                <Link key={btn.label} href={btn.href} className={`w-full flex items-center justify-between p-5 ${btn.color} rounded-x-3xl rounded-[24px] transition-all font-bold text-sm backdrop-blur-md border border-white/5 group/btn`}>
                                     {btn.label} <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover/btn:text-white group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-all" />
-                                </button>
+                                </Link>
                             ))}
-                            <button className="w-full flex items-center justify-center p-6 bg-blue-600 hover:bg-blue-500 rounded-[28px] transition-all font-black text-sm shadow-xl shadow-blue-500/40 mt-6 active:scale-95">
+                            <button
+                                onClick={() => window.print()}
+                                className="w-full flex items-center justify-center p-6 bg-blue-600 hover:bg-blue-500 rounded-[28px] transition-all font-black text-sm shadow-xl shadow-blue-500/40 mt-6 active:scale-95"
+                            >
                                 GENERATE SYSTEM REPORT
                             </button>
                         </div>
