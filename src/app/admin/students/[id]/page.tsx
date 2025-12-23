@@ -271,13 +271,6 @@ export default function StudentProfilePage({ params }: PageProps) {
                     </h2>
 
                     <div className="bg-white rounded-[2.5rem] border border-slate-100 p-8 shadow-xl shadow-slate-200/20 space-y-6">
-                        <div className="flex items-center justify-between p-4 bg-emerald-50 rounded-2xl">
-                            <div className="flex items-center space-x-3 text-emerald-700 font-black">
-                                <Calendar className="w-5 h-5 opacity-70" />
-                                <span>Attendance</span>
-                            </div>
-                            <span className="font-black text-emerald-700">96.4%</span>
-                        </div>
 
                         <div className="space-y-4">
                             <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1 text-center">Identity Verification</h4>

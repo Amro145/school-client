@@ -603,6 +603,42 @@ export const handleDeleteClassRoom = createAsyncThunk(
     }
 );
 
+export const handleDeleteSubject = createAsyncThunk(
+    'admin/deleteSubject',
+    async (id: string | number, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        const mutation = `
+      mutation DeleteSubject($id: Int!) {
+        deleteSubject(id: $id) {
+          id
+        }
+      }
+    `;
+
+        try {
+            const response = await api.post('', {
+                query: mutation,
+                variables: { id: typeof id === 'string' ? parseInt(id) : id }
+            });
+
+            if (response.data.errors) {
+                return rejectWithValue(response.data.errors[0].message);
+            }
+
+            return id;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete subject');
+            }
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 export const updateGradesBulk = createAsyncThunk(
     'admin/updateGradesBulk',
     async (grades: { id: string | number, score: number }[], { rejectWithValue, getState }) => {
@@ -872,6 +908,20 @@ const adminSlice = createSlice({
                 }
             })
             .addCase(handleDeleteClassRoom.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Delete Subject
+            .addCase(handleDeleteSubject.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(handleDeleteSubject.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = action.payload.toString();
+                state.subjects = state.subjects.filter(s => s.id.toString() !== deletedId);
+            })
+            .addCase(handleDeleteSubject.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             })

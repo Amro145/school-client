@@ -96,16 +96,6 @@ export default function AdminLayout({
                             })}
                         </nav>
 
-                        <div className="p-6">
-                            <div className="p-5 bg-slate-900 rounded-[32px] overflow-hidden relative group cursor-pointer border border-white/5 shadow-2xl">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl -mr-8 -mt-8 group-hover:bg-blue-500/30 transition-all duration-500" />
-                                <div className="relative z-10">
-                                    <p className="text-xs font-bold text-blue-400 mb-1">PRO PLAN</p>
-                                    <p className="text-sm font-bold text-white mb-3">Upgrade to Enterprise</p>
-                                    <button className="w-full py-2 bg-white/10 hover:bg-white/20 text-white text-[11px] font-black uppercase tracking-widest rounded-xl transition-all border border-white/10">Learn More</button>
-                                </div>
-                            </div>
-                        </div>
 
                         <div className="px-4 py-6 border-t border-slate-100">
                             <button
@@ -198,7 +188,7 @@ export default function AdminLayout({
                         </div>
                     )}
 
-                    <div className="p-6 md:p-12 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                    <div className="p-4 md:p-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-1000">
                         {children}
                     </div>
                 </main>

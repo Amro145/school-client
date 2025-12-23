@@ -181,10 +181,6 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
                                 <span className="text-slate-500">Gender Distribution</span>
                                 <span className="font-bold text-slate-900">Equal</span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-slate-500">Avg. Attendance</span>
-                                <span className="font-bold text-slate-900">94%</span>
-                            </div>
                         </div>
                     </div>
                 </div>

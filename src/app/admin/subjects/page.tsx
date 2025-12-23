@@ -9,12 +9,13 @@ import {
     BookOpen,
     User,
     Layers,
-    AlertCircle,
     Search,
-    Trash2,
-    Eye
+    Eye,
+    AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import DeleteActionButton from '@/components/DeleteActionButton';
+import { handleDeleteSubject } from '@/lib/redux/slices/adminSlice';
 
 export const runtime = 'edge';
 
@@ -166,9 +167,11 @@ export default function SubjectsListPage() {
                                                 <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
                                                     <Eye className="w-5 h-5" />
                                                 </button>
-                                                <button className="p-4 bg-slate-50 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-red-100 active:scale-95">
-                                                    <Trash2 className="w-5 h-5" />
-                                                </button>
+                                                <DeleteActionButton
+                                                    userId={subject.id}
+                                                    userName={subject.name}
+                                                    action={handleDeleteSubject}
+                                                />
                                             </div>
                                         </td>
                                     </tr>
