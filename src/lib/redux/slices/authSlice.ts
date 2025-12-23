@@ -9,6 +9,8 @@ interface User {
     userName: string;
     role: string;
     schoolId: number | null;
+    averageScore?: number;
+    successRate?: number;
     subjectsTaught?: {
         id: string;
         name: string;
@@ -17,6 +19,22 @@ interface User {
             id: string;
             name: string;
         } | null;
+    }[];
+    class?: {
+        id: string;
+        name: string;
+        subjects: {
+            id: string;
+            name: string;
+        }[];
+    } | null;
+    grades?: {
+        id: string;
+        score: number;
+        subject: {
+            id: string;
+            name: string;
+        };
     }[];
 }
 
@@ -96,10 +114,28 @@ export const fetchMe = createAsyncThunk(
       query Me {
         me {
           id
-          email
+          averageScore
+          successRate
           userName
+          email
           role
           schoolId
+          class {
+            id
+            name
+            subjects {
+              id
+              name
+            }
+          }
+          grades {
+            id
+            score
+            subject {
+              id
+              name
+            }
+          }
           subjectsTaught {
             id
             name

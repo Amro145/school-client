@@ -24,6 +24,11 @@ const teacherItems = [
     { name: 'Profile', href: '/profile', icon: User },
 ];
 
+const studentItems = [
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'Profile', href: '/profile', icon: User },
+];
+
 export default function TeacherLayout({
     children,
 }: {
@@ -33,6 +38,8 @@ export default function TeacherLayout({
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const dispatch = useDispatch();
     const { user } = useSelector((state: RootState) => state.auth);
+
+    const sidebarItems = user?.role === 'student' ? studentItems : teacherItems;
 
     const handleLogout = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -61,7 +68,7 @@ export default function TeacherLayout({
                         </div>
 
                         <nav className="flex-1 px-3 group-hover/sidebar:px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
-                            {teacherItems.map((item) => {
+                            {sidebarItems.map((item) => {
                                 const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                                 return (
                                     <Link
@@ -99,17 +106,23 @@ export default function TeacherLayout({
                 <main className="grow md:ml-20 group-hover/sidebar:md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
                     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-6 py-5 md:px-10 flex items-center justify-between">
                         <div>
-                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Academic Evaluation</h2>
-                            <p className="text-lg font-bold text-slate-900 tracking-tight">Faculty Terminal</p>
+                            <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                {user?.role === 'student' ? 'Student Workspace' : 'Academic Evaluation'}
+                            </h2>
+                            <p className="text-lg font-bold text-slate-900 tracking-tight">
+                                {user?.role === 'student' ? 'Learner Terminal' : 'Faculty Terminal'}
+                            </p>
                         </div>
 
                         <div className="flex items-center space-x-4">
                             <div className="hidden sm:flex items-center bg-slate-100 rounded-2xl px-4 py-2 border border-slate-200/50">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
-                                <span className="text-xs font-bold text-slate-600">Active Duty</span>
+                                <span className="text-xs font-bold text-slate-600">
+                                    {user?.role === 'student' ? 'Enrolled' : 'Active Duty'}
+                                </span>
                             </div>
                             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
-                                {user?.userName.substring(0, 2) || 'TR'}
+                                {user?.userName.substring(0, 2) || 'US'}
                             </div>
                         </div>
                     </header>
@@ -158,7 +171,7 @@ export default function TeacherLayout({
                                     <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center active:scale-90 transition-transform"><X className="w-5 h-5 text-slate-500" /></button>
                                 </div>
                                 <nav className="flex-1 px-4 space-y-2 pt-8">
-                                    {teacherItems.map((item) => {
+                                    {sidebarItems.map((item) => {
                                         const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                                         return (
                                             <Link

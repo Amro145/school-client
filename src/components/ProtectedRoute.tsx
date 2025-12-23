@@ -30,12 +30,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         } else {
             // Student restrictions
             if (role === 'student') {
-                const isRestricted = pathname.includes('/admin/subjects') ||
-                    pathname.includes('/admin/teachers') ||
-                    pathname.includes('/admin/classes');
+                const isRestricted = pathname.includes('/admin'); // Completely block admin for student
 
+                // Allow /dashboard and /profile for student (which are now shared under (portal))
                 if (isRestricted) {
-                    router.push('/admin'); // Redirect to dashboard
+                    router.push('/dashboard');
                 }
             }
 
@@ -44,10 +43,11 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                 router.push('/dashboard');
             }
 
+            // Redirect from login/home based on role
             if (pathname === '/login' || pathname === '/') {
-                if (role === 'admin' || role === 'student') {
+                if (role === 'admin') {
                     router.push('/admin');
-                } else if (role === 'teacher') {
+                } else if (role === 'teacher' || role === 'student') {
                     router.push('/dashboard');
                 }
             }
