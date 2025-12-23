@@ -84,7 +84,9 @@ export default function ClassesListPage() {
                                                 <BookOpen className="w-8 h-8" />
                                             </div>
                                             <div>
-                                                <h3 className="text-lg font-black text-slate-900 leading-none mb-1.5 group-hover:text-blue-600 transition-colors">{cls.name}</h3>
+                                                <Link href={`/admin/classes/${cls.id}`}>
+                                                    <h3 className="text-lg font-black text-slate-900 leading-none mb-1.5 hover:text-blue-600 transition-colors cursor-pointer">{cls.name}</h3>
+                                                </Link>
                                                 <div className="flex items-center space-x-2">
                                                     <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ID: {cls.id}</span>
                                                     <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">COHORT</span>

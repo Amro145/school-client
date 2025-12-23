@@ -205,7 +205,9 @@ export default function TeacherDetailPage() {
                                                             <User className="w-6 h-6" />
                                                         </div>
                                                         <div>
-                                                            <span className="block font-black text-slate-900 text-lg leading-none mb-1.5">{grade.student?.userName || 'Anonymous Node'}</span>
+                                                            <Link href={grade.student ? `/admin/students/${grade.student.id}` : '#'}>
+                                                                <span className="block font-black text-slate-900 text-lg leading-none mb-1.5 hover:text-indigo-600 transition-colors cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
+                                                            </Link>
                                                             <span className="text-[10px] font-bold text-slate-400 lowercase tracking-tight">{grade.student?.email}</span>
                                                         </div>
                                                     </div>

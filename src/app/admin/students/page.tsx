@@ -147,10 +147,20 @@ export default function StudentsListPage() {
                                         </div>
                                     </td>
                                     <td className="px-10 py-8">
-                                        <div className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit group-hover:border-blue-100 transition-colors">
-                                            <div className="w-2 h-2 rounded-full bg-blue-600 mr-3" />
-                                            {student.class?.name || 'Provisionally Waitlisted'}
-                                        </div>
+                                        {student.class ? (
+                                            <Link
+                                                href={`/admin/classes/${student.class.id}`}
+                                                className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all group/class"
+                                            >
+                                                <div className="w-2 h-2 rounded-full bg-blue-600 mr-3 group-hover/class:animate-pulse" />
+                                                {student.class.name}
+                                            </Link>
+                                        ) : (
+                                            <div className="flex items-center text-slate-400 font-bold bg-slate-50 border border-slate-100 px-4 py-2 rounded-2xl w-fit">
+                                                <div className="w-2 h-2 rounded-full bg-slate-300 mr-3" />
+                                                Waitlisted
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-10 py-8 text-sm">
                                         <div className="space-y-1.5">
@@ -166,14 +176,15 @@ export default function StudentsListPage() {
                                             <div className="flex -space-x-3 hover:space-x-1 transition-all">
                                                 {student.grades.length > 0 ? (
                                                     student.grades.slice(0, 4).map((grade) => (
-                                                        <div
+                                                        <Link
                                                             key={grade.id}
+                                                            href={grade.subject ? `/admin/subjects/${grade.subject.id}` : '#'}
                                                             className={`flex h-10 w-10 rounded-2xl ring-4 ring-white shadow-lg items-center justify-center text-[10px] font-black text-white ${grade.score >= 80 ? 'bg-indigo-600' : grade.score >= 60 ? 'bg-blue-600' : 'bg-slate-400'
-                                                                } transform transition-transform hover:-translate-y-2 cursor-default`}
-                                                            title={`Subject Grade: ${grade.score}%`}
+                                                                } transform transition-transform hover:-translate-y-2 cursor-pointer`}
+                                                            title={`Subject: ${grade.subject?.name || 'Unknown'}\nGrade: ${grade.score}%`}
                                                         >
                                                             {grade.score}
-                                                        </div>
+                                                        </Link>
                                                     ))
                                                 ) : (
                                                     <div className="px-4 py-2 bg-slate-100 rounded-xl text-[10px] font-black text-slate-400 uppercase tracking-widest">Records Pending</div>

@@ -152,13 +152,25 @@ export default function SubjectDetailPage() {
                                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                                         <User className="w-4 h-4 text-slate-400" />
                                     </div>
-                                    <span className="text-slate-900 font-black text-sm">{currentSubject.teacher?.userName || 'TBA'}</span>
+                                    {currentSubject.teacher ? (
+                                        <Link href={`/admin/teachers/${currentSubject.teacher.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
+                                            <span className="text-slate-900 font-black text-sm">{currentSubject.teacher.userName}</span>
+                                        </Link>
+                                    ) : (
+                                        <span className="text-slate-400 font-black text-sm italic">TBA</span>
+                                    )}
                                 </div>
                                 <div className="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
                                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                                         <Layers className="w-4 h-4 text-slate-400" />
                                     </div>
-                                    <span className="text-slate-900 font-black text-sm">{currentSubject.class?.name || 'Global'}</span>
+                                    {currentSubject.class ? (
+                                        <Link href={`/admin/classes/${currentSubject.class.id}`} className="hover:text-blue-600 transition-colors cursor-pointer">
+                                            <span className="text-slate-900 font-black text-sm">{currentSubject.class.name}</span>
+                                        </Link>
+                                    ) : (
+                                        <span className="text-slate-400 font-black text-sm italic">Global</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -252,7 +264,9 @@ export default function SubjectDetailPage() {
                                                 <User className="w-6 h-6" />
                                             </div>
                                             <div>
-                                                <span className="block font-black text-slate-900 text-lg group-hover:text-blue-600 transition-colors leading-none mb-1.5">{grade.student?.userName || 'Anonymous Node'}</span>
+                                                <Link href={grade.student ? `/admin/students/${grade.student.id}` : '#'}>
+                                                    <span className="block font-black text-slate-900 text-lg hover:text-blue-600 transition-colors leading-none mb-1.5 cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
+                                                </Link>
                                                 <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {grade.student?.id || grade.id}</span>
                                             </div>
                                         </div>

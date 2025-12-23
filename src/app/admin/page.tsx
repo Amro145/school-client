@@ -141,7 +141,9 @@ export default function AdminDashboard() {
                                         {subject.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-black text-slate-900 leading-none mb-1 group-hover:text-blue-600 transition-colors">{subject.name}</h4>
+                                        <Link href={`/admin/subjects/${subject.id}`}>
+                                            <h4 className="text-lg font-black text-slate-900 leading-none mb-1 hover:text-blue-600 transition-colors cursor-pointer">{subject.name}</h4>
+                                        </Link>
                                         <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Departmental Standards</p>
                                     </div>
                                 </div>

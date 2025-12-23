@@ -93,7 +93,9 @@ export default function TeachersListPage() {
                                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full shadow-lg shadow-green-500/20" />
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl font-black text-slate-900 leading-tight group-hover:text-purple-600 transition-colors">{teacher.userName}</h3>
+                                        <Link href={`/admin/teachers/${teacher.id}`}>
+                                            <h3 className="text-2xl font-black text-slate-900 leading-tight group-hover:text-purple-600 hover:underline transition-all cursor-pointer">{teacher.userName}</h3>
+                                        </Link>
                                         <div className="flex items-center space-x-2 mt-1.5">
                                             <span className="text-[10px] bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">ID: {teacher.id}</span>
                                             <span className="text-[10px] bg-purple-50 text-purple-600 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">FACULTY</span>
@@ -130,14 +132,18 @@ export default function TeachersListPage() {
                                                 : null;
 
                                             return (
-                                                <div key={subject.id} className="bg-white border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-purple-200 hover:shadow-lg hover:shadow-purple-100 transition-all duration-300">
-                                                    <span className="text-sm font-black text-slate-700 group-hover/tag:text-purple-700">{subject.name}</span>
+                                                <Link
+                                                    key={subject.id}
+                                                    href={`/admin/subjects/${subject.id}`}
+                                                    className="bg-white border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 cursor-pointer"
+                                                >
+                                                    <span className="text-sm font-black text-slate-700 group-hover/tag:text-blue-600">{subject.name}</span>
                                                     {avgGrade !== null && (
                                                         <span className="ml-3 text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-lg font-black border border-green-100/50">
                                                             {avgGrade}% AVG
                                                         </span>
                                                     )}
-                                                </div>
+                                                </Link>
                                             );
                                         })
                                     ) : (

@@ -161,7 +161,13 @@ export default function StudentProfilePage({ params }: PageProps) {
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Assigned Class</p>
                                 <p className="text-lg font-black text-slate-900 flex items-center justify-center">
                                     <BookOpen className="w-5 h-5 mr-2 text-indigo-500" />
-                                    {currentStudent.class?.name || 'Waitlisted'}
+                                    {currentStudent.class ? (
+                                        <Link href={`/admin/classes/${currentStudent.class.id}`} className="hover:text-indigo-600 transition-colors cursor-pointer group/class">
+                                            {currentStudent.class.name}
+                                        </Link>
+                                    ) : (
+                                        'Waitlisted'
+                                    )}
                                 </p>
                             </div>
                             <div className="px-6 py-4 bg-slate-50 rounded-3xl border border-slate-100 text-center">
@@ -214,7 +220,13 @@ export default function StudentProfilePage({ params }: PageProps) {
                                             <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
                                                 <GraduationCap className="w-6 h-6" />
                                             </div>
-                                            <span className="font-black text-slate-900">{grade.subject?.name || 'N/A'}</span>
+                                            {grade.subject ? (
+                                                <Link href={`/admin/subjects/${grade.subject.id}`}>
+                                                    <span className="font-black text-slate-900 hover:text-blue-600 transition-colors cursor-pointer">{grade.subject.name}</span>
+                                                </Link>
+                                            ) : (
+                                                <span className="font-black text-slate-900">N/A</span>
+                                            )}
                                         </div>
                                         {isAuthorized ? (
                                             <div className="relative group/input">
@@ -249,9 +261,12 @@ export default function StudentProfilePage({ params }: PageProps) {
                                     </div>
                                     <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-tight">
                                         <span>Course Average: 74%</span>
-                                        <span className="text-blue-600 flex items-center cursor-pointer hover:underline">
+                                        <Link
+                                            href={grade.subject ? `/admin/subjects/${grade.subject.id}` : '#'}
+                                            className="text-blue-600 flex items-center cursor-pointer hover:underline"
+                                        >
                                             Details <ArrowUpRight className="w-3 h-3 ml-1" />
-                                        </span>
+                                        </Link>
                                     </div>
                                 </div>
                             ))

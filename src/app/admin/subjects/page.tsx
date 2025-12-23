@@ -129,14 +129,33 @@ export default function SubjectsListPage() {
                                                 <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 group-hover:border-blue-100 transition-colors">
                                                     <User className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
                                                 </div>
-                                                <span className="group-hover:translate-x-1 transition-transform">{subject.teacher?.userName || 'Pending Assignment'}</span>
+                                                {subject.teacher ? (
+                                                    <Link
+                                                        href={`/admin/teachers/${subject.teacher.id}`}
+                                                        className="text-blue-600 hover:underline cursor-pointer group-hover:translate-x-1 transition-all"
+                                                    >
+                                                        {subject.teacher.userName}
+                                                    </Link>
+                                                ) : (
+                                                    <span className="text-slate-400 italic">Pending Assignment</span>
+                                                )}
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm group-hover:border-blue-100 transition-colors">
-                                                <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
-                                                {subject.class?.name || 'Cross-Institutional'}
-                                            </div>
+                                            {subject.class ? (
+                                                <Link
+                                                    href={`/admin/classes/${subject.class.id}`}
+                                                    className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm hover:border-blue-400 hover:text-blue-600 transition-all"
+                                                >
+                                                    <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
+                                                    {subject.class.name}
+                                                </Link>
+                                            ) : (
+                                                <div className="inline-flex items-center px-4 py-2 bg-slate-50 border border-slate-100 rounded-2xl font-black text-sm text-slate-400">
+                                                    <Layers className="w-4 h-4 mr-2.5 opacity-50" />
+                                                    Cross-Institutional
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-10 py-8">
                                             <div className="flex flex-col items-center">
