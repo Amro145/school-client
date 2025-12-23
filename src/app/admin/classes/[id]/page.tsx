@@ -123,7 +123,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
                             <div className="pt-8 border-t border-white/5">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-4">Aggregate Success Rate</span>
                                 <div className="text-6xl font-black tracking-tighter tabular-nums text-white">
-                                    {calculateSuccessRate(classStudents.flatMap(s => Object.values(s.grades)))}
+                                    {calculateSuccessRate(classStudents.flatMap(s => Object.values(s.grades || {})))}
                                 </div>
                             </div>
                         </div>
@@ -170,7 +170,7 @@ function StudentRow({ student, subjects }: { student: StudentData, subjects: Sub
                 <div className="flex items-center space-x-12">
                     <div className="text-right">
                         <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Success Index</div>
-                        <div className={`text-xl font-black tabular-nums ${studentRate > 0.1 ? 'text-green-600' : 'text-blue-600'}`}>{studentRate}</div>
+                        <div className={`text-xl font-black tabular-nums ${parseFloat(studentRate) >= 50 ? 'text-green-600' : 'text-blue-600'}`}>{studentRate}</div>
                     </div>
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isOpen ? 'bg-purple-600 text-white rotate-180' : 'bg-slate-50 text-slate-300'}`}>
                         <TrendingUp className="w-4 h-4" />

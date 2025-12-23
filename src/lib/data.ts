@@ -49,12 +49,9 @@ export function saveData() {
 }
 
 // Success Rate helper
-export function calculateSuccessRate(grades: number[]): number {
-    if (grades.length === 0) return 0;
+export function calculateSuccessRate(grades: number[]): string {
+    if (!grades || grades.length === 0) return "0.0%";
     const sum = grades.reduce((acc, grade) => acc + grade, 0);
-    if (sum === 0) return 0;
-    // Calculation logic as requested: (Number of Subjects / Total Sum of Marks)
-    // We'll multiply by 100 or format it as per typical success rate displays if it makes sense, 
-    // but the prompt specifies exactly this formula.
-    return Number((grades.length / sum).toFixed(4));
+    const average = sum / grades.length;
+    return `${average.toFixed(1)}%`;
 }

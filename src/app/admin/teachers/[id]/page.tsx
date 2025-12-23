@@ -172,7 +172,7 @@ export default function TeacherDetailPage() {
                                     <div className="flex items-center space-x-8">
                                         <div className="text-right">
                                             <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Success Rate</div>
-                                            <div className={`text-2xl font-black tabular-nums ${successRate > 0.1 ? 'text-green-600' : 'text-blue-600'}`}>
+                                            <div className={`text-2xl font-black tabular-nums ${parseFloat(successRate) >= 50 ? 'text-green-600' : 'text-blue-600'}`}>
                                                 {successRate}
                                             </div>
                                         </div>

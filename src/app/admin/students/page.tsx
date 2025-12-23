@@ -19,6 +19,8 @@ import { calculateSuccessRate } from '@/lib/data';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 export const runtime = 'edge';
 
 const LIMIT = 10;
@@ -28,6 +30,32 @@ export default function StudentsListPage() {
     const { students, loading, error, totalStudentsCount, currentPage } = useSelector((state: RootState) => state.admin);
     const [searchTerm, setSearchTerm] = React.useState('');
     const [debouncedSearch, setDebouncedSearch] = React.useState('');
+
+    // Success rate styling helper
+    const getStatusStyles = (rate: string) => {
+        const value = parseFloat(rate);
+        if (value >= 75) return {
+            bg: 'bg-emerald-500/10',
+            border: 'border-emerald-500/20',
+            text: 'text-emerald-600',
+            glow: 'shadow-[0_0_20px_rgba(16,185,129,0.15)]',
+            progress: 'bg-emerald-500'
+        };
+        if (value >= 50) return {
+            bg: 'bg-amber-500/10',
+            border: 'border-amber-500/20',
+            text: 'text-amber-600',
+            glow: 'shadow-[0_0_20px_rgba(245,158,11,0.15)]',
+            progress: 'bg-amber-500'
+        };
+        return {
+            bg: 'bg-rose-500/10',
+            border: 'border-rose-500/20',
+            text: 'text-rose-600',
+            glow: 'shadow-[0_0_20px_rgba(244,63,94,0.15)]',
+            progress: 'bg-rose-500'
+        };
+    };
 
     // Handle debouncing
     useEffect(() => {
@@ -114,87 +142,102 @@ export default function StudentsListPage() {
                 </div>
 
                 <div className="overflow-x-auto custom-scrollbar">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
                                 <th className="px-10 py-6">Identity & Profile</th>
-                                <th className="px-10 py-6">Academic Class</th>
-                                <th className="px-10 py-6">Connectivity Info</th>
-                                <th className="px-10 py-6 text-center">نسبة النجاح (Success Rate)</th>
+                                <th className="px-10 py-6 text-center">Academic Class</th>
+                                <th className="px-10 py-6 text-center">Performance Matrix</th>
                                 <th className="px-10 py-6 text-right">Administrative Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {students?.map((student) => (
-                                <tr key={student.id} className="hover:bg-slate-50/30 transition-all duration-300 group">
-                                    <td className="px-10 py-8">
-                                        <div className="flex items-center space-x-5">
-                                            <div className="relative">
-                                                <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                                                    <UserCircle className="w-8 h-8" />
+                            <AnimatePresence mode="popLayout">
+                                {students?.map((student, index) => {
+                                    const successRate = calculateSuccessRate(student.grades?.map(g => g.score) || []);
+                                    const styles = getStatusStyles(successRate);
+
+                                    return (
+                                        <motion.tr
+                                            key={student.id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.95 }}
+                                            transition={{ duration: 0.4, delay: index * 0.05 }}
+                                            className="hover:bg-slate-50/30 transition-all duration-300 group"
+                                        >
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center space-x-5">
+                                                    <div className="relative">
+                                                        <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                            <UserCircle className="w-8 h-8" />
+                                                        </div>
+                                                        <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full" title="Active Account" />
+                                                    </div>
+                                                    <div>
+                                                        <Link href={`/admin/students/${student.id}`} className="block font-black text-slate-900 text-lg hover:text-blue-600 transition-colors leading-none mb-1.5">
+                                                            {student.userName}
+                                                        </Link>
+                                                        <div className="flex items-center space-x-2">
+                                                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">UID: {student.id}</span>
+                                                            <div className="hidden md:flex items-center text-[10px] text-slate-400 font-bold ml-2">
+                                                                <Mail className="w-3 h-3 mr-1" /> {student.email}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-4 border-white rounded-full" title="Active Account" />
-                                            </div>
-                                            <div>
-                                                <Link href={`/admin/students/${student.id}`} className="block font-black text-slate-900 text-lg hover:text-blue-600 transition-colors leading-none mb-1.5">
-                                                    {student.userName}
-                                                </Link>
-                                                <div className="flex items-center space-x-2">
-                                                    <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">UID: {student.id}</span>
-                                                    <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">STUDENT</span>
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="flex justify-center">
+                                                    {student.class ? (
+                                                        <Link
+                                                            href={`/admin/classes/${student.class.id}`}
+                                                            className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all group/class"
+                                                        >
+                                                            <div className="w-2 h-2 rounded-full bg-blue-600 mr-3 group-hover/class:animate-pulse" />
+                                                            {student.class.name}
+                                                        </Link>
+                                                    ) : (
+                                                        <div className="flex items-center text-slate-400 font-bold bg-slate-50 border border-slate-100 px-4 py-2 rounded-2xl w-fit">
+                                                            <div className="w-2 h-2 rounded-full bg-slate-300 mr-3" />
+                                                            Waitlisted
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-8">
-                                        {student.class ? (
-                                            <Link
-                                                href={`/admin/classes/${student.class.id}`}
-                                                className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit hover:border-blue-400 hover:text-blue-600 hover:shadow-md transition-all group/class"
-                                            >
-                                                <div className="w-2 h-2 rounded-full bg-blue-600 mr-3 group-hover/class:animate-pulse" />
-                                                {student.class.name}
-                                            </Link>
-                                        ) : (
-                                            <div className="flex items-center text-slate-400 font-bold bg-slate-50 border border-slate-100 px-4 py-2 rounded-2xl w-fit">
-                                                <div className="w-2 h-2 rounded-full bg-slate-300 mr-3" />
-                                                Waitlisted
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="px-10 py-8 text-sm">
-                                        <div className="space-y-1.5">
-                                            <div className="flex items-center text-slate-600 font-bold group-hover:text-slate-900 transition-colors">
-                                                <Mail className="w-4 h-4 mr-2.5 text-slate-300 group-hover:text-blue-500 transition-colors" />
-                                                {student.email}
-                                            </div>
-                                            <div className="text-[10px] text-slate-400 font-black uppercase tracking-wider pl-6.5">Official Communications Only</div>
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-8">
-                                        <div className="flex flex-col items-center">
-                                            <div className="flex items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100 w-32 relative overflow-hidden group/success">
-                                                <div
-                                                    className="absolute inset-y-0 left-0 bg-blue-600/10 transition-all duration-1000"
-                                                    style={{ width: `${(calculateSuccessRate(student.grades?.map(g => g.score) || []) * 100).toFixed(2)}%` }}
-                                                />
-                                                <span className="text-xl font-black relative z-10 text-blue-600">
-                                                    {calculateSuccessRate(student.grades?.map(g => g.score) || [])}
-                                                </span>
-                                            </div>
-                                            <div className="mt-2 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Academic Index</div>
-                                        </div>
-                                    </td>
-                                    <td className="px-10 py-8 text-right">
-                                        <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
-                                                <GraduationCap className="w-5 h-5" />
-                                            </button>
-                                            <DeleteActionButton userId={student.id} userName={student.userName} />
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="flex flex-col items-center group/success">
+                                                    <div className={`relative px-6 py-3 rounded-2xl border ${styles.bg} ${styles.border} ${styles.glow} min-w-[140px] transition-all duration-500`}>
+                                                        <div className="flex flex-col items-center relative z-10">
+                                                            <span className={`text-2xl font-black tabular-nums ${styles.text}`}>
+                                                                {successRate}
+                                                            </span>
+                                                            <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Success Rate</span>
+                                                        </div>
+                                                        {/* Subtle progress bar at bottom */}
+                                                        <div className="absolute bottom-1 left-3 right-3 h-1 bg-slate-200/30 rounded-full overflow-hidden">
+                                                            <motion.div
+                                                                initial={{ width: 0 }}
+                                                                animate={{ width: successRate }}
+                                                                transition={{ duration: 1.5, ease: "easeOut" }}
+                                                                className={`h-full ${styles.progress}`}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8 text-right">
+                                                <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
+                                                    <button className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
+                                                        <GraduationCap className="w-5 h-5" />
+                                                    </button>
+                                                    <DeleteActionButton userId={student.id} userName={student.userName} />
+                                                </div>
+                                            </td>
+                                        </motion.tr>
+                                    );
+                                })}
+                            </AnimatePresence>
                         </tbody>
                     </table>
                 </div>
