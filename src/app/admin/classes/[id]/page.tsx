@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { getData, calculateSuccessRate } from '@/lib/data';
+import React from 'react';
 
 export const runtime = 'edge';
 
@@ -16,10 +17,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 import { notFound } from 'next/navigation';
 import {
     ArrowLeft,
-    Trash2,
-    Plus,
     BookOpen,
     Users,
+    TrendingUp,
 } from 'lucide-react';
 
 export default async function ClassDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -134,7 +134,21 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
     );
 }
 
-function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
+
+interface StudentData {
+    id: string;
+    name: string;
+    grades: Record<string, number>;
+}
+
+interface SubjectData {
+    id: string;
+    name: string;
+    classId: string;
+    teacherId: string;
+}
+
+function StudentRow({ student, subjects }: { student: StudentData, subjects: SubjectData[] }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const studentRate = calculateSuccessRate(Object.values(student.grades));
 
@@ -191,8 +205,5 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
                 </div>
             )}
         </div>
-    );
-}
-        </div >
     );
 }

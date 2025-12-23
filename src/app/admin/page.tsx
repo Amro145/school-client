@@ -8,9 +8,7 @@ import {
     Users,
     GraduationCap,
     BookOpen,
-    BarChart3,
     ArrowUpRight,
-    Loader2,
     AlertCircle,
     Trophy,
     TrendingUp,
@@ -19,8 +17,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
-import { calculateSuccessRate } from '@/lib/data';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 export default function AdminDashboard() {
@@ -157,7 +154,7 @@ export default function AdminDashboard() {
 
             {/* Bento Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {dashboardStats.map((stat, idx) => (
+                {dashboardStats.map((stat) => (
                     <motion.div
                         key={stat.name}
                         variants={itemVariants}

@@ -11,13 +11,9 @@ import {
     ArrowLeft,
     Mail,
     BookOpen,
-    ArrowRight,
-    User,
     Shield,
-    GraduationCap,
     Trophy,
     TrendingUp,
-    Search,
     AlertCircle,
     Trash2
 } from 'lucide-react';
@@ -31,6 +27,7 @@ export default function TeacherDetailPage() {
     const id = params?.id as string;
     const dispatch = useDispatch<AppDispatch>();
     const { currentTeacher, loading, error } = useSelector((state: RootState) => state.teacher);
+    const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | null>(null);
 
     useEffect(() => {
         if (id) {
@@ -96,7 +93,7 @@ export default function TeacherDetailPage() {
 
     if (!currentTeacher) return null;
 
-    const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | null>(null);
+
 
     return (
         <div className="space-y-10 animate-in fade-in transition-all duration-700 pb-20">
@@ -235,7 +232,6 @@ export default function TeacherDetailPage() {
                                                                                 confirmButtonColor: '#2563eb',
                                                                                 cancelButtonColor: '#ef4444',
                                                                                 confirmButtonText: 'Yes, delete record',
-                                                                                borderRadius: '24px',
                                                                                 customClass: {
                                                                                     popup: 'rounded-[32px] border-none shadow-2xl',
                                                                                     title: 'font-black text-2xl',

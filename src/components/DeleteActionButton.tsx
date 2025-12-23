@@ -54,7 +54,7 @@ export default function DeleteActionButton({ userId, userName, warning, action }
                         popup: 'rounded-[32px] border-none shadow-2xl',
                     }
                 });
-            } catch (error) {
+            } catch {
                 Swal.fire({
                     title: 'Error!',
                     text: 'Failed to delete the record.',
