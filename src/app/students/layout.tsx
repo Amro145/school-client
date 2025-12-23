@@ -4,7 +4,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
 import AdminLayout from '@/app/admin/layout';
-import TeacherLayout from '@/app/(teacher)/layout';
+import TeacherLayout from '@/app/(portal)/layout';
 import { Loader2 } from 'lucide-react';
 
 export default function StudentsLayout({
