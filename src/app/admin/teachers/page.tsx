@@ -23,6 +23,7 @@ export const runtime = 'edge';
 export default function TeachersListPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { teachers, loading, error } = useSelector((state: RootState) => state.admin);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         dispatch(fetchMyTeachers());
@@ -64,15 +65,17 @@ export default function TeachersListPage() {
                     <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Faculty Registry</h1>
                     <p className="text-slate-500 mt-3 font-medium text-lg italic">Overseeing academic expertise and teaching staff...</p>
                 </div>
-                <Link
-                    href="/admin/users/new?role=teacher"
-                    className="relative group overflow-hidden"
-                >
-                    <div className="absolute -inset-1 bg-linear-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                    <div className="relative bg-purple-600 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-purple-700 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
-                        <Plus className="w-5 h-5 mr-3" /> Register New Faculty
-                    </div>
-                </Link>
+                {user?.role === 'admin' && (
+                    <Link
+                        href="/admin/users/new?role=teacher"
+                        className="relative group overflow-hidden"
+                    >
+                        <div className="absolute -inset-1 bg-linear-to-r from-purple-600 to-indigo-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                        <div className="relative bg-purple-600 text-white px-8 py-4 rounded-xl font-black text-sm hover:bg-purple-700 transition-all flex items-center justify-center shadow-lg active:scale-95 uppercase tracking-widest leading-none">
+                            <Plus className="w-5 h-5 mr-3" /> Register New Faculty
+                        </div>
+                    </Link>
+                )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -158,7 +161,7 @@ export default function TeachersListPage() {
                             <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3 bg-white rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             <div className="flex items-center space-x-2">
                                 <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                <DeleteActionButton userId={teacher.id} userName={teacher.userName} />
+                                {user?.role === 'admin' && <DeleteActionButton userId={teacher.id} userName={teacher.userName} />}
                             </div>
                         </div>
                     </div>

@@ -6,12 +6,27 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { createNewClassRoom } from '@/lib/redux/slices/adminSlice';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, BookOpen } from 'lucide-react';
+import Swal from 'sweetalert2';
+
+export const runtime = 'edge';
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 
 export default function CreateClassPage() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
-    const { loading, error } = useSelector((state: RootState) => state.admin);
+    const { loading } = useSelector((state: RootState) => state.admin);
     const [name, setName] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +34,16 @@ export default function CreateClassPage() {
 
         const resultAction = await dispatch(createNewClassRoom(name));
         if (createNewClassRoom.fulfilled.match(resultAction)) {
+            Toast.fire({
+                icon: "success",
+                title: "Classroom created successfully"
+            });
             router.push('/admin/classes');
+        } else {
+            Toast.fire({
+                icon: "error",
+                title: resultAction.payload as string || "Failed to create class"
+            });
         }
     };
 
@@ -42,13 +66,6 @@ export default function CreateClassPage() {
                         <p className="text-slate-500 text-left">Set up a new classroom group for your school.</p>
                     </div>
                 </div>
-
-                {error && (
-                    <div className="mb-8 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center space-x-3 text-rose-600 animate-in shake duration-500">
-                        <AlertCircle className="w-5 h-5" />
-                        <p className="text-sm font-bold uppercase tracking-tight">{error}</p>
-                    </div>
-                )}
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                     <div>

@@ -1,14 +1,27 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BarChart3, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, BarChart3 } from 'lucide-react';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchMyTeachers, fetchClassRooms, createNewSubject } from '@/lib/redux/slices/adminSlice';
+import Swal from 'sweetalert2';
 
 export const runtime = 'edge';
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 
 export default function CreateSubjectPage() {
     const router = useRouter();
@@ -18,8 +31,6 @@ export default function CreateSubjectPage() {
     const { teachers, classRooms, loading: globalLoading } = useSelector((state: RootState) => state.admin);
 
     const [submitting, setSubmitting] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -39,7 +50,6 @@ export default function CreateSubjectPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitting(true);
-        setError(null);
 
         try {
             const resultAction = await dispatch(createNewSubject({
@@ -49,15 +59,24 @@ export default function CreateSubjectPage() {
             }));
 
             if (createNewSubject.fulfilled.match(resultAction)) {
-                setSuccess(true);
+                Toast.fire({
+                    icon: "success",
+                    title: "Subject created successfully"
+                });
                 setTimeout(() => {
                     router.push('/subjects');
                 }, 1500);
             } else {
-                setError(resultAction.payload as string || 'Failed to create subject');
+                Toast.fire({
+                    icon: "error",
+                    title: resultAction.payload as string || "Failed to create subject"
+                });
             }
         } catch {
-            setError('An unexpected error occurred');
+            Toast.fire({
+                icon: "error",
+                title: "An unexpected error occurred"
+            });
         } finally {
             setSubmitting(false);
         }
@@ -79,7 +98,7 @@ export default function CreateSubjectPage() {
             </Link>
 
             <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
+                <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
                     <div className="flex items-center space-x-4">
                         <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
                             <BarChart3 className="text-white w-7 h-7" />
@@ -92,20 +111,6 @@ export default function CreateSubjectPage() {
                 </div>
 
                 <div className="p-8 md:p-12">
-                    {error && (
-                        <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-center space-x-3 text-sm font-medium animate-in slide-in-from-top-2">
-                            <AlertCircle className="w-5 h-5 shrink-0" />
-                            <span>{error}</span>
-                        </div>
-                    )}
-
-                    {success && (
-                        <div className="mb-8 p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl flex items-center space-x-3 text-sm font-medium animate-in slide-in-from-top-2">
-                            <CheckCircle2 className="w-5 h-5 shrink-0" />
-                            <span>Subject created successfully! Redirecting...</span>
-                        </div>
-                    )}
-
                     <form onSubmit={handleSubmit} className="space-y-8">
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 ml-1">Subject Name</label>

@@ -13,13 +13,24 @@ import {
     Layers,
     ArrowLeft,
     Loader2,
-    CheckCircle2,
-    AlertCircle,
     User
 } from 'lucide-react';
 import Link from 'next/link';
+import Swal from 'sweetalert2';
 
 export const runtime = 'edge';
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 
 export default function CreateUserPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -27,7 +38,7 @@ export default function CreateUserPage() {
     const searchParams = useSearchParams();
     const initialRole = searchParams.get('role') || 'student';
 
-    const { classRooms, loading, error } = useSelector((state: RootState) => state.admin);
+    const { classRooms, loading } = useSelector((state: RootState) => state.admin);
 
     const [formData, setFormData] = useState({
         userName: '',
@@ -36,8 +47,6 @@ export default function CreateUserPage() {
         role: initialRole,
         classId: ''
     });
-
-    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         dispatch(fetchClassRooms());
@@ -63,10 +72,18 @@ export default function CreateUserPage() {
 
         const resultAction = await dispatch(createNewUser(payload));
         if (createNewUser.fulfilled.match(resultAction)) {
-            setSuccess(true);
+            Toast.fire({
+                icon: "success",
+                title: "User created successfully"
+            });
             setTimeout(() => {
                 router.push(formData.role === 'teacher' ? '/admin/teachers' : '/students');
-            }, 2000);
+            }, 1000);
+        } else {
+            Toast.fire({
+                icon: "error",
+                title: resultAction.payload as string || "Failed to create user"
+            });
         }
     };
 
@@ -97,30 +114,6 @@ export default function CreateUserPage() {
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-12 space-y-10">
-                    {error && (
-                        <div className="p-6 bg-rose-50 border border-rose-100 rounded-[32px] flex items-start space-x-4 animate-in shake duration-500">
-                            <div className="p-2 bg-white rounded-xl shadow-sm">
-                                <AlertCircle className="w-6 h-6 text-rose-500" />
-                            </div>
-                            <div>
-                                <h3 className="text-rose-900 font-black text-sm uppercase tracking-widest leading-none mb-1">Architecture Fault</h3>
-                                <p className="text-rose-600 text-sm font-medium italic">{error}</p>
-                            </div>
-                        </div>
-                    )}
-
-                    {success && (
-                        <div className="p-6 bg-emerald-50 border border-emerald-100 rounded-[32px] flex items-start space-x-4 animate-in zoom-in duration-500">
-                            <div className="p-2 bg-white rounded-xl shadow-sm">
-                                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                            </div>
-                            <div>
-                                <h3 className="text-emerald-900 font-black text-sm uppercase tracking-widest leading-none mb-1">Node Synchronized</h3>
-                                <p className="text-emerald-600 text-sm font-medium italic">New identity successfully integrated. Redirecting to operational index...</p>
-                            </div>
-                        </div>
-                    )}
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         {/* Name Field */}
                         <div className="space-y-4">
@@ -236,7 +229,7 @@ export default function CreateUserPage() {
                         </div>
                         <button
                             type="submit"
-                            disabled={loading || success}
+                            disabled={loading}
                             className={`px-16 py-6 bg-slate-900 text-white rounded-[32px] font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center shadow-2xl active:scale-95 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-600 hover:shadow-blue-500/25'}`}
                         >
                             {loading ? (
