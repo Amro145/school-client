@@ -92,6 +92,10 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Academic Class</p>
                                 <p className="font-bold text-slate-700">{user.class?.name || 'Unassigned'}</p>
                             </div>
+                            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Average Score</p>
+                                <p className="font-bold text-slate-700">{user.averageScore || 'N/A'}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

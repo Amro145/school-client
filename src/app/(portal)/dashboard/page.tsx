@@ -111,7 +111,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Success Rate</span>
                     </div>
                     <div>
-                        <div className="text-5xl font-black text-slate-900 tracking-tighter mb-1 tabular-nums">{successRate}%</div>
+                        <div className="text-5xl font-black text-slate-900 tracking-tighter mb-1 tabular-nums">{averageScore}%</div>
                         <p className="text-slate-500 font-bold text-sm">Overall Performance</p>
                     </div>
                 </div>

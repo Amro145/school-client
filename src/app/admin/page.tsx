@@ -293,26 +293,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-linear-to-br from-indigo-600 to-purple-700 p-10 rounded-[56px] text-white shadow-2xl relative overflow-hidden group">
-                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]" />
-                        <div className="relative z-10">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="px-4 py-1.5 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest">Server Status</div>
-                                <div className="w-3 h-3 bg-emerald-400 rounded-full animate-ping" />
-                            </div>
-                            <h3 className="text-2xl font-black mb-4 leading-tight tracking-tight uppercase">Edge Synchronization Active</h3>
-                            <p className="text-white/70 text-sm font-medium leading-relaxed mb-10">All educational nodes are transmitting data through encrypted edge layers.</p>
-
-                            <div className="flex items-center -space-x-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-12 h-12 rounded-2xl border-4 border-indigo-700 bg-slate-200 overflow-hidden shadow-2xl relative z-10 transition-transform duration-500">
-                                        <Image src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="user" width={48} height={48} className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                                <div className="w-12 h-12 rounded-2xl border-4 border-indigo-700 bg-indigo-500 backdrop-blur-sm flex items-center justify-center text-[10px] font-black shadow-2xl relative z-20">+24</div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </motion.div>
             </div>
         </motion.div>

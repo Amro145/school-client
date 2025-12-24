@@ -271,9 +271,11 @@ export default function StudentsPage() {
                                                 <td className="px-10 py-8 text-right">
                                                     <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
                                                         <Link href={`/students/${student.id}`} className="p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95">
-                                                            <GraduationCap className="w-5 h-5" />
+                                                            <GraduationCap className="w-5 h-5 text-blue-600" />
                                                         </Link>
-                                                        <DeleteActionButton userId={student.id} userName={student.userName} />
+                                                        <span className="text-red-700">
+                                                            <DeleteActionButton userId={student.id} userName={student.userName} />
+                                                        </span>
                                                     </div>
                                                 </td>
                                             )}

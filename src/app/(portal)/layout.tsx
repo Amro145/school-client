@@ -24,6 +24,7 @@ const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'Profile', href: '/profile', icon: User },
+    { name: "students", href: '/students', icon: User },
 ];
 
 const studentItems = [
