@@ -32,6 +32,7 @@ const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'My Classes', href: '/admin/classes', icon: Users },
+    { name: 'My Students', href: '/admin/students', icon: GraduationCap },
 ];
 
 const studentItems = [
