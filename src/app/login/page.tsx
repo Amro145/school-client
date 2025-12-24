@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -34,10 +36,10 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 relative overflow-hidden p-6">
+        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 relative overflow-hidden p-6 transition-colors duration-300">
             {/* Animated Background Orbs */}
-            <div className="absolute top-0 -left-20 w-96 h-96 bg-blue-100/50 rounded-full blur-[100px] animate-float opacity-70" />
-            <div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-purple-100/30 rounded-full blur-[120px] opacity-60" />
+            <div className="absolute top-0 -left-20 w-96 h-96 bg-blue-100/50 dark:bg-blue-900/20 rounded-full blur-[100px] animate-float opacity-70" />
+            <div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-[120px] opacity-60" />
 
             <div className="w-full max-w-[480px] relative z-10 transition-all duration-700 animate-in fade-in slide-in-from-bottom-12">
                 {/* Brand Logo */}
@@ -46,15 +48,15 @@ export default function LoginPage() {
                         <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/40 group-hover:rotate-12 transition-transform duration-500">
                             <GraduationCap className="text-white w-7 h-7" />
                         </div>
-                        <span className="text-3xl font-black text-slate-900 tracking-tighter">EDUDASH</span>
+                        <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">EDUDASH</span>
                     </Link>
                 </div>
 
-                <div className="bg-white/80 backdrop-blur-2xl rounded-[48px] border border-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-[48px] border border-white dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
                     <div className="px-10 py-12">
                         <div className="mb-10 text-center">
-                            <h1 className="text-4xl font-black text-slate-900 tracking-tight mb-3">Portal Secure Login</h1>
-                            <p className="text-slate-500 font-bold italic">Identity Verification Required</p>
+                            <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">Portal Secure Login</h1>
+                            <p className="text-slate-500 dark:text-slate-400 font-bold italic">Identity Verification Required</p>
                         </div>
 
                         {error && (
@@ -78,7 +80,7 @@ export default function LoginPage() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 border border-slate-100 rounded-[24px] text-slate-900 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 focus:border-blue-500 focus:bg-white transition-all outline-none"
+                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
                                         placeholder="admin@edudash.edu"
                                     />
                                 </div>
@@ -87,7 +89,7 @@ export default function LoginPage() {
                             <div className="space-y-2">
                                 <div className="flex items-center justify-between px-2">
                                     <label className="text-xs font-black text-slate-400 uppercase tracking-[0.2em]">Secret Key</label>
-                                    <Link href="#" className="text-[10px] font-black text-blue-600 uppercase tracking-widest hover:underline">Reset Access</Link>
+                                    {/* Link removed as per clean up task */}
                                 </div>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
@@ -98,7 +100,7 @@ export default function LoginPage() {
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 border border-slate-100 rounded-[24px] text-slate-900 font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 focus:border-blue-500 focus:bg-white transition-all outline-none"
+                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
                                         placeholder="••••••••••••"
                                     />
                                 </div>
@@ -109,7 +111,7 @@ export default function LoginPage() {
                                 disabled={loading}
                                 className="w-full relative group"
                             >
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-[28px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                                <div className="absolute -inset-1 bg-linear-to-r from-blue-600 to-purple-600 rounded-[28px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                                 <div className="relative flex items-center justify-center py-5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white rounded-[24px] font-black text-lg transition-all active:scale-[0.98]">
                                     {loading ? (
                                         <Loader2 className="w-7 h-7 animate-spin" />

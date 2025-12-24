@@ -1,6 +1,8 @@
 "use client";
 
+
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { usePathname } from 'next/navigation';
 import {
     LayoutDashboard,
@@ -115,13 +117,14 @@ export default function TeacherLayout({
                         </div>
 
                         <div className="flex items-center space-x-4">
-                            <div className="hidden sm:flex items-center bg-slate-100 rounded-2xl px-4 py-2 border border-slate-200/50">
+                            <ThemeToggle />
+                            <div className="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-slate-200/50 dark:border-slate-700">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
                                 <span className="text-xs font-bold text-slate-600">
                                     {user?.role === 'student' ? 'Enrolled' : 'Active Duty'}
                                 </span>
                             </div>
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
+                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
                                 {user?.userName.substring(0, 2) || 'US'}
                             </div>
                         </div>

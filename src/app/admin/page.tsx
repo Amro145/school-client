@@ -1,5 +1,7 @@
 'use client';
 
+export const runtime = 'edge';
+
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
@@ -45,12 +47,12 @@ export default function AdminDashboard() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="relative"
                 >
-                    <div className="w-20 h-20 border-4 border-blue-50 border-t-blue-600 rounded-full animate-spin"></div>
+                    <div className="w-20 h-20 border-4 border-blue-50 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
                     <ShieldCheck className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
                 </motion.div>
                 <div className="text-center">
-                    <p className="text-slate-900 font-black text-xl tracking-tight">Accessing Mainframe...</p>
-                    <p className="text-slate-500 font-medium text-sm mt-1 italic">Decrypting institutional analytics layers...</p>
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Accessing Mainframe...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Decrypting institutional analytics layers...</p>
                 </div>
             </div>
         );
@@ -143,12 +145,12 @@ export default function AdminDashboard() {
                         <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">Mainframe Console</span>
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     </motion.div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tighter leading-none">Intelligence Hub</h1>
-                    <p className="text-slate-500 mt-4 font-medium text-lg italic">Accessing real-time institutional analytics...</p>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Intelligence Hub</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-4 font-medium text-lg italic">Accessing real-time institutional analytics...</p>
                 </div>
-                <div className="flex items-center space-x-3 bg-white p-2 rounded-3xl shadow-sm border border-slate-100 glass">
-                    <div className="px-6 py-2.5 bg-slate-950 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl">Live Metrics</div>
-                    <Link href="/students" className="px-6 py-2.5 text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-slate-900 transition-colors">Directory Access</Link>
+                <div className="flex items-center space-x-3 bg-white dark:bg-slate-900 p-2 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 glass">
+                    <div className="px-6 py-2.5 bg-slate-950 dark:bg-slate-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl">Live Metrics</div>
+                    <Link href="/students" className="px-6 py-2.5 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors">Directory Access</Link>
                 </div>
             </div>
 
@@ -163,14 +165,14 @@ export default function AdminDashboard() {
                         <div className={`absolute -right-8 -top-8 w-32 h-32 bg-${stat.color}-500/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700`} />
                         <div className="relative z-10">
                             <div className="flex items-start justify-between mb-8">
-                                <div className={`p-4 rounded-3xl bg-slate-50 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner`}>
+                                <div className={`p-4 rounded-3xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner`}>
                                     <stat.icon className="w-6 h-6" />
                                 </div>
-                                <ArrowUpRight className="w-5 h-5 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                                <ArrowUpRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 transition-colors" />
                             </div>
-                            <p className="text-xs font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{stat.name}</p>
-                            <h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-4">{stat.value}</h3>
-                            <p className="text-[10px] font-bold text-slate-400 italic leading-none">{stat.description}</p>
+                            <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-2">{stat.name}</p>
+                            <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">{stat.value}</h3>
+                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-600 italic leading-none">{stat.description}</p>
                         </div>
                     </motion.div>
                 ))}
@@ -184,17 +186,17 @@ export default function AdminDashboard() {
                 >
                     <div className="flex items-center justify-between mb-12">
                         <div className="flex items-center space-x-6">
-                            <div className="w-16 h-16 bg-amber-50 rounded-3xl flex items-center justify-center text-amber-500 shadow-inner">
+                            <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-3xl flex items-center justify-center text-amber-500 shadow-inner">
                                 <Trophy className="w-8 h-8" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-slate-900 tracking-tight leading-none mb-2">Academic Leaderboard</h2>
-                                <p className="text-sm font-medium text-slate-400 tracking-wider">Top Performing Intelligence Nodes</p>
+                                <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-2">Academic Leaderboard</h2>
+                                <p className="text-sm font-medium text-slate-400 dark:text-slate-500 tracking-wider">Top Performing Intelligence Nodes</p>
                             </div>
                         </div>
-                        <div className="hidden sm:flex items-center px-6 py-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                        <div className="hidden sm:flex items-center px-6 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl">
                             <TrendingUp className="w-4 h-4 text-emerald-500 mr-3" />
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Global Algorithm: Success Rate</span>
+                            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Global Algorithm: Success Rate</span>
                         </div>
                     </div>
 
@@ -210,7 +212,7 @@ export default function AdminDashboard() {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: idx * 0.1 + 0.5 }}
-                                    className="group flex items-center justify-between p-6 bg-slate-50/50 rounded-[32px] hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 border border-transparent hover:border-slate-100"
+                                    className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/30 rounded-[32px] hover:bg-white dark:hover:bg-slate-800 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all duration-500 border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
                                 >
                                     <div className="flex items-center space-x-6">
                                         <div className="relative">
@@ -226,7 +228,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div>
                                             <Link href={`/students/${student.id}`}>
-                                                <h4 className="text-xl font-black text-slate-900 leading-none mb-2 hover:text-blue-600 transition-colors cursor-pointer capitalize">{student.userName}</h4>
+                                                <h4 className="text-xl font-black text-slate-900 dark:text-white leading-none mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer capitalize">{student.userName}</h4>
                                             </Link>
                                             <div className="flex items-center space-x-2">
                                                 <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">Verified Performance</span>
@@ -235,8 +237,8 @@ export default function AdminDashboard() {
                                     </div>
                                     <div className="text-right flex items-center space-x-8">
                                         <div className="hidden md:block text-right">
-                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1.5">Efficiency Score</div>
-                                            <div className="text-xl font-black text-slate-900 tabular-nums">{(student.averageScore ?? 0).toFixed(1)}%</div>
+                                            <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1.5">Efficiency Score</div>
+                                            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">{(student.averageScore ?? 0).toFixed(1)}%</div>
                                         </div>
                                         <Link href={`/students/${student.id}`} className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90">
                                             <ArrowRight className="w-5 h-5" />
@@ -291,7 +293,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-indigo-600 to-purple-700 p-10 rounded-[56px] text-white shadow-2xl relative overflow-hidden group">
+                    <div className="bg-linear-to-br from-indigo-600 to-purple-700 p-10 rounded-[56px] text-white shadow-2xl relative overflow-hidden group">
                         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.1),transparent)]" />
                         <div className="relative z-10">
                             <div className="flex items-center justify-between mb-8">
@@ -303,7 +305,7 @@ export default function AdminDashboard() {
 
                             <div className="flex items-center -space-x-4">
                                 {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="w-12 h-12 rounded-2xl border-4 border-indigo-700 bg-slate-200 overflow-hidden shadow-2xl relative z-10 hover:-translate-y-2 transition-transform duration-500 cursor-pointer">
+                                    <div key={i} className="w-12 h-12 rounded-2xl border-4 border-indigo-700 bg-slate-200 overflow-hidden shadow-2xl relative z-10 transition-transform duration-500">
                                         <Image src={`https://i.pravatar.cc/100?u=${i + 10}`} alt="user" width={48} height={48} className="w-full h-full object-cover" />
                                     </div>
                                 ))}

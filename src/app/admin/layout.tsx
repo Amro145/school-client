@@ -1,6 +1,8 @@
 "use client";
 
+
 import Link from 'next/link';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { usePathname } from 'next/navigation';
 import {
     BarChart3,
@@ -32,7 +34,7 @@ const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'My Classes', href: '/admin/classes', icon: Users },
-    { name: 'My Students', href: '/admin/students', icon: GraduationCap },
+
 ];
 
 const studentItems = [
@@ -144,7 +146,8 @@ export default function AdminLayout({
                         </div>
 
                         <div className="flex items-center space-x-4">
-                            <div className="hidden sm:flex items-center bg-slate-100 rounded-2xl px-4 py-2 border border-slate-200/50">
+                            <ThemeToggle />
+                            <div className="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-slate-200/50 dark:border-slate-700">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
                                 <span className="text-xs font-bold text-slate-600">Active</span>
                             </div>
