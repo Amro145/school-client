@@ -5,7 +5,7 @@ export const runtime = 'edge';
 export default function NotFound() {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 text-slate-900 font-sans p-4">
-            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-100">
+            <div className=" p-8 rounded-2xl shadow-xl max-w-md w-full text-center border border-slate-100">
                 <h2 className="text-3xl font-black text-slate-900 mb-2">404 - Not Found</h2>
                 <p className="text-slate-500 font-medium mb-8">The page you are looking for does not exist or has been moved.</p>
                 <Link

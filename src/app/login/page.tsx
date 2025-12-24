@@ -52,7 +52,7 @@ export default function LoginPage() {
                     </Link>
                 </div>
 
-                <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-[48px] border border-white dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
+                <div className="/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-[48px] border border-white dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
                     <div className="px-10 py-12">
                         <div className="mb-10 text-center">
                             <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight mb-3">Portal Secure Login</h1>
@@ -80,7 +80,7 @@ export default function LoginPage() {
                                         required
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus: dark:focus:bg-slate-800 transition-all outline-none"
                                         placeholder="admin@edudash.edu"
                                     />
                                 </div>
@@ -100,7 +100,7 @@ export default function LoginPage() {
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus:bg-white dark:focus:bg-slate-800 transition-all outline-none"
+                                        className="block w-full pl-14 pr-6 py-5 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-[24px] text-slate-900 dark:text-white font-bold placeholder:text-slate-300 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 focus:border-blue-500 focus: dark:focus:bg-slate-800 transition-all outline-none"
                                         placeholder="••••••••••••"
                                     />
                                 </div>

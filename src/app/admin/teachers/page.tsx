@@ -82,7 +82,7 @@ export default function TeachersListPage() {
                 {teachers?.map((teacher, idx) => (
                     <div
                         key={teacher.id}
-                        className="bg-white rounded-[40px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 group overflow-hidden flex flex-col"
+                        className=" rounded-[40px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 group overflow-hidden flex flex-col"
                         style={{ animationDelay: `${idx * 150}ms` }}
                     >
                         <div className="p-10 flex-1">
@@ -108,13 +108,13 @@ export default function TeachersListPage() {
 
                             <div className="space-y-4 mb-10 bg-slate-50/50 p-6 rounded-3xl border border-slate-100/50">
                                 <div className="flex items-center text-slate-600 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
+                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
                                         <Mail className="w-4 h-4 text-slate-400 group-hover:text-purple-600" />
                                     </div>
                                     {teacher.email}
                                 </div>
                                 <div className="flex items-center text-slate-600 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl bg-white border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
+                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
                                         <GraduationCap className="w-4 h-4 text-slate-400 group-hover:text-purple-600" />
                                     </div>
                                     <span className="text-slate-900 mr-2">{teacher.subjectsTaught.length}</span> Specializations
@@ -137,7 +137,7 @@ export default function TeachersListPage() {
                                                 <Link
                                                     key={subject.id}
                                                     href={`/subjects/${subject.id}`}
-                                                    className="bg-white border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 cursor-pointer"
+                                                    className=" border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 cursor-pointer"
                                                 >
                                                     <span className="text-sm font-black text-slate-700 group-hover/tag:text-blue-600">{subject.name}</span>
                                                     {avgGrade !== null && (
@@ -158,9 +158,9 @@ export default function TeachersListPage() {
                         </div>
 
                         <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between glass">
-                            <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3 bg-white rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
+                            <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3  rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             <div className="flex items-center space-x-2">
-                                <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover:bg-white rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
+                                <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
                                 {user?.role === 'admin' && <DeleteActionButton userId={teacher.id} userName={teacher.userName} />}
                             </div>
                         </div>
@@ -169,7 +169,7 @@ export default function TeachersListPage() {
             </div>
 
             {teachers.length === 0 && !loading && (
-                <div className="p-32 text-center bg-white rounded-[64px] border-4 border-dashed border-slate-100 shadow-2xl relative overflow-hidden group">
+                <div className="p-32 text-center  rounded-[64px] border-4 border-dashed border-slate-100 shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-purple-50 rounded-full blur-[100px] opacity-50 group-hover:scale-150 transition-transform duration-1000" />
                     <div className="relative z-10">
                         <div className="w-32 h-32 bg-slate-50 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:rotate-12 transition-transform duration-500">

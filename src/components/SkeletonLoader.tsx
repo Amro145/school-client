@@ -58,7 +58,7 @@ export const CardSkeleton = ({ count = 4 }: { count?: number }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {Array.from({ length: count }).map((_, i) => (
-                <div key={i} className="p-8 bg-white rounded-[40px] border border-slate-100 flex flex-col space-y-4">
+                <div key={i} className="p-8  rounded-[40px] border border-slate-100 flex flex-col space-y-4">
                     <Skeleton variant="circle" className="w-12 h-12" />
                     <Skeleton variant="text" className="w-1/2 h-4" />
                     <Skeleton variant="text" className="w-3/4 h-8" />

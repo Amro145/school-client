@@ -65,7 +65,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                 </div>
                 <button className="relative group overflow-hidden opacity-50 cursor-not-allowed" title="Feature coming soon">
                     <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25"></div>
-                    <div className="relative bg-white dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 px-8 py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center shadow-lg uppercase tracking-widest leading-none">
+                    <div className="relative  dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 px-8 py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center shadow-lg uppercase tracking-widest leading-none">
                         <Printer className="w-5 h-5 mr-3" /> Print Report Card
                     </div>
                 </button>
@@ -74,7 +74,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Identity Card */}
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden p-8 text-center relative">
+                    <div className=" dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden p-8 text-center relative">
                         <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mx-auto flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 shadow-inner relative z-10">
                             <GraduationCap className="w-16 h-16" />
                         </div>
@@ -102,7 +102,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
 
                 {/* Performance Table */}
                 <div className="lg:col-span-2">
-                    <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden">
+                    <div className=" dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden">
                         <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
                             <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Academic Performance</h3>
                             <div className="flex items-center space-x-2">
@@ -160,7 +160,7 @@ function TeacherProfilePage({ currentTeacher }: { currentTeacher: Teacher }) {
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
             <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Faculty Profile</h1>
 
-            <div className="bg-white dark:bg-slate-900 rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-none overflow-hidden relative">
+            <div className=" dark:bg-slate-900 rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-none overflow-hidden relative">
                 {/* Decorative Background */}
                 <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-r from-purple-600 to-indigo-700"></div>
                 <div className="absolute top-0 right-0 p-10 opacity-10 text-white">
@@ -169,7 +169,7 @@ function TeacherProfilePage({ currentTeacher }: { currentTeacher: Teacher }) {
 
                 <div className="relative pt-24 px-10 pb-12">
                     <div className="flex flex-col md:flex-row items-end md:items-end gap-6 mb-8">
-                        <div className="w-32 h-32 bg-white dark:bg-slate-950 rounded-3xl p-2 shadow-2xl">
+                        <div className="w-32 h-32  dark:bg-slate-950 rounded-3xl p-2 shadow-2xl">
                             <div className="w-full h-full bg-slate-900 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-white text-4xl font-black uppercase">
                                 {currentTeacher.userName.substring(0, 2)}
                             </div>

@@ -75,7 +75,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 font-medium text-lg italic tracking-tight">Your academic progress is being tracked.</p>
                 </div>
-                <div className="flex items-center space-x-3 bg-white dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center space-x-3  dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                     <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
                         <Calendar className="w-5 h-5" />
                     </div>
@@ -122,7 +122,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         <Award className="w-24 h-24 text-white" />
                     </div>
                     <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 /10 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                             <Star className="w-6 h-6" />
                         </div>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Average Score</span>
@@ -152,9 +152,9 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         const grade = grades.find((g) => g.subject.id === subject.id);
 
                         return (
-                            <div key={subject.id} className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 hover:border-purple-200 dark:hover:border-purple-900/30 hover:shadow-xl transition-all group/card">
+                            <div key={subject.id} className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover: dark:hover:bg-slate-800 hover:border-purple-200 dark:hover:border-purple-900/30 hover:shadow-xl transition-all group/card">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center font-black text-purple-600 dark:text-purple-400 shadow-sm group-hover/card:rotate-12 transition-transform">
+                                    <div className="w-10 h-10  dark:bg-slate-800 rounded-xl flex items-center justify-center font-black text-purple-600 dark:text-purple-400 shadow-sm group-hover/card:rotate-12 transition-transform">
                                         {subject.name.charAt(0)}
                                     </div>
                                     {grade && (
@@ -220,7 +220,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium text-lg italic tracking-tight">System online. Your educational impact is currently being monitored.</p>
                 </div>
-                <div className="flex items-center space-x-3 bg-white dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center space-x-3  dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm">
                     <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400">
                         <Calendar className="w-5 h-5" />
                     </div>
@@ -263,7 +263,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         <TrendingUp className="w-24 h-24 text-white" />
                     </div>
                     <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 /10 rounded-2xl flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
                             <Star className="w-6 h-6" />
                         </div>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate</span>
@@ -288,9 +288,9 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         {subjects.slice(0, 3).map(subject => {
                             const enrollment = subject.grades.length;
                             return (
-                                <Link key={subject.id} href={`/subjects/${subject.id}`} className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-800 hover:border-purple-200 dark:hover:border-purple-900/30 hover:shadow-xl transition-all group/card">
+                                <Link key={subject.id} href={`/subjects/${subject.id}`} className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover: dark:hover:bg-slate-800 hover:border-purple-200 dark:hover:border-purple-900/30 hover:shadow-xl transition-all group/card">
                                     <div className="flex items-center justify-between mb-4">
-                                        <div className="w-10 h-10 bg-white dark:bg-slate-800 rounded-xl flex items-center justify-center font-black text-purple-600 dark:text-purple-400 shadow-sm group-hover/card:rotate-12 transition-transform">
+                                        <div className="w-10 h-10  dark:bg-slate-800 rounded-xl flex items-center justify-center font-black text-purple-600 dark:text-purple-400 shadow-sm group-hover/card:rotate-12 transition-transform">
                                             {subject.name.charAt(0)}
                                         </div>
                                     </div>

@@ -80,7 +80,7 @@ export default function AdminLayout({
             <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex group/sidebar transition-colors duration-300">
                 {/* Sidebar - Desktop */}
                 <aside className="hidden md:flex flex-col fixed h-full z-30">
-                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0  dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
                         <div className="flex flex-col items-center group-hover/sidebar:items-start px-0 group-hover/sidebar:px-6 py-10 transition-all duration-300">
                             <Link href="/admin" className="flex items-center group/logo overflow-hidden">
                                 <div className="min-w-[50px] w-[50px] h-[50px] bg-blue-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover/logo:scale-105 transition-transform duration-300">
@@ -133,7 +133,7 @@ export default function AdminLayout({
                 {/* Main Content */}
                 <main className="grow md:ml-20 group-hover/sidebar:md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
                     {/* Header - Glass Effect */}
-                    <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 px-6 py-5 md:px-10 flex items-center justify-between transition-colors duration-300">
+                    <header className="sticky top-0 z-40 /80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 px-6 py-5 md:px-10 flex items-center justify-between transition-colors duration-300">
                         <div className="flex items-center">
                             <div className="hidden md:block">
                                 <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
@@ -170,7 +170,7 @@ export default function AdminLayout({
                         <div className="fixed inset-0 z-50 md:hidden overflow-hidden" onClick={() => setIsMobileMenuOpen(false)}>
                             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" />
                             <div
-                                className="absolute inset-y-0 left-0 w-[280px] bg-white dark:bg-slate-950 shadow-2xl flex flex-col animate-in slide-in-from-left duration-500 rounded-r-[40px] border-r border-slate-100 dark:border-slate-800"
+                                className="absolute inset-y-0 left-0 w-[280px]  dark:bg-slate-950 shadow-2xl flex flex-col animate-in slide-in-from-left duration-500 rounded-r-[40px] border-r border-slate-100 dark:border-slate-800"
                                 onClick={e => e.stopPropagation()}
                             >
                                 <div className="p-8 flex items-center justify-between border-b border-slate-50 dark:border-slate-800">

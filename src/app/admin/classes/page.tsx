@@ -41,7 +41,7 @@ export default function ClassesListPage() {
                         <div className="h-4 w-96 bg-slate-100 animate-pulse rounded-lg" />
                     </div>
                 </div>
-                <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
+                <div className=" rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
                     <TableSkeleton rows={5} />
                 </div>
             </div>
@@ -88,7 +88,7 @@ export default function ClassesListPage() {
                 )}
             </div>
 
-            <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+            <div className=" rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left">
                         <thead>

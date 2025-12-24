@@ -57,10 +57,10 @@ export default function StudentProfilePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 <div className="lg:col-span-1 space-y-8">
-                    <div className="bg-white p-10 rounded-[56px] border border-slate-100 shadow-sm text-center relative overflow-hidden group">
+                    <div className=" p-10 rounded-[56px] border border-slate-100 shadow-sm text-center relative overflow-hidden group">
                         <div className="absolute top-0 left-0 w-full h-32 bg-linear-to-br from-blue-600 to-indigo-700"></div>
                         <div className="relative z-10 pt-16">
-                            <div className="w-32 h-32 rounded-[40px] bg-white border-8 border-slate-50 flex items-center justify-center text-5xl font-black text-blue-600 mx-auto shadow-2xl group-hover:rotate-6 transition-transform">
+                            <div className="w-32 h-32 rounded-[40px]  border-8 border-slate-50 flex items-center justify-center text-5xl font-black text-blue-600 mx-auto shadow-2xl group-hover:rotate-6 transition-transform">
                                 {currentStudent.userName.charAt(0)}
                             </div>
                             <h2 className="mt-8 text-3xl font-black text-slate-900 leading-tight capitalize">{currentStudent.userName}</h2>
@@ -91,7 +91,7 @@ export default function StudentProfilePage() {
                             <TrendingUp className="w-12 h-12 text-blue-500 mx-auto mb-6" />
                             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Success Rate Metric</h3>
                             <div className="text-6xl font-black tracking-tighter tabular-nums mb-4">{successRate}</div>
-                            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                            <div className="w-full h-2 /5 rounded-full overflow-hidden">
                                 <motion.div
                                     initial={{ width: 0 }}
                                     animate={{ width: `${avgScore}%` }}
@@ -104,7 +104,7 @@ export default function StudentProfilePage() {
                     </div>
                 </div>
 
-                <div className="lg:col-span-2 bg-white p-12 rounded-[56px] border border-slate-100 shadow-sm glass">
+                <div className="lg:col-span-2  p-12 rounded-[56px] border border-slate-100 shadow-sm glass">
                     <div className="flex items-center justify-between mb-12">
                         <h3 className="text-3xl font-black text-slate-900 tracking-tight flex items-center">
                             <Award className="w-8 h-8 mr-4 text-amber-500" />
@@ -120,10 +120,10 @@ export default function StudentProfilePage() {
                                 initial={{ opacity: 0, x: 20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: idx * 0.1 }}
-                                className="flex items-center justify-between p-8 bg-slate-50/50 rounded-[32px] border border-transparent hover:border-slate-100 hover:bg-white hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group"
+                                className="flex items-center justify-between p-8 bg-slate-50/50 rounded-[32px] border border-transparent hover:border-slate-100 hover: hover:shadow-2xl hover:shadow-slate-200/50 transition-all duration-500 group"
                             >
                                 <div className="flex items-center space-x-8">
-                                    <div className="w-16 h-16 bg-white border border-slate-100 rounded-[24px] flex items-center justify-center text-blue-600 shadow-sm group-hover:rotate-6 transition-transform">
+                                    <div className="w-16 h-16  border border-slate-100 rounded-[24px] flex items-center justify-center text-blue-600 shadow-sm group-hover:rotate-6 transition-transform">
                                         <BookOpen className="w-8 h-8" />
                                     </div>
                                     <div>

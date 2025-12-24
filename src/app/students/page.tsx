@@ -172,7 +172,7 @@ export default function StudentsPage() {
                 )}
             </div>
 
-            <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+            <div className="rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="p-8 border-b border-slate-50 relative group glass">
                     <div className="absolute left-14 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
                         {loading && searchTerm !== debouncedSearch ? <Loader2 className="w-6 h-6 animate-spin text-blue-500" /> : <Search className="w-6 h-6" />}
@@ -182,7 +182,7 @@ export default function StudentsPage() {
                         placeholder="Scan directory by name, ID or email index..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
+                        className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus: focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
                     />
                 </div>
 
@@ -239,7 +239,7 @@ export default function StudentsPage() {
                                             <td className="px-10 py-8">
                                                 <div className="flex justify-center">
                                                     {student.class ? (
-                                                        <span className="flex items-center text-slate-900 font-black bg-white border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit">
+                                                        <span className="flex items-center text-slate-900 font-black  border border-slate-100 shadow-sm px-4 py-2 rounded-2xl w-fit">
                                                             <div className="w-2 h-2 rounded-full bg-blue-600 mr-3" />
                                                             {student.class.name}
                                                         </span>
@@ -260,7 +260,7 @@ export default function StudentsPage() {
                                                     <div className={`relative px-6 py-3 rounded-2xl border ${styles.bg} ${styles.border} ${styles.glow} min-w-[140px] transition-all duration-500`}>
                                                         <div className="flex flex-col items-center relative z-10">
                                                             <span className={`text-2xl font-black tabular-nums ${styles.text}`}>
-                                                                {successRate}%
+                                                                {successRate}
                                                             </span>
                                                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avg Performance</span>
                                                         </div>
@@ -293,8 +293,8 @@ export default function StudentsPage() {
                             Showing Page {currentPage} of {totalPages} ({totalStudentsCount} records)
                         </div>
                         <div className="flex items-center space-x-2">
-                            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="p-2 bg-white rounded-lg disabled:opacity-50"><ChevronLeft className="w-4 h-4" /></button>
-                            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="p-2 bg-white rounded-lg disabled:opacity-50"><ChevronRight className="w-4 h-4" /></button>
+                            <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="p-2  rounded-lg disabled:opacity-50"><ChevronLeft className="w-4 h-4" /></button>
+                            <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="p-2  rounded-lg disabled:opacity-50"><ChevronRight className="w-4 h-4" /></button>
                         </div>
                     </div>
                 )}

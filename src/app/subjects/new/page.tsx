@@ -97,10 +97,10 @@ export default function CreateSubjectPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" /> Back to Subjects
             </Link>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
+            <div className=" rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
                 <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
                     <div className="flex items-center space-x-4">
-                        <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
+                        <div className="w-14 h-14 /20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
                             <BarChart3 className="text-white w-7 h-7" />
                         </div>
                         <div>
@@ -132,7 +132,7 @@ export default function CreateSubjectPage() {
                                     <select
                                         value={formData.classId}
                                         onChange={(e) => setFormData({ ...formData, classId: e.target.value })}
-                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all  appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
                                         required
                                         disabled={submitting || isLoadingData}
                                     >
@@ -153,7 +153,7 @@ export default function CreateSubjectPage() {
                                     <select
                                         value={formData.teacherId}
                                         onChange={(e) => setFormData({ ...formData, teacherId: e.target.value })}
-                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all bg-white appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
+                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all  appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
                                         required
                                         disabled={submitting || isLoadingData}
                                     >

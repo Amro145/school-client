@@ -56,7 +56,7 @@ export default function CreateClassPage() {
                 <ArrowLeft className="w-4 h-4 mr-2" /> Back to Classes
             </Link>
 
-            <div className="bg-white rounded-3xl border border-slate-100 shadow-xl p-8 md:p-12">
+            <div className=" rounded-3xl border border-slate-100 shadow-xl p-8 md:p-12">
                 <div className="flex items-center space-x-4 mb-10">
                     <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
                         <BookOpen className="text-blue-600 w-6 h-6" />

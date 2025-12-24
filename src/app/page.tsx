@@ -36,7 +36,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white selection:bg-blue-100">
+    <div className="min-h-screen  selection:bg-blue-100">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
         {/* Animated Background Elements */}
@@ -75,7 +75,7 @@ export default function LandingPage() {
             {roles.map((role) => (
               <div
                 key={role.title}
-                className={`group flex flex-col p-8 rounded-[40px] border border-slate-100 bg-white/50 backdrop-blur-xl transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:-translate-y-2`}
+                className={`group flex flex-col p-8 rounded-[40px] border border-slate-100 /50 backdrop-blur-xl transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] hover:-translate-y-2`}
               >
                 <div className="mb-8 flex justify-center transform group-hover:scale-110 transition-transform duration-500">
                   <div className={`p-5 rounded-3xl ${role.color.split(' ')[0]} shadow-inner`}>

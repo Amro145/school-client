@@ -56,7 +56,7 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Subjects Section */}
                 <div className="lg:col-span-2 space-y-10">
-                    <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden p-8">
+                    <div className=" rounded-[40px] border border-slate-100 shadow-sm overflow-hidden p-8">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl font-black text-slate-900 flex items-center">
                                 <BookOpen className="w-6 h-6 mr-3 text-blue-500" />
@@ -70,9 +70,9 @@ export default async function ClassDetailPage({ params }: { params: Promise<{ id
                                 const rate = calculateSuccessRate(subjectGrades);
 
                                 return (
-                                    <div key={subject.id} className="p-6 bg-slate-50 rounded-3xl border border-slate-100/50 hover:bg-white hover:border-blue-200 hover:shadow-xl transition-all group">
+                                    <div key={subject.id} className="p-6 bg-slate-50 rounded-3xl border border-slate-100/50 hover: hover:border-blue-200 hover:shadow-xl transition-all group">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center font-black text-blue-600 shadow-sm">
+                                            <div className="w-10 h-10  rounded-xl flex items-center justify-center font-black text-blue-600 shadow-sm">
                                                 {subject.name.charAt(0)}
                                             </div>
                                             <div className="text-right">
@@ -153,7 +153,7 @@ function StudentRow({ student, subjects }: { student: StudentData, subjects: Sub
     const studentRate = calculateSuccessRate(Object.values(student.grades));
 
     return (
-        <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
+        <div className=" rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className={`p-6 flex items-center justify-between cursor-pointer hover:bg-slate-50/50 transition-colors ${isOpen ? 'bg-slate-50/50' : ''}`}
@@ -179,7 +179,7 @@ function StudentRow({ student, subjects }: { student: StudentData, subjects: Sub
             </div>
 
             {isOpen && (
-                <div className="p-8 border-t border-slate-100 bg-white animate-in slide-in-from-top-4 duration-300">
+                <div className="p-8 border-t border-slate-100  animate-in slide-in-from-top-4 duration-300">
                     <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Course Metrics</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {subjects.map(subject => {
@@ -188,7 +188,7 @@ function StudentRow({ student, subjects }: { student: StudentData, subjects: Sub
                                 <div key={subject.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100/50">
                                     <span className="font-bold text-slate-600 text-sm uppercase tracking-tight">{subject.name}</span>
                                     <div className="flex items-center space-x-4">
-                                        <div className="w-24 h-1.5 bg-white rounded-full overflow-hidden border border-slate-100">
+                                        <div className="w-24 h-1.5  rounded-full overflow-hidden border border-slate-100">
                                             <div className="h-full bg-blue-500 rounded-full" style={{ width: `${grade}%` }} />
                                         </div>
                                         <span className="text-sm font-black tabular-nums text-slate-900">{grade}%</span>

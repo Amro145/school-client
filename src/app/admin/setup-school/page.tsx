@@ -57,7 +57,7 @@ export default function SetupSchoolPage() {
                 </div>
 
                 {/* Form Card */}
-                <div className="bg-white rounded-[32px] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
+                <div className=" rounded-[32px] shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
                     <div className="p-8 sm:p-10">
                         {error && (
                             <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center space-x-3 text-red-600 text-sm font-bold animate-in slide-in-from-top-2">
@@ -80,7 +80,7 @@ export default function SetupSchoolPage() {
                                         value={schoolName}
                                         onChange={(e) => setSchoolName(e.target.value)}
                                         placeholder="e.g. Prestige International Academy"
-                                        className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus:bg-white focus:border-blue-500 transition-all font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
+                                        className="w-full pl-14 pr-6 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-100 focus: focus:border-blue-500 transition-all font-bold text-slate-900 placeholder:text-slate-300 placeholder:font-medium"
                                         required
                                         disabled={submitting}
                                     />

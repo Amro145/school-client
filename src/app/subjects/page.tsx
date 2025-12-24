@@ -107,7 +107,7 @@ export default function SubjectsPage() {
 
             {/* Search Bar Shared */}
             {isAdmin ? (
-                <div className="bg-white rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+                <div className=" rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
                     <div className="p-8 border-b border-slate-50 relative group glass">
                         <div className="absolute left-14 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors">
                             <Search className="w-6 h-6" />
@@ -117,7 +117,7 @@ export default function SubjectsPage() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Scan curriculum by subject name, faculty lead or academic class..."
-                            className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus:bg-white focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
+                            className="w-full pl-16 pr-8 py-6 bg-slate-50/50 rounded-3xl border border-transparent focus:border-blue-100 focus: focus:ring-4 focus:ring-blue-50 placeholder:text-slate-300 transition-all font-bold text-slate-900 outline-none"
                         />
                     </div>
 
@@ -181,7 +181,7 @@ export default function SubjectsPage() {
                                                 </td>
                                                 <td className="px-10 py-8">
                                                     {subject.class ? (
-                                                        <div className="inline-flex items-center px-4 py-2 bg-white border border-slate-100 shadow-sm rounded-2xl font-black text-sm text-blue-600">
+                                                        <div className="inline-flex items-center px-4 py-2  border border-slate-100 shadow-sm rounded-2xl font-black text-sm text-blue-600">
                                                             <Layers className="w-4 h-4 mr-2.5 text-blue-600" />
                                                             {subject.class.name}
                                                         </div>
@@ -246,10 +246,10 @@ export default function SubjectsPage() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search modules or cohorts..."
-                                className="block w-full pl-12 pr-4 py-3 bg-white border border-slate-200 rounded-2xl text-slate-900 font-bold placeholder:text-slate-400 focus:ring-4 focus:ring-purple-50 focus:border-purple-200 transition-all outline-none shadow-sm"
+                                className="block w-full pl-12 pr-4 py-3  border border-slate-200 rounded-2xl text-slate-900 font-bold placeholder:text-slate-400 focus:ring-4 focus:ring-purple-50 focus:border-purple-200 transition-all outline-none shadow-sm"
                             />
                         </div>
-                        <button className="p-3 bg-white border border-slate-200 rounded-2xl text-slate-500 hover:text-purple-600 hover:border-purple-200 transition-all shadow-sm active:scale-95">
+                        <button className="p-3  border border-slate-200 rounded-2xl text-slate-500 hover:text-purple-600 hover:border-purple-200 transition-all shadow-sm active:scale-95">
                             <Filter className="w-5 h-5" />
                         </button>
                     </div>
@@ -259,7 +259,7 @@ export default function SubjectsPage() {
                             const enrollment = subject.grades.length;
 
                             return (
-                                <Link key={subject.id} href={`/subjects/${subject.id}`} className="group relative bg-white p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:border-purple-200 transition-all duration-300 overflow-hidden">
+                                <Link key={subject.id} href={`/subjects/${subject.id}`} className="group relative  p-8 rounded-[40px] border border-slate-100 shadow-sm hover:shadow-xl hover:border-purple-200 transition-all duration-300 overflow-hidden">
                                     <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
                                         <BookOpen className="w-32 h-32" />
                                     </div>
@@ -283,7 +283,7 @@ export default function SubjectsPage() {
                                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Enrolled</span>
                                                 <span className="text-xl font-black text-slate-900 tabular-nums">{enrollment}</span>
                                             </div>
-                                            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-purple-600 group-hover:text-white transition-all transform group-hover:-rotate-45">
+                                            <div className="w-10 h-10 rounded-full  flex items-center justify-center text-slate-400 group-hover:bg-purple-600 group-hover:text-white transition-all transform group-hover:-rotate-45">
                                                 <ArrowRight className="w-5 h-5" />
                                             </div>
                                         </div>

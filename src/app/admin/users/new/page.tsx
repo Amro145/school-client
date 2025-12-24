@@ -91,19 +91,19 @@ export default function CreateUserPage() {
         <div className="max-w-4xl mx-auto space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <Link
                 href="/admin"
-                className="inline-flex items-center space-x-3 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
+                className="inline-flex items-center space-x-3 px-6 py-3  dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 <span>Return to Intelligence Hub</span>
             </Link>
 
-            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className=" dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="relative h-40 bg-slate-900 flex items-center px-12 overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] -mr-32 -mt-32" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-[80px] -ml-20 -mb-20" />
 
                     <div className="relative z-10 flex items-center space-x-6">
-                        <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
+                        <div className="w-20 h-20 /10 backdrop-blur-xl rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
                             <UserPlus className="w-10 h-10 text-white" />
                         </div>
                         <div>
@@ -129,7 +129,7 @@ export default function CreateUserPage() {
                                     value={formData.userName}
                                     onChange={handleChange}
                                     placeholder="Enter full legal name..."
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
@@ -148,7 +148,7 @@ export default function CreateUserPage() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="node@institutional-domain.com"
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
@@ -167,7 +167,7 @@ export default function CreateUserPage() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••••••"
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
@@ -183,7 +183,7 @@ export default function CreateUserPage() {
                                     name="role"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="student">STUDENT NODE</option>
                                     <option value="teacher">INSTRUCTOR NODE</option>
@@ -203,7 +203,7 @@ export default function CreateUserPage() {
                                     name="classId"
                                     value={formData.classId}
                                     onChange={handleChange}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                     disabled={loading && classRooms.length === 0}
                                 >
                                     <option value="">AWAITING Curricular MAPPING (NO CLASS)</option>

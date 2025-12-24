@@ -42,7 +42,7 @@ export default function TeacherDetailPage() {
         return (
             <div className="space-y-12 pb-20">
                 <div className="flex items-center space-x-2 px-4 py-2 w-32 bg-slate-100 animate-pulse rounded-xl h-8" />
-                <div className="bg-white p-12 rounded-[40px] border border-slate-100 shadow-sm flex gap-10">
+                <div className=" p-12 rounded-[40px] border border-slate-100 shadow-sm flex gap-10">
                     <div className="w-32 h-32 bg-slate-200 animate-pulse rounded-[32px]" />
                     <div className="flex-1 space-y-4">
                         <div className="h-4 w-32 bg-slate-100 animate-pulse rounded-lg" />
@@ -55,7 +55,7 @@ export default function TeacherDetailPage() {
                 </div>
                 <div className="space-y-6">
                     <div className="h-8 w-48 bg-slate-200 animate-pulse rounded-lg ml-2" />
-                    <div className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
+                    <div className=" rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
                         <TableSkeleton rows={3} />
                     </div>
                 </div>
@@ -65,7 +65,7 @@ export default function TeacherDetailPage() {
 
     if (error) {
         return (
-            <div className="max-w-2xl mx-auto mt-12 bg-white border border-rose-100 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
+            <div className="max-w-2xl mx-auto mt-12  border border-rose-100 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
                 <div className="p-6 bg-rose-50 rounded-[32px]">
                     <AlertCircle className="w-12 h-12 text-rose-500" />
                 </div>
@@ -99,14 +99,14 @@ export default function TeacherDetailPage() {
         <div className="space-y-10 animate-in fade-in transition-all duration-700 pb-20">
             <Link
                 href="/admin/teachers"
-                className="inline-flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-blue-600 hover:border-blue-200 font-bold text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
+                className="inline-flex items-center space-x-2 px-4 py-2  border border-slate-200 rounded-xl text-slate-500 hover:text-blue-600 hover:border-blue-200 font-bold text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Faculty Directory</span>
             </Link>
 
             {/* Teacher Header Section */}
-            <div className="bg-white p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center md:items-start gap-10">
+            <div className=" p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center md:items-start gap-10">
                 <div className="w-32 h-32 bg-linear-to-br from-blue-600 to-indigo-700 rounded-[32px] flex items-center justify-center text-white shadow-xl shadow-blue-500/20 transform hover:scale-105 transition-transform duration-500">
                     <span className="text-4xl font-black italic">{currentTeacher.userName.substring(0, 2).toUpperCase()}</span>
                 </div>
@@ -155,13 +155,13 @@ export default function TeacherDetailPage() {
                         const isExpanded = expandedSubjectId === subject.id;
 
                         return (
-                            <div key={subject.id} className="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
+                            <div key={subject.id} className=" rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
                                 <div
                                     onClick={() => setExpandedSubjectId(isExpanded ? null : subject.id)}
                                     className={`p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-slate-50/50 transition-colors ${isExpanded ? 'bg-slate-50/50' : ''}`}
                                 >
                                     <div className="flex items-center space-x-6">
-                                        <div className="w-14 h-14 bg-white border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm group-hover:scale-110 transition-transform">
+                                        <div className="w-14 h-14  border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm group-hover:scale-110 transition-transform">
                                             <Trophy className="w-6 h-6 text-amber-500" />
                                         </div>
                                         <div>
@@ -183,7 +183,7 @@ export default function TeacherDetailPage() {
                                 </div>
 
                                 {isExpanded && (
-                                    <div className="p-8 border-t border-slate-100 bg-white animate-in slide-in-from-top-4 duration-300">
+                                    <div className="p-8 border-t border-slate-100  animate-in slide-in-from-top-4 duration-300">
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left">
                                                 <thead>
