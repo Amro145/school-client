@@ -63,18 +63,18 @@ export default function AdminDashboard() {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-2xl mx-auto mt-12 bg-white border border-rose-100 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8"
+                className="max-w-2xl mx-auto mt-12 bg-white dark:bg-slate-900 border border-rose-100 dark:border-rose-900/30 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8"
             >
-                <div className="p-6 bg-rose-50 rounded-[32px]">
+                <div className="p-6 bg-rose-50 dark:bg-rose-900/20 rounded-[32px]">
                     <AlertCircle className="w-12 h-12 text-rose-500" />
                 </div>
                 <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-slate-900 leading-tight">Sync Protocol Failure</h3>
-                    <p className="text-slate-500 font-medium text-lg leading-relaxed">{error}</p>
+                    <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-tight">Sync Protocol Failure</h3>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-lg leading-relaxed">{error}</p>
                 </div>
                 <button
                     onClick={() => dispatch(fetchAdminDashboardData())}
-                    className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black hover:bg-rose-700 transition-all active:scale-95 shadow-lg shadow-rose-200 uppercase tracking-widest text-xs"
+                    className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black hover:bg-rose-700 transition-all active:scale-95 shadow-lg shadow-rose-200 dark:shadow-rose-900/20 uppercase tracking-widest text-xs"
                 >
                     Attempt Re-Link
                 </button>
@@ -142,14 +142,14 @@ export default function AdminDashboard() {
                         animate={{ opacity: 1, x: 0 }}
                         className="flex items-center space-x-3 mb-3"
                     >
-                        <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">Mainframe Console</span>
+                        <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">Mainframe Console</span>
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     </motion.div>
                     <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">Intelligence Hub</h1>
                     <p className="text-slate-500 dark:text-slate-400 mt-4 font-medium text-lg italic">Accessing real-time institutional analytics...</p>
                 </div>
-                <div className="flex items-center space-x-3 bg-white dark:bg-slate-900 p-2 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 glass">
-                    <div className="px-6 py-2.5 bg-slate-950 dark:bg-slate-700 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl">Live Metrics</div>
+                <div className="flex items-center space-x-3 bg-white dark:bg-slate-950 p-2 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 glass">
+                    <div className="px-6 py-2.5 bg-slate-950 dark:bg-slate-800 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl">Live Metrics</div>
                     <Link href="/students" className="px-6 py-2.5 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors">Directory Access</Link>
                 </div>
             </div>
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
                     <motion.div
                         key={stat.name}
                         variants={itemVariants}
-                        className={`group relative overflow-hidden p-8 rounded-[40px] border border-slate-100 bg-white shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 cursor-pointer`}
+                        className={`group relative overflow-hidden p-8 rounded-[40px] border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 cursor-pointer`}
                     >
                         <div className={`absolute -right-8 -top-8 w-32 h-32 bg-${stat.color}-500/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700`} />
                         <div className="relative z-10">
@@ -182,7 +182,7 @@ export default function AdminDashboard() {
                 {/* Leaderboard Section */}
                 <motion.div
                     variants={itemVariants}
-                    className="lg:col-span-2 bg-white p-10 rounded-[56px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] glass"
+                    className="lg:col-span-2 bg-white dark:bg-slate-950 p-10 rounded-[56px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] glass"
                 >
                     <div className="flex items-center justify-between mb-12">
                         <div className="flex items-center space-x-6">
@@ -216,12 +216,12 @@ export default function AdminDashboard() {
                                 >
                                     <div className="flex items-center space-x-6">
                                         <div className="relative">
-                                            <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center border border-slate-100 text-xl font-black text-blue-600 shadow-sm group-hover:rotate-6 transition-transform">
+                                            <div className="w-14 h-14 rounded-2xl bg-white dark:bg-slate-900 flex items-center justify-center border border-slate-100 dark:border-slate-800 text-xl font-black text-blue-600 dark:text-blue-400 shadow-sm group-hover:rotate-6 transition-transform">
                                                 {student.userName.charAt(0)}
                                             </div>
                                             <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black shadow-lg ${idx === 0 ? 'bg-amber-400 text-amber-900' :
                                                 idx === 1 ? 'bg-slate-300 text-slate-700' :
-                                                    idx === 2 ? 'bg-orange-400 text-orange-900' : 'bg-slate-100 text-slate-400'
+                                                    idx === 2 ? 'bg-orange-400 text-orange-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                                                 }`}>
                                                 #{idx + 1}
                                             </div>
@@ -231,16 +231,16 @@ export default function AdminDashboard() {
                                                 <h4 className="text-xl font-black text-slate-900 dark:text-white leading-none mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer capitalize">{student.userName}</h4>
                                             </Link>
                                             <div className="flex items-center space-x-2">
-                                                <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">Verified Performance</span>
+                                                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">Verified Performance</span>
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right flex items-center space-x-8">
                                         <div className="hidden md:block text-right">
                                             <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1.5">Efficiency Score</div>
-                                            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">{(student.averageScore ?? 0).toFixed(1)}%</div>
+                                            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">{Number((student.averageScore ?? 0).toFixed(1))}%</div>
                                         </div>
-                                        <Link href={`/students/${student.id}`} className="p-3 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90">
+                                        <Link href={`/students/${student.id}`} className="p-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all active:scale-90">
                                             <ArrowRight className="w-5 h-5" />
                                         </Link>
                                     </div>
@@ -248,9 +248,9 @@ export default function AdminDashboard() {
                             );
                         })}
                         {topStudents.length === 0 && (
-                            <div className="text-center py-20 bg-slate-50 rounded-[48px] border-2 border-dashed border-slate-200">
-                                <GraduationCap className="w-16 h-16 text-slate-200 mx-auto mb-4" />
-                                <p className="text-slate-400 font-bold italic">Awaiting Academic Performance Data streams...</p>
+                            <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/20 rounded-[48px] border-2 border-dashed border-slate-200 dark:border-slate-800/50">
+                                <GraduationCap className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                                <p className="text-slate-400 dark:text-slate-500 font-bold italic">Awaiting Academic Performance Data streams...</p>
                             </div>
                         )}
                     </div>
@@ -293,7 +293,7 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    
+
                 </motion.div>
             </div>
         </motion.div>

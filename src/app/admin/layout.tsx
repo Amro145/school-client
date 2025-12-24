@@ -77,18 +77,18 @@ export default function AdminLayout({
 
     return (
         <ProtectedRoute>
-            <div className="min-h-screen bg-[#f8fafc] flex group/sidebar">
+            <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex group/sidebar transition-colors duration-300">
                 {/* Sidebar - Desktop */}
                 <aside className="hidden md:flex flex-col fixed h-full z-30">
-                    <div className="flex-1 flex flex-col min-h-0 bg-white border-r border-slate-200/60 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
+                    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
                         <div className="flex flex-col items-center group-hover/sidebar:items-start px-0 group-hover/sidebar:px-6 py-10 transition-all duration-300">
                             <Link href="/admin" className="flex items-center group/logo overflow-hidden">
                                 <div className="min-w-[50px] w-[50px] h-[50px] bg-blue-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover/logo:scale-105 transition-transform duration-300">
                                     <ShieldCheck className="text-white w-7 h-7" />
                                 </div>
                                 <div className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">
-                                    <span className="block text-xl font-black text-slate-900 tracking-tighter leading-none">EDUDASH</span>
-                                    <span className="text-[9px] font-bold text-blue-600 uppercase tracking-widest mt-1 block">
+                                    <span className="block text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">EDUDASH</span>
+                                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">
                                         {user?.role === 'teacher' ? 'Teacher' : 'Admin'}
                                     </span>
                                 </div>
@@ -104,11 +104,11 @@ export default function AdminLayout({
                                         href={item.href}
                                         className={`flex items-center px-4 py-4 rounded-2xl font-bold transition-all duration-300 group ${isActive
                                             ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/25'
-                                            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                                            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
                                             }`}
                                     >
                                         <div className="min-w-[20px] flex items-center justify-center">
-                                            <item.icon className={`w-6 h-6 transition-colors ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-900'}`} />
+                                            <item.icon className={`w-6 h-6 transition-colors ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white'}`} />
                                         </div>
                                         <span className="ml-4 tracking-tight opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">{item.name}</span>
                                     </Link>
@@ -116,10 +116,10 @@ export default function AdminLayout({
                             })}
                         </nav>
 
-                        <div className="px-3 group-hover/sidebar:px-4 py-6 border-t border-slate-100">
+                        <div className="px-3 group-hover/sidebar:px-4 py-6 border-t border-slate-100 dark:border-slate-800">
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center px-4 py-4 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all duration-300 group font-bold"
+                                className="w-full flex items-center px-4 py-4 text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 group font-bold"
                             >
                                 <div className="min-w-[24px] flex items-center justify-center">
                                     <LogOut className="w-5 h-5" />
@@ -133,13 +133,13 @@ export default function AdminLayout({
                 {/* Main Content */}
                 <main className="grow md:ml-20 group-hover/sidebar:md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
                     {/* Header - Glass Effect */}
-                    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-slate-200/50 px-6 py-5 md:px-10 flex items-center justify-between">
+                    <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 px-6 py-5 md:px-10 flex items-center justify-between transition-colors duration-300">
                         <div className="flex items-center">
                             <div className="hidden md:block">
-                                <h2 className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+                                <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                                     {user?.role === 'teacher' ? 'Academic Hub' : 'Management Overview'}
                                 </h2>
-                                <p className="text-lg font-bold text-slate-900 tracking-tight">
+                                <p className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                                     {user?.role === 'teacher' ? 'Evaluation Terminal' : 'System Terminal'}
                                 </p>
                             </div>
@@ -149,9 +149,9 @@ export default function AdminLayout({
                             <ThemeToggle />
                             <div className="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800 rounded-2xl px-4 py-2 border border-slate-200/50 dark:border-slate-700">
                                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-3" />
-                                <span className="text-xs font-bold text-slate-600">Active</span>
+                                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Active</span>
                             </div>
-                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
+                            <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 dark:from-slate-700 dark:to-slate-900 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
                                 {user?.userName.substring(0, 2) || 'AD'}
                             </div>
                         </div>
@@ -170,20 +170,20 @@ export default function AdminLayout({
                         <div className="fixed inset-0 z-50 md:hidden overflow-hidden" onClick={() => setIsMobileMenuOpen(false)}>
                             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300" />
                             <div
-                                className="absolute inset-y-0 left-0 w-[280px] bg-white shadow-2xl flex flex-col animate-in slide-in-from-left duration-500 rounded-r-[40px] border-r border-slate-100"
+                                className="absolute inset-y-0 left-0 w-[280px] bg-white dark:bg-slate-950 shadow-2xl flex flex-col animate-in slide-in-from-left duration-500 rounded-r-[40px] border-r border-slate-100 dark:border-slate-800"
                                 onClick={e => e.stopPropagation()}
                             >
-                                <div className="p-8 flex items-center justify-between border-b border-slate-50">
+                                <div className="p-8 flex items-center justify-between border-b border-slate-50 dark:border-slate-800">
                                     <div className="flex items-center">
                                         <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                                             <ShieldCheck className="text-white w-7 h-7" />
                                         </div>
                                         <div className="ml-4 text-left">
-                                            <span className="block text-xl font-black text-slate-900 tracking-tighter">EDUDASH</span>
-                                            <span className="text-[9px] font-bold text-blue-600 uppercase tracking-widest block">Portal Access</span>
+                                            <span className="block text-xl font-black text-slate-900 dark:text-white tracking-tighter">EDUDASH</span>
+                                            <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest block">Portal Access</span>
                                         </div>
                                     </div>
-                                    <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center active:scale-90 transition-transform"><X className="w-5 h-5 text-slate-500" /></button>
+                                    <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 bg-slate-50 dark:bg-slate-900 rounded-xl flex items-center justify-center active:scale-90 transition-transform"><X className="w-5 h-5 text-slate-500" /></button>
                                 </div>
                                 <nav className="flex-1 px-4 space-y-2 pt-8">
                                     {sidebarItems.map((item) => {
@@ -195,7 +195,7 @@ export default function AdminLayout({
                                                 onClick={() => setIsMobileMenuOpen(false)}
                                                 className={`flex items-center px-6 py-5 rounded-2xl font-black transition-all text-sm ${isActive
                                                     ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/25'
-                                                    : 'text-slate-500 active:bg-slate-50'
+                                                    : 'text-slate-500 dark:text-slate-400 active:bg-slate-50 dark:active:bg-slate-900'
                                                     }`}
                                             >
                                                 <item.icon className={`w-5 h-5 mr-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -204,10 +204,10 @@ export default function AdminLayout({
                                         );
                                     })}
                                 </nav>
-                                <div className="p-8 border-t border-slate-50">
+                                <div className="p-8 border-t border-slate-50 dark:border-slate-800">
                                     <button
                                         onClick={handleLogout}
-                                        className="w-full flex items-center px-6 py-5 text-slate-600 font-black text-sm bg-slate-50 rounded-2xl active:scale-95 transition-all"
+                                        className="w-full flex items-center px-6 py-5 text-slate-600 dark:text-slate-400 font-black text-sm bg-slate-50 dark:bg-slate-900 rounded-2xl active:scale-95 transition-all"
                                     >
                                         <LogOut className="w-5 h-5 mr-4 text-slate-400" />
                                         <span>Logout Session</span>

@@ -91,13 +91,13 @@ export default function CreateUserPage() {
         <div className="max-w-4xl mx-auto space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <Link
                 href="/admin"
-                className="inline-flex items-center space-x-3 px-6 py-3 bg-white border border-slate-100 rounded-2xl text-slate-500 hover:text-blue-600 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
+                className="inline-flex items-center space-x-3 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 <span>Return to Intelligence Hub</span>
             </Link>
 
-            <div className="bg-white rounded-[56px] border border-slate-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] overflow-hidden">
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] overflow-hidden">
                 <div className="relative h-40 bg-slate-900 flex items-center px-12 overflow-hidden">
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-[100px] -mr-32 -mt-32" />
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-[80px] -ml-20 -mb-20" />
@@ -117,9 +117,9 @@ export default function CreateUserPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         {/* Name Field */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Public Identifier (Username)</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Public Identifier (Username)</label>
                             <div className="relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <input
@@ -129,16 +129,16 @@ export default function CreateUserPage() {
                                     value={formData.userName}
                                     onChange={handleChange}
                                     placeholder="Enter full legal name..."
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all placeholder:text-slate-300"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
 
                         {/* Email Field */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Institutional Email</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Institutional Email</label>
                             <div className="relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <input
@@ -148,16 +148,16 @@ export default function CreateUserPage() {
                                     value={formData.email}
                                     onChange={handleChange}
                                     placeholder="node@institutional-domain.com"
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all placeholder:text-slate-300"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
 
                         {/* Password Field */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Access Credentials (Password)</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Access Credentials (Password)</label>
                             <div className="relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <Lock className="w-5 h-5" />
                                 </div>
                                 <input
@@ -167,23 +167,23 @@ export default function CreateUserPage() {
                                     value={formData.password}
                                     onChange={handleChange}
                                     placeholder="••••••••••••"
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all placeholder:text-slate-300"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-300 dark:placeholder:text-slate-700"
                                 />
                             </div>
                         </div>
 
                         {/* Role Dropdown */}
                         <div className="space-y-4">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Functional Role</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Functional Role</label>
                             <div className="relative group text-blue-500 font-bold uppercase tracking-widest">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <Shield className="w-5 h-5" />
                                 </div>
                                 <select
                                     name="role"
                                     value={formData.role}
                                     onChange={handleChange}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all appearance-none cursor-pointer"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="student">STUDENT NODE</option>
                                     <option value="teacher">INSTRUCTOR NODE</option>
@@ -194,16 +194,16 @@ export default function CreateUserPage() {
 
                         {/* Class Selection */}
                         <div className="space-y-4 md:col-span-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Curricular Assignment (Classroom)</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Curricular Assignment (Classroom)</label>
                             <div className="relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-blue-500 transition-colors">
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <Layers className="w-5 h-5" />
                                 </div>
                                 <select
                                     name="classId"
                                     value={formData.classId}
                                     onChange={handleChange}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 border border-slate-100 rounded-[28px] focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 outline-none font-bold text-slate-900 transition-all appearance-none cursor-pointer"
+                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                     disabled={loading && classRooms.length === 0}
                                 >
                                     <option value="">AWAITING Curricular MAPPING (NO CLASS)</option>
@@ -222,15 +222,15 @@ export default function CreateUserPage() {
                         </div>
                     </div>
 
-                    <div className="pt-10 flex items-center justify-between border-t border-slate-50">
+                    <div className="pt-10 flex items-center justify-between border-t border-slate-50 dark:border-slate-800/50">
                         <div className="hidden md:block">
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">Architecture Policy</p>
-                            <p className="text-slate-400 text-xs italic">Credentials are encrypted at resting state.</p>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-tight">Architecture Policy</p>
+                            <p className="text-slate-400 dark:text-slate-500 text-xs italic">Credentials are encrypted at resting state.</p>
                         </div>
                         <button
                             type="submit"
                             disabled={loading}
-                            className={`px-16 py-6 bg-slate-900 text-white rounded-[32px] font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center shadow-2xl active:scale-95 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-600 hover:shadow-blue-500/25'}`}
+                            className={`px-16 py-6 bg-slate-900 dark:bg-blue-600 text-white rounded-[32px] font-black text-sm uppercase tracking-[0.2em] transition-all flex items-center shadow-2xl active:scale-95 ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-blue-600 dark:hover:bg-blue-500 hover:shadow-blue-500/25'}`}
                         >
                             {loading ? (
                                 <>
