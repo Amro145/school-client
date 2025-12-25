@@ -37,9 +37,18 @@ export const classService = {
             id
             userName
             averageScore
+            grades {
+              id
+              score
+              subject {
+                id
+                name
+              }
+            }
           }
         }
       }
+
     `;
     const response = await api.post('', {
       query,

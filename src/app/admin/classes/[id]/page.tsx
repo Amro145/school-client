@@ -57,7 +57,7 @@ export default function ClassDetailPage() {
     const classStudents = currentClass.students || [];
     const classSubjects = currentClass.subjects || [];
 
-    return (
+    return (    
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <Link
                 href="/admin/classes"
@@ -132,6 +132,7 @@ export default function ClassDetailPage() {
 
                         <div className="space-y-4">
                             {classStudents.map((student) => <StudentRow key={student.id} student={student} subjects={classSubjects} />)}
+
                             {classStudents.length === 0 && (
                                 <div className="text-center py-10 text-slate-400 italic bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800">
                                     No students enrolled in this class.
@@ -176,7 +177,7 @@ export default function ClassDetailPage() {
 function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
     const [isOpen, setIsOpen] = React.useState(false);
     const studentGrades = student.grades || [];
-    const studentRate = calculateSuccessRate(studentGrades.map((g: any) => g.score));
+    const studentRate = student.averageScore;
 
     return (
         <div className="bg-white dark:bg-slate-950 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300">
