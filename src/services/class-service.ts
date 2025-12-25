@@ -17,27 +17,29 @@ export const classService = {
 
   async getClassById(id: number | string) {
     const query = `
-  classRoom(id: ${id}) {
-    id
-    name
-    subjects {
-      id
-      name
-      grades {
-        id
-        score
-        student {
+      query GetClass($id: Int!) {
+        classRoom(id: $id) {
           id
-          userName
+          name
+          subjects {
+            id
+            name
+            grades {
+              id
+              score
+              student {
+                id
+                userName
+              }
+            }
+          }
+          students {
+            id
+            userName
+            averageScore
+          }
         }
       }
-    }
-    students {
-      id
-      userName
-      averageScore
-    }
-  }
     `;
     const response = await api.post('', {
       query,

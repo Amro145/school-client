@@ -171,7 +171,7 @@ export const fetchClassRooms = createAsyncThunk(
         }
 
         try {
-            return await classService.getClassById();
+            return await classService.getClassRooms();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class rooms');
@@ -191,9 +191,7 @@ export const fetchClassById = createAsyncThunk(
         }
 
         try {
-            const classRooms = await classService.getClassRooms();
-            const classRoom = classRooms.find((classRoom: ClassRoom) => classRoom.id === id);
-            return classRoom;
+            return await classService.getClassById(id);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class details');
