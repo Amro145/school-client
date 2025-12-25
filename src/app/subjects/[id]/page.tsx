@@ -170,6 +170,21 @@ export default function SubjectDetailPage() {
         }
     };
 
+    // Auto-save Mechanism: Automatically saves changes after 2 seconds of inactivity
+    useEffect(() => {
+        // Only trigger if there are changes and not currently saving
+        if (Object.keys(modifiedGrades).length === 0 || isSaving) return;
+
+        const debouncedSave = setTimeout(() => {
+            handleSaveAll();
+        }, 2000);
+
+        // Cleanup function to cancel the timeout if the user types again, manually saves, or component unmounts
+        return () => clearTimeout(debouncedSave);
+    }, [modifiedGrades, isSaving]);
+
+
+
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">

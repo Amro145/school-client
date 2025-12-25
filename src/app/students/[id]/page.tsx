@@ -137,6 +137,18 @@ export default function StudentProfilePage({ params }: PageProps) {
         }
     };
 
+    // Auto-save Mechanism
+    useEffect(() => {
+        if (Object.keys(modifiedGrades).length === 0 || isSaving) return;
+
+        const debouncedSave = setTimeout(() => {
+            handleSaveAll();
+        }, 2000);
+
+        return () => clearTimeout(debouncedSave);
+    }, [modifiedGrades, isSaving]);
+
+
     if (loading) {
         return (
             <div className="space-y-12 pb-20 p-8">
