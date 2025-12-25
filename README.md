@@ -1,134 +1,115 @@
-# 🏫 School Management System - Frontend
+# 🎓 EduDash - Frontend
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=for-the-badge&logo=typescript)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Cloudflare](https://img.shields.io/badge/Cloudflare-Pages-orange?style=for-the-badge&logo=cloudflare)
-![Redux](https://img.shields.io/badge/Redux-Toolkit-purple?style=for-the-badge&logo=redux)
+![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-v4-cyan)
+![Redux](https://img.shields.io/badge/Redux-Toolkit-purple)
 
-A modern, high-performance web application for managing school operations. Built with the latest **Next.js 15 App Router**, **Tailwind CSS v4**, and **Redux Toolkit**, designed to run on the **Cloudflare Edge**.
-
----
-
-## 🚀 Features
-
-- **🎓 Student Portal**: Dedicated area for students to view grades, schedules, and announcements.
-- **👨‍🏫 Teacher Management**: Tools for teachers to manage classes and subjects.
-- **🛠 Admin Dashboard**: Comprehensive control panel for school administrators.
-- **📚 Subject & Class Management**: Organize curriculum and classroom allocations effectively.
-- **🔐 Secure Authentication**: Role-based access control and secure login system.
-- **⚡ Edge Performance**: Optimized for Cloudflare Pages with edge runtime capabilities.
-- **🎨 Modern UI/UX**: Responsive design with **Lucide Icons** and **Framer Motion** animations.
+**EduDash** is a state-of-the-art School Management System frontend designed for high performance, visual elegance, and seamless user experience. Built with the latest web technologies, it provides distinct, secure portals for Students, Teachers, and Administrators.
 
 ---
 
-## 🛠 Tech Stack
+## ⚡ Project Analysis & Architecture
 
-- **Framework**: [Next.js 15](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Alpha)
-- **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
-- **Database ORM**: [Drizzle ORM](https://orm.drizzle.team/)
-- **Deployment**: [Cloudflare Pages](https://pages.cloudflare.com/)
-- **Data Fetching**: Axios & GraphQL
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+This project adopts a **modern, scalable architecture** leveraging the `App Router` in Next.js 15.
+
+### 🏗️ Architectural Highlights
+*   **Feature-First Structure**: Code is organized by domain features (`features/dashboard`, `features/grades`) rather than just technical layers, making the codebase maintainable and scalable.
+*   **State Management Strategy**:
+    *   **Global State**: Managed via **Redux Toolkit** for complex cross-component data (User session, Admin dashboard stats, Classroom data).
+    *   **Server State & Caching**: **Axios** with interceptors handles API data fetching, error handling, and token injection seamlessly.
+*   **Design System**:
+    *   Built on **Tailwind CSS v4** (Alpha) for ultra-fast styling.
+    *   **Dark Mode First**: Native support for dark/light themes using CSS variables and `next-themes`.
+    *   **Glassmorphism**: Custom utility classes for premium glass-like UI effects.
+    *   **Animations**: **Framer Motion** and native CSS animations (`animate-float`) bring the interface to life.
+*   **Edge Compatibility**: configured to run on **Cloudflare Pages** (Edge Runtime), ensuring global low-latency access.
+
+### 🛠️ Core Technologies
+| Category | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Framework** | **Next.js 15** | App Router, Server Components, Edge Runtime |
+| **Styling** | **Tailwind CSS v4** | Utility-first styling, CSS Variables, Theme Configuration |
+| **State** | **Redux Toolkit** | Centralized state for Auth, Admin Data, and UI consistency |
+| **UI Library** | **Lucide React** | Consistent, crisp vector icons |
+| **Motion** | **Framer Motion** | Complex layout animations and transitions |
+| **Network** | **Axios** | HTTP Client with centralized interceptors for JWT Auth |
+| **Fonts** | **Geist & Outfit** | Modern, readable typography |
 
 ---
 
-## 📂 Project Structure
+## 🚀 Key Features
+
+### 🛡️ Role-Based Portals
+*   **Admin Dashboard**: comprehensive control center to manage Users (Students/Teachers), Classes, Subjects, and view school-wide analytics.
+*   **Teacher Portal**: Tools for grade entry, subject management, and student performance tracking.
+*   **Student Portal**: Personal dashboard for viewing grades, assignments, and academic progress.
+
+### 🎨 Visual Experience
+*   **Dynamic Landing Page**: A responsive, animated hero section that guides users to their respective login portals.
+*   **Interactive UI**: Hover effects, smooth transitions, and distinct color-coding for different roles (Blue for Students, Purple for Teachers, Green for Admins).
+*   **Responsive**: Fully optimized for Desktop, Tablet, and Mobile devices.
+
+---
+
+## 📂 Folder Structure
+
+The project follows a clean, opinionated structure inside `src/`:
 
 ```bash
 src/
-├── app/              # Next.js App Router pages
-│   ├── (portal)/     # Student/Public portal routes
-│   ├── admin/        # Admin dashboard routes
-│   ├── login/        # Authentication routes
-│   └── ...
-├── components/       # Reusable UI components
-├── services/         # API service calls
-├── lib/              # Utility functions and configurations
-├── data/             # Static data and constants
-└── types/            # TypeScript type definitions
+├── 📂 app/                 # Next.js App Router (Pages & Layouts)
+│   ├── (dashboard)/        # Protected dashboard routes (Admin/Student/Teacher)
+│   ├── login/              # Authentication pages
+│   ├── layout.tsx          # Root layout with Providers (Redux/Theme)
+│   └── page.tsx            # Animated Landing Page
+├── 📂 components/          # Shared UI Atoms (Buttons, Cards, Modals)
+├── 📂 features/            # Domain-specific logic & components
+│   └── dashboard/          # Dashboard widgets and charts
+├── 📂 lib/                 # Core configurations
+│   ├── axios.ts            # Http client setup
+│   └── redux/              # Redux Store & Slices
+├── 📂 services/            # API Layer (Decoupled from UI)
+│   ├── user-service.ts     # User CRUD operations
+│   └── student-service.ts  # Student-specifc logic
+└── 📂 types/               # TypeScript Definitions
 ```
 
 ---
 
-## ⚡ Getting Started
+## 🏎️ Getting Started
 
-### Prerequisites
+### 1. Installation
+Clone the repo and install dependencies:
 
-- Node.js (v20+ recommended)
-- npm or pnpm
+```bash
+npm install
+# or
+bun install
+```
 
-### Installation
+### 2. Configuration
+Create a `.env.local` file:
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd newClient
-   ```
+```env
+NEXT_PUBLIC_API_URL=https://y.com/graphql
+```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 3. Run Locally
+Start the development server with TurboPack for instant HMR:
 
-3. **Set up Environment Variables:**
-   Create a `.env.local` file (optional for local dev, but required for API connection):
-   ```
-   NEXT_PUBLIC_API_URL="https://schoolapi.amroaltayeb14.workers.dev/graphql"
-   ```
-
-4. **Run Locally:**
-   ```bash
-   npm run dev
-   ```
-   The app will happen at `http://localhost:8787` (configured for Cloudflare env compatibility).
+```bash
+npm run dev
+```
+Visit `http://localhost:3000`.
 
 ---
 
-## 🌐 Deployment (Cloudflare Pages)
+## 🧪 Custom Scripts
 
-This project is configured to be deployed using **Cloudflare Pages** via `@cloudflare/next-on-pages`.
-
-### Build & Deploy
-
-1. **Build the project:**
-   ```bash
-   npm run pages:build
-   ```
-   This generates a `.vercel/output/static` directory compatible with Cloudflare.
-
-2. **Preview locally (Wrangler):**
-   ```bash
-   npm run preview
-   ```
-
-3. **Deploy with Wrangler:**
-   ```bash
-   npx wrangler pages deploy .vercel/output/static
-   ```
+*   `npm run dev:cloudflare`: Run using the Cloudflare Pages local simulator.
+*   `npm run pages:build`: Build the app for Cloudflare Pages deployment.
 
 ---
 
-## 📜 Scripts
-
-| Script | Description |
-|Args|Description|
-|---|---|
-| `npm run dev` | Runs the Next.js development server locally. |
-| `npm run pages:build` | Builds the app for Cloudflare Pages (Edge). |
-| `npm run dev:cloudflare` | Runs the app with Wrangler's Pages dev server simulation. |
-| `npm run preview` | Builds and previews the production build locally using Wrangler. |
-
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
----
-
-Author: Amro Altayeb
+*Verified Analysis by Antigravity Agent.*
