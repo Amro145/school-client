@@ -149,7 +149,7 @@ export default function StudentProfilePage({ params }: PageProps) {
         }, 2000);
 
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled, handleSaveAll]);
 
 
     if (loading) {
@@ -169,8 +169,8 @@ export default function StudentProfilePage({ params }: PageProps) {
         return (
             <div className="max-w-xl mx-auto mt-20 p-10  rounded-3xl border border-rose-100 shadow-xl text-center">
                 <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Access Denied</h3>
-                <p className="text-slate-500 mb-6">{error}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Access Denied</h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">{error}</p>
                 <Link href="/students" className="text-blue-600 font-bold hover:underline">Return to Directory</Link>
             </div>
         );
@@ -198,7 +198,7 @@ export default function StudentProfilePage({ params }: PageProps) {
             </div>
 
             {/* Profile Overview Card */}
-            <div className=" rounded-[3rem] border border-slate-50 shadow-2xl shadow-slate-200/40 overflow-hidden">
+            <div className=" rounded-[3rem] border border-slate-50 dark:border-slate-800 shadow-2xl shadow-slate-200/40 dark:shadow-slate-900/20 overflow-hidden">
                 <div className="h-32 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 </div>
@@ -206,7 +206,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                     <div className="flex flex-col md:flex-row md:items-end justify-between -mt-16 gap-6">
                         <div className="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-8">
                             <div className="w-40 h-40 rounded-[2.5rem]  p-2 shadow-2xl relative">
-                                <div className="w-full h-full rounded-[2rem] bg-slate-50 flex items-center justify-center text-slate-200 overflow-hidden border border-slate-100">
+                                <div className="w-full h-full rounded-[2rem] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-200 dark:text-slate-600 overflow-hidden border border-slate-100 dark:border-slate-700">
                                     <UserCircle className="w-24 h-24" />
                                 </div>
                                 <div className="absolute bottom-4 right-4 w-10 h-10 bg-emerald-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">
@@ -215,23 +215,23 @@ export default function StudentProfilePage({ params }: PageProps) {
                             </div>
                             <div className="pb-2">
                                 <div className="flex items-center space-x-3 mb-2">
-                                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">{student.userName}</h1>
-                                    <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-[11px] font-black uppercase tracking-widest">{student.role || 'Student'}</span>
+                                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">{student.userName}</h1>
+                                    <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-[11px] font-black uppercase tracking-widest">{student.role || 'Student'}</span>
                                 </div>
-                                <p className="text-slate-500 font-bold text-lg flex items-center">
+                                <p className="text-slate-500 dark:text-slate-400 font-bold text-lg flex items-center">
                                     <Mail className="w-4 h-4 mr-2 opacity-50" />
                                     {student.email}
                                 </p>
                             </div>
                         </div>
                         <div className="flex space-x-4 mb-4">
-                            <div className="px-6 py-4 bg-slate-50 rounded-3xl border border-slate-100 text-center">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Assigned Class</p>
-                                <p className="text-lg font-black text-slate-900 flex items-center justify-center">
+                            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 text-center">
+                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Assigned Class</p>
+                                <p className="text-lg font-black text-slate-900 dark:text-white flex items-center justify-center">
                                     <BookOpen className="w-5 h-5 mr-2 text-indigo-500" />
                                     {student.class ? (
                                         isAdmin ? (
-                                            <Link href={`/admin/classes/${student.class.id}`} className="hover:text-indigo-600 transition-colors cursor-pointer group/class">
+                                            <Link href={`/admin/classes/${student.class.id}`} className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer group/class">
                                                 {student.class.name}
                                             </Link>
                                         ) : (
@@ -242,8 +242,8 @@ export default function StudentProfilePage({ params }: PageProps) {
                                     )}
                                 </p>
                             </div>
-                            <div className="px-6 py-4 bg-slate-50 rounded-3xl border border-slate-100 text-center">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status</p>
+                            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 text-center">
+                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Status</p>
                                 <p className="text-lg font-black text-emerald-600 flex items-center justify-center">
                                     <Shield className="w-5 h-5 mr-2 text-emerald-500" />
                                     Active
@@ -258,7 +258,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                 {/* Academic Performance */}
                 <div className="lg:col-span-2 space-y-8">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
+                        <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center">
                             <TrendingUp className="w-6 h-6 mr-3 text-blue-600" />
                             Academic Performance
                         </h2>
@@ -290,18 +290,18 @@ export default function StudentProfilePage({ params }: PageProps) {
                             student.grades.map((grade: any) => {
                                 const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
                                 return (
-                                    <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/20 hover:border-blue-200 transition-all group">
+                                    <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-slate-900/20 hover:border-blue-200 dark:hover:border-blue-900 transition-all group">
                                         <div className="flex items-center justify-between mb-4">
                                             <div className="flex items-center space-x-3">
-                                                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                                <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                                     <GraduationCap className="w-6 h-6" />
                                                 </div>
                                                 {grade.subject ? (
                                                     <Link href={`/subjects/${grade.subject.id}`}>
-                                                        <span className="font-black text-slate-900 hover:text-blue-600 transition-colors cursor-pointer">{grade.subject.name}</span>
+                                                        <span className="font-black text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer">{grade.subject.name}</span>
                                                     </Link>
                                                 ) : (
-                                                    <span className="font-black text-slate-900">N/A</span>
+                                                    <span className="font-black text-slate-900 dark:text-white">N/A</span>
                                                 )}
                                             </div>
                                             {(isTeacher || isAdmin) ? (
@@ -311,7 +311,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                                                         value={currentScore}
                                                         onChange={(e) => handleScoreChange(grade.id, e.target.value)}
                                                         // Allow editing always for demo/unification, or restrict: readOnly={!isTeacher} if admin shouldn't edit
-                                                        className={`w-20 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${currentScore >= 80 ? 'text-emerald-500' : currentScore >= 60 ? 'text-amber-500' : 'text-rose-500'
+                                                        className={`w-20 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 dark:hover:border-slate-700 focus:border-blue-500 focus:outline-none transition-all py-1 ${currentScore >= 80 ? 'text-emerald-500' : currentScore >= 60 ? 'text-amber-500' : 'text-rose-500'
                                                             }`}
                                                         min="0"
                                                         max="100"
@@ -329,14 +329,14 @@ export default function StudentProfilePage({ params }: PageProps) {
                                                 </div>
                                             )}
                                         </div>
-                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
+                                        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-2">
                                             <div
                                                 className={`h-full rounded-full transition-all duration-1000 ${currentScore >= 80 ? 'bg-emerald-500' : currentScore >= 60 ? 'bg-amber-500' : 'bg-rose-500'
                                                     }`}
                                                 style={{ width: `${currentScore}%` }}
                                             />
                                         </div>
-                                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-tight">
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">
                                             <span>Current Metrics</span>
                                             <Link
                                                 href={grade.subject ? `/subjects/${grade.subject.id}` : '#'}
@@ -349,8 +349,8 @@ export default function StudentProfilePage({ params }: PageProps) {
                                 )
                             })
                         ) : (
-                            <div className="col-span-full py-12  border border-dashed border-slate-200 rounded-[2.5rem] text-center">
-                                <p className="text-slate-400 font-bold">No academic evaluation records found.</p>
+                            <div className="col-span-full py-12  border border-dashed border-slate-200 dark:border-slate-800 rounded-[2.5rem] text-center">
+                                <p className="text-slate-400 dark:text-slate-500 font-bold">No academic evaluation records found.</p>
                             </div>
                         )}
                     </div>
@@ -358,19 +358,19 @@ export default function StudentProfilePage({ params }: PageProps) {
 
                 {/* Sidebar Stats / Info */}
                 <div className="space-y-8">
-                    <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center">
                         <Shield className="w-6 h-6 mr-3 text-indigo-600" />
                         Details
                     </h2>
 
-                    <div className=" rounded-[2.5rem] border border-slate-100 p-8 shadow-xl shadow-slate-200/20 space-y-6">
+                    <div className=" rounded-[2.5rem] border border-slate-100 dark:border-slate-800 p-8 shadow-xl shadow-slate-200/20 dark:shadow-slate-900/20 space-y-6">
                         <div className="space-y-4">
-                            <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1 text-center">Identity Verification</h4>
-                            <div className="p-5 bg-slate-50 flex flex-col items-center justify-center rounded-2xl border border-slate-100/50">
-                                <div className="w-32 h-32  rounded-2xl flex items-center justify-center shadow-lg mb-4 text-[10px] font-black text-slate-300">
+                            <h4 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1 text-center">Identity Verification</h4>
+                            <div className="p-5 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center rounded-2xl border border-slate-100/50 dark:border-slate-700/50">
+                                <div className="w-32 h-32  rounded-2xl flex items-center justify-center shadow-lg mb-4 text-[10px] font-black text-slate-300 dark:text-slate-600">
                                     QR ID CODE
                                 </div>
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Permanent ID: USR-{student.id}</p>
+                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Permanent ID: USR-{student.id}</p>
                             </div>
                         </div>
                     </div>

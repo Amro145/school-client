@@ -184,7 +184,7 @@ export default function SubjectDetailPage() {
 
         // Cleanup function to cancel the timeout if the user types again, manually saves, or component unmounts
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled, handleSaveAll]);
 
 
 
@@ -231,7 +231,7 @@ export default function SubjectDetailPage() {
                 {/* Header Section */}
                 <div className="lg:col-span-2  dark:bg-slate-950 p-10 rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] flex flex-col md:flex-row md:items-center justify-between gap-10">
                     <div className="flex items-center space-x-8">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-blue-500/20 transform hover:scale-110 hover:rotate-3 transition-transform duration-500">
+                        <div className="w-20 h-20 bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-blue-500/20 transform hover:scale-110 hover:rotate-3 transition-transform duration-500">
                             <BarChart3 className="w-10 h-10" />
                         </div>
                         <div>
@@ -270,7 +270,7 @@ export default function SubjectDetailPage() {
                 </div>
 
                 {/* Score Summary Card */}
-                <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-10 rounded-[48px] text-white shadow-2xl relative overflow-hidden group">
+                <div className="bg-linear-to-br from-slate-900 to-slate-800 p-10 rounded-[48px] text-white shadow-2xl relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
                         <TrendingUp className="w-32 h-32" />
                     </div>

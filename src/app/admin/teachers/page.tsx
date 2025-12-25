@@ -33,7 +33,7 @@ export default function TeachersListPage() {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-                <p className="text-slate-500 font-medium italic">Retrieving faculty records...</p>
+                <p className="text-slate-500 dark:text-slate-400 font-medium italic">Retrieving faculty records...</p>
             </div>
         );
     }
@@ -62,8 +62,8 @@ export default function TeachersListPage() {
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 pb-20">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Faculty Registry</h1>
-                    <p className="text-slate-500 mt-3 font-medium text-lg italic">Overseeing academic expertise and teaching staff...</p>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Faculty Registry</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium text-lg italic">Overseeing academic expertise and teaching staff...</p>
                 </div>
                 {user?.role === 'admin' && (
                     <Link
@@ -82,49 +82,49 @@ export default function TeachersListPage() {
                 {teachers?.map((teacher, idx) => (
                     <div
                         key={teacher.id}
-                        className=" rounded-[40px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 group overflow-hidden flex flex-col"
+                        className=" rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 group overflow-hidden flex flex-col"
                         style={{ animationDelay: `${idx * 150}ms` }}
                     >
                         <div className="p-10 flex-1">
                             <div className="flex items-start justify-between mb-10">
                                 <div className="flex items-center space-x-5">
                                     <div className="relative">
-                                        <div className="w-20 h-20 bg-linear-to-br from-purple-50 to-indigo-50 rounded-[28px] flex items-center justify-center text-purple-600 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
+                                        <div className="w-20 h-20 bg-linear-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-[28px] flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
                                             <UserCircle className="w-12 h-12" />
                                         </div>
                                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full shadow-lg shadow-green-500/20" />
                                     </div>
                                     <div>
                                         <Link href={`/admin/teachers/${teacher.id}`}>
-                                            <h3 className="text-2xl font-black text-slate-900 leading-tight group-hover:text-purple-600 hover:underline transition-all cursor-pointer">{teacher.userName}</h3>
+                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 hover:underline transition-all cursor-pointer">{teacher.userName}</h3>
                                         </Link>
                                         <div className="flex items-center space-x-2 mt-1.5">
-                                            <span className="text-[10px] bg-slate-100 text-slate-500 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">ID: {teacher.id}</span>
-                                            <span className="text-[10px] bg-purple-50 text-purple-600 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">FACULTY</span>
+                                            <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">ID: {teacher.id}</span>
+                                            <span className="text-[10px] bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">FACULTY</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="space-y-4 mb-10 bg-slate-50/50 p-6 rounded-3xl border border-slate-100/50">
-                                <div className="flex items-center text-slate-600 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
-                                        <Mail className="w-4 h-4 text-slate-400 group-hover:text-purple-600" />
+                            <div className="space-y-4 mb-10 bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-100/50 dark:border-slate-800/50">
+                                <div className="flex items-center text-slate-600 dark:text-slate-400 font-bold text-sm">
+                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 dark:border-slate-800 flex items-center justify-center mr-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
+                                        <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
                                     </div>
                                     {teacher.email}
                                 </div>
-                                <div className="flex items-center text-slate-600 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 flex items-center justify-center mr-4 group-hover:bg-purple-100 group-hover:border-purple-200 transition-colors">
-                                        <GraduationCap className="w-4 h-4 text-slate-400 group-hover:text-purple-600" />
+                                <div className="flex items-center text-slate-600 dark:text-slate-400 font-bold text-sm">
+                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 dark:border-slate-800 flex items-center justify-center mr-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
+                                        <GraduationCap className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
                                     </div>
-                                    <span className="text-slate-900 mr-2">{teacher.subjectsTaught.length}</span> Specializations
+                                    <span className="text-slate-900 dark:text-white mr-2">{teacher.subjectsTaught.length}</span> Specializations
                                 </div>
                             </div>
 
                             <div className="space-y-5">
                                 <div className="flex items-center justify-between">
-                                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Academic Expertise</h4>
-                                    <div className="h-0.5 grow mx-4 bg-slate-100 rounded-full" />
+                                    <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Academic Expertise</h4>
+                                    <div className="h-0.5 grow mx-4 bg-slate-100 dark:bg-slate-800 rounded-full" />
                                 </div>
                                 <div className="flex flex-wrap gap-2.5">
                                     {teacher.subjectsTaught.length > 0 ? (
@@ -137,9 +137,9 @@ export default function TeachersListPage() {
                                                 <Link
                                                     key={subject.id}
                                                     href={`/subjects/${subject.id}`}
-                                                    className=" border border-slate-100 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 hover:shadow-lg hover:shadow-blue-100 transition-all duration-300 cursor-pointer"
+                                                    className=" border border-slate-100 dark:border-slate-800 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 transition-all duration-300 cursor-pointer"
                                                 >
-                                                    <span className="text-sm font-black text-slate-700 group-hover/tag:text-blue-600">{subject.name}</span>
+                                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300 group-hover/tag:text-blue-600 dark:group-hover/tag:text-blue-400">{subject.name}</span>
                                                     {avgGrade !== null && (
                                                         <span className="ml-3 text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-lg font-black border border-green-100/50">
                                                             {avgGrade}% AVG
@@ -149,16 +149,16 @@ export default function TeachersListPage() {
                                             );
                                         })
                                     ) : (
-                                        <div className="w-full py-4 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-100">
-                                            <p className="text-xs text-slate-400 font-black italic uppercase tracking-widest">Awaiting Assignment</p>
+                                        <div className="w-full py-4 text-center bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800">
+                                            <p className="text-xs text-slate-400 dark:text-slate-500 font-black italic uppercase tracking-widest">Awaiting Assignment</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-50 flex items-center justify-between glass">
-                            <button className="text-[10px] font-black text-slate-900 uppercase tracking-widest hover:text-purple-600 px-6 py-3  rounded-xl border border-slate-200/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
+                        <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between glass">
+                            <button className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 px-6 py-3  rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             <div className="flex items-center space-x-2">
                                 <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
                                 {user?.role === 'admin' && <DeleteActionButton userId={teacher.id} userName={teacher.userName} />}
@@ -169,14 +169,14 @@ export default function TeachersListPage() {
             </div>
 
             {teachers.length === 0 && !loading && (
-                <div className="p-32 text-center  rounded-[64px] border-4 border-dashed border-slate-100 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-purple-50 rounded-full blur-[100px] opacity-50 group-hover:scale-150 transition-transform duration-1000" />
+                <div className="p-32 text-center  rounded-[64px] border-4 border-dashed border-slate-100 dark:border-slate-800 shadow-2xl relative overflow-hidden group">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-purple-50 dark:bg-purple-900/20 rounded-full blur-[100px] opacity-50 group-hover:scale-150 transition-transform duration-1000" />
                     <div className="relative z-10">
-                        <div className="w-32 h-32 bg-slate-50 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
-                            <Users className="w-16 h-16 text-slate-200" />
+                        <div className="w-32 h-32 bg-slate-50 dark:bg-slate-800 rounded-[48px] flex items-center justify-center mx-auto mb-10 shadow-inner group-hover:rotate-12 transition-transform duration-500">
+                            <Users className="w-16 h-16 text-slate-200 dark:text-slate-600" />
                         </div>
-                        <h3 className="text-3xl font-black text-slate-900 tracking-tight mb-4">No Faculty Detected</h3>
-                        <p className="text-slate-500 max-w-sm mx-auto font-medium text-lg leading-relaxed mb-10 italic">The institutional registry is currently awaiting initial faculty member onboarding.</p>
+                        <h3 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-4">No Faculty Detected</h3>
+                        <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium text-lg leading-relaxed mb-10 italic">The institutional registry is currently awaiting initial faculty member onboarding.</p>
                         <Link
                             href="/admin/users/new?role=teacher"
                             className="inline-flex items-center justify-center bg-slate-900 text-white px-12 py-5 rounded-[24px] font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-2xl hover:-translate-y-1 active:scale-95"

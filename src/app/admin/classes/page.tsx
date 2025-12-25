@@ -37,11 +37,11 @@ export default function ClassesListPage() {
             <div className="space-y-12 pb-20">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                     <div className="space-y-4">
-                        <div className="h-10 w-64 bg-slate-200 animate-pulse rounded-xl" />
-                        <div className="h-4 w-96 bg-slate-100 animate-pulse rounded-lg" />
+                        <div className="h-10 w-64 bg-slate-200 dark:bg-slate-800 animate-pulse rounded-xl" />
+                        <div className="h-4 w-96 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
                     </div>
                 </div>
-                <div className=" rounded-[48px] border border-slate-100 shadow-sm overflow-hidden">
+                <div className=" rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
                     <TableSkeleton rows={5} />
                 </div>
             </div>
@@ -72,8 +72,8 @@ export default function ClassesListPage() {
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
-                    <h1 className="text-4xl font-black text-slate-900 tracking-tight leading-none">Class Cohorts</h1>
-                    <p className="text-slate-500 mt-3 font-medium text-lg italic">Strategic monitoring of classroom performance and student density...</p>
+                    <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Class Cohorts</h1>
+                    <p className="text-slate-500 dark:text-slate-400 mt-3 font-medium text-lg italic">Strategic monitoring of classroom performance and student density...</p>
                 </div>
                 {user?.role === 'admin' && (
                     <Link
@@ -88,17 +88,17 @@ export default function ClassesListPage() {
                 )}
             </div>
 
-            <div className=" rounded-[48px] border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+            <div className=" rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
                 <div className="overflow-x-auto custom-scrollbar">
                     <table className="w-full text-left">
                         <thead>
-                            <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100">
+                            <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
                                 <th className="px-10 py-6">Cohort Identification</th>
                                 <th className="px-10 py-6">Operational Status</th>
                                 <th className="px-10 py-6 text-right">Administrative Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50">
+                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                             <AnimatePresence>
                                 {filteredClassRooms.map((cls, idx) => (
                                     <motion.tr
@@ -111,7 +111,7 @@ export default function ClassesListPage() {
                                     >
                                         <td className="px-10 py-8">
                                             <div className="flex items-center space-x-5">
-                                                <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl flex items-center justify-center text-blue-600 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                                                <div className="w-14 h-14 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                                                     <BookOpen className="w-8 h-8" />
                                                 </div>
                                                 <div>
@@ -126,7 +126,7 @@ export default function ClassesListPage() {
                                             </div>
                                         </td>
                                         <td className="px-10 py-8">
-                                            <div className="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl font-black text-[10px] uppercase tracking-widest">
+                                            <div className="inline-flex items-center px-4 py-2 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 rounded-2xl font-black text-[10px] uppercase tracking-widest">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
                                                 Active System Node
                                             </div>
@@ -135,7 +135,7 @@ export default function ClassesListPage() {
                                             <div className="flex items-center justify-end space-x-3">
                                                 <Link
                                                     href={`/admin/classes/${cls.id}`}
-                                                    className="inline-flex items-center justify-center p-4 bg-slate-50 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-2xl transition-all shadow-sm border border-slate-200/50 hover:border-blue-100 active:scale-95 group/btn"
+                                                    className="inline-flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all shadow-sm border border-slate-200/50 dark:border-slate-700/50 hover:border-blue-100 active:scale-95 group/btn"
                                                 >
                                                     <ChevronRight className="w-6 h-6 group-hover/btn:translate-x-1 transition-transform" />
                                                 </Link>
@@ -158,9 +158,9 @@ export default function ClassesListPage() {
 
                 {filteredClassRooms.length === 0 && !loading && (
                     <div className="p-20 text-center">
-                        <Users className="w-16 h-16 text-slate-200 mx-auto mb-6" />
-                        <h3 className="text-xl font-bold text-slate-900">No Cohorts Established</h3>
-                        <p className="text-slate-500 mt-2">Begin by constructing your schools first academic cohort.</p>
+                        <Users className="w-16 h-16 text-slate-200 dark:text-slate-800 mx-auto mb-6" />
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">No Cohorts Established</h3>
+                        <p className="text-slate-500 dark:text-slate-400 mt-2">Begin by constructing your schools first academic cohort.</p>
                     </div>
                 )}
             </div>
