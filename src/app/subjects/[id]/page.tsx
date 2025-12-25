@@ -21,6 +21,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 
 export const runtime = 'edge';
 
@@ -171,9 +172,11 @@ export default function SubjectDetailPage() {
     };
 
     // Auto-save Mechanism: Automatically saves changes after 2 seconds of inactivity
+    const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
+
     useEffect(() => {
-        // Only trigger if there are changes and not currently saving
-        if (Object.keys(modifiedGrades).length === 0 || isSaving) return;
+        // Only trigger if there are changes and not currently saving, and auto-save is enabled
+        if (Object.keys(modifiedGrades).length === 0 || isSaving || !isAutoSaveEnabled) return;
 
         const debouncedSave = setTimeout(() => {
             handleSaveAll();
@@ -181,7 +184,7 @@ export default function SubjectDetailPage() {
 
         // Cleanup function to cancel the timeout if the user types again, manually saves, or component unmounts
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
 
 
 
@@ -307,6 +310,7 @@ export default function SubjectDetailPage() {
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
+                        <AutoSaveToggle />
                         {showSuccess && (
                             <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
                                 <CheckCircle2 className="w-5 h-5" />

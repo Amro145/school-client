@@ -20,6 +20,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
+import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 
 export const runtime = 'edge';
 
@@ -138,15 +139,17 @@ export default function StudentProfilePage({ params }: PageProps) {
     };
 
     // Auto-save Mechanism
+    const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
+
     useEffect(() => {
-        if (Object.keys(modifiedGrades).length === 0 || isSaving) return;
+        if (Object.keys(modifiedGrades).length === 0 || isSaving || !isAutoSaveEnabled) return;
 
         const debouncedSave = setTimeout(() => {
             handleSaveAll();
         }, 2000);
 
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
 
 
     if (loading) {
@@ -260,6 +263,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                             Academic Performance
                         </h2>
                         <div className="flex items-center space-x-4">
+                            <AutoSaveToggle />
                             {showSuccess && (
                                 <div className="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
                                     <CheckCircle2 className="w-5 h-5" />

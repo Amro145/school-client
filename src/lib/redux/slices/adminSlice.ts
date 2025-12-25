@@ -27,6 +27,7 @@ interface AdminState {
     topStudents: Student[];
     loading: boolean;
     error: string | null;
+    isAutoSaveEnabled: boolean;
 }
 
 const initialState: AdminState = {
@@ -41,6 +42,7 @@ const initialState: AdminState = {
     topStudents: [],
     loading: false,
     error: null,
+    isAutoSaveEnabled: true,
 };
 
 export const fetchAdminDashboardData = createAsyncThunk(
@@ -344,6 +346,16 @@ const adminSlice = createSlice({
     reducers: {
         setPage: (state, action) => {
             state.currentPage = action.payload;
+        },
+        toggleAutoSave: (state) => {
+            state.isAutoSaveEnabled = !state.isAutoSaveEnabled;
+            // Side effect: persistence is handled by the component invoking this or middleware, 
+            // but here we just update state. Ideally, effects belong elsewhere, 
+            // but for simplicity we rely on the UI to sync to localStorage if needed, 
+            // or the component initializing it.
+        },
+        setAutoSave: (state, action) => {
+            state.isAutoSaveEnabled = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -565,6 +577,6 @@ const adminSlice = createSlice({
     },
 });
 
-export const { setPage } = adminSlice.actions;
+export const { setPage, toggleAutoSave, setAutoSave } = adminSlice.actions;
 
 export default adminSlice.reducer;
