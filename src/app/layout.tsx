@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://main.school-management-frontend-66i.pages.dev/"),
   title: "EduDash | All-in-One School Management & Education Platform",
   description: "Transform your institution with EduDash, a modern school management system for tracking student progress, teacher performance, and institutional growth.",
   keywords: ["School Management", "EduDash", "Education Platform", "Student Portal", "Teacher Dashboard"],
