@@ -7,20 +7,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchAdminDashboardData } from '@/lib/redux/slices/adminSlice';
 import {
-    Users,
-    GraduationCap,
-    BookOpen,
-    ArrowUpRight,
-    AlertCircle,
-    Trophy,
-    TrendingUp,
     ShieldCheck,
-    ArrowRight
+    AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
+import StatsCards from '@/features/dashboard/components/StatsCards';
+import Leaderboard from '@/features/dashboard/components/Leaderboard';
+import QuickActions from '@/features/dashboard/components/QuickActions';
 
 export default function AdminDashboard() {
     const dispatch = useDispatch<AppDispatch>();
@@ -82,37 +77,6 @@ export default function AdminDashboard() {
         );
     }
 
-    const dashboardStats = [
-        {
-            name: 'Total Students',
-            value: stats?.totalStudents || 0,
-            icon: GraduationCap,
-            color: 'blue',
-            description: 'Active learners enrolled in modules'
-        },
-        {
-            name: 'Total Faculty',
-            value: stats?.totalTeachers || 0,
-            icon: Users,
-            color: 'purple',
-            description: 'Verified educational instructors'
-        },
-        {
-            name: 'Classrooms',
-            value: stats?.totalClassRooms || 0,
-            icon: BookOpen,
-            color: 'emerald',
-            description: 'Active physical & digital nodes'
-        },
-        {
-            name: 'System Status',
-            value: 'Optimal',
-            icon: ShieldCheck,
-            color: 'blue',
-            description: 'Mainframe integrity: 100%'
-        },
-    ];
-
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
@@ -121,11 +85,6 @@ export default function AdminDashboard() {
                 staggerChildren: 0.1
             }
         }
-    };
-
-    const itemVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: { opacity: 1, y: 0 }
     };
 
     return (
@@ -154,147 +113,15 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {dashboardStats.map((stat) => (
-                    <motion.div
-                        key={stat.name}
-                        variants={itemVariants}
-                        className={`group relative overflow-hidden p-8 rounded-[40px] border border-slate-100 dark:border-slate-800  dark:bg-slate-950 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-500 cursor-pointer`}
-                    >
-                        <div className={`absolute -right-8 -top-8 w-32 h-32 bg-${stat.color}-500/5 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-700`} />
-                        <div className="relative z-10">
-                            <div className="flex items-start justify-between mb-8">
-                                <div className={`p-4 rounded-3xl bg-slate-50 dark:bg-slate-800 group-hover:bg-blue-600 group-hover:text-white transition-all duration-500 shadow-inner`}>
-                                    <stat.icon className="w-6 h-6" />
-                                </div>
-                                <ArrowUpRight className="w-5 h-5 text-slate-300 dark:text-slate-600 group-hover:text-blue-500 transition-colors" />
-                            </div>
-                            <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-2">{stat.name}</p>
-                            <h3 className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">{stat.value}</h3>
-                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-600 italic leading-none">{stat.description}</p>
-                        </div>
-                    </motion.div>
-                ))}
-            </div>
+            {/* Bento Grid Layout - Extracted to StatsCards */}
+            <StatsCards stats={stats} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                {/* Leaderboard Section */}
-                <motion.div
-                    variants={itemVariants}
-                    className="lg:col-span-2  dark:bg-slate-950 p-10 rounded-[56px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] glass"
-                >
-                    <div className="flex items-center justify-between mb-12">
-                        <div className="flex items-center space-x-6">
-                            <div className="w-16 h-16 bg-amber-50 dark:bg-amber-900/20 rounded-3xl flex items-center justify-center text-amber-500 shadow-inner">
-                                <Trophy className="w-8 h-8" />
-                            </div>
-                            <div>
-                                <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-2">Academic Leaderboard</h2>
-                                <p className="text-sm font-medium text-slate-400 dark:text-slate-500 tracking-wider">Top Performing Intelligence Nodes</p>
-                            </div>
-                        </div>
-                        <div className="hidden sm:flex items-center px-6 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl">
-                            <TrendingUp className="w-4 h-4 text-emerald-500 mr-3" />
-                            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">Global Algorithm: Success Rate</span>
-                        </div>
-                    </div>
+                {/* Leaderboard Section - Extracted to Leaderboard */}
+                <Leaderboard topStudents={topStudents} />
 
-                    <div className="space-y-4">
-                        {topStudents.map((student, idx) => {
-                            // Using the provided formula: Number of Subjects / Total marks
-                            // However, back-end topStudents only provides averageScore.
-                            // To follow the user requirement, I'll display the averageScore but labeled as success logic
-                            // or if possible I'd calculate it. For now, I'll stylized it.
-                            return (
-                                <motion.div
-                                    key={student.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: idx * 0.1 + 0.5 }}
-                                    className="group flex items-center justify-between p-6 bg-slate-50/50 dark:bg-slate-800/30 rounded-[32px] hover: dark:hover:bg-slate-800 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-slate-900/50 transition-all duration-500 border border-transparent hover:border-slate-100 dark:hover:border-slate-700"
-                                >
-                                    <div className="flex items-center space-x-6">
-                                        <div className="relative">
-                                            <div className="w-14 h-14 rounded-2xl  dark:bg-slate-900 flex items-center justify-center border border-slate-100 dark:border-slate-800 text-xl font-black text-blue-600 dark:text-blue-400 shadow-sm group-hover:rotate-6 transition-transform">
-                                                {student.userName.charAt(0)}
-                                            </div>
-                                            <div className={`absolute -top-2 -left-2 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black shadow-lg ${idx === 0 ? 'bg-amber-400 text-amber-900' :
-                                                idx === 1 ? 'bg-slate-300 text-slate-700' :
-                                                    idx === 2 ? 'bg-orange-400 text-orange-900' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                                                }`}>
-                                                #{idx + 1}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <Link href={`/students/${student.id}`}>
-                                                <h4 className="text-xl font-black text-slate-900 dark:text-white leading-none mb-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer capitalize">{student.userName}</h4>
-                                            </Link>
-                                            <div className="flex items-center space-x-2">
-                                                <span className="text-[10px] bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">Verified Performance</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="text-right flex items-center space-x-8">
-                                        <div className="hidden md:block text-right">
-                                            <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest leading-none mb-1.5">Efficiency Score</div>
-                                            <div className="text-xl font-black text-slate-900 dark:text-white tabular-nums">{Number((student.averageScore ?? 0).toFixed(1))}%</div>
-                                        </div>
-                                        <Link href={`/students/${student.id}`} className="p-3  dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-xl text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-900/50 transition-all active:scale-90">
-                                            <ArrowRight className="w-5 h-5" />
-                                        </Link>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
-                        {topStudents.length === 0 && (
-                            <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/20 rounded-[48px] border-2 border-dashed border-slate-200 dark:border-slate-800/50">
-                                <GraduationCap className="w-16 h-16 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
-                                <p className="text-slate-400 dark:text-slate-500 font-bold italic">Awaiting Academic Performance Data streams...</p>
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
-
-                {/* Sidebar Rapid Actions */}
-                <motion.div variants={itemVariants} className="space-y-8">
-                    <div className="bg-slate-950 p-10 rounded-[56px] text-white overflow-hidden relative group shadow-2xl">
-                        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] group-hover:bg-blue-600/30 transition-all duration-1000"></div>
-
-                        <h2 className="text-2xl font-black mb-10 relative z-10 tracking-tight flex items-center uppercase">
-                            <TrendingUp className="w-6 h-6 mr-3 text-blue-500" />
-                            Operational
-                        </h2>
-
-                        <div className="space-y-4 relative z-10">
-                            {[
-                                { label: 'Enroll Student', href: '/admin/users/new?role=student', icon: GraduationCap },
-                                { label: 'Register Teacher', href: '/admin/users/new?role=teacher', icon: Users },
-                                { label: 'New Classroom', href: '/admin/classes/new', icon: BookOpen }
-                            ].map((btn) => (
-                                <Link
-                                    key={btn.label}
-                                    href={btn.href}
-                                    className="w-full flex items-center justify-between p-5 /5 hover:/10 rounded-[32px] transition-all font-black text-xs uppercase tracking-widest border border-white/5 group/btn"
-                                >
-                                    <div className="flex items-center">
-                                        <btn.icon className="w-4 h-4 mr-4 text-blue-500" />
-                                        {btn.label}
-                                    </div>
-                                    <ArrowRight className="w-4 h-4 text-slate-600 group-hover/btn:text-white group-hover/btn:translate-x-1 transition-all" />
-                                </Link>
-                            ))}
-                            <button
-                                onClick={() => window.print()}
-                                className="w-full flex items-center justify-center p-6 bg-blue-600 hover:bg-blue-500 rounded-[32px] transition-all font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/40 mt-6 active:scale-95"
-                            >
-                                Generate Insight Report
-                            </button>
-                        </div>
-                    </div>
-
-
-                </motion.div>
+                {/* Sidebar Rapid Actions - Extracted to QuickActions */}
+                <QuickActions />
             </div>
         </motion.div>
     );

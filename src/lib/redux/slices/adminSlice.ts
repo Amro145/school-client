@@ -1,71 +1,19 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '@/lib/axios';
 import axios from 'axios';
 import { RootState } from '../store';
-
-interface AdminDashboardStats {
-    totalStudents: number;
-    totalTeachers: number;
-    totalClassRooms: number;
-}
-
-interface Subject {
-    id: string;
-    name: string;
-    teacher: {
-        id: string;
-        userName: string;
-    } | null;
-    class: {
-        id: string;
-        name: string;
-    } | null;
-    grades: {
-        id: string;
-        score: number;
-    }[];
-}
-
-interface Student {
-    id: string;
-    userName: string;
-    email: string;
-    role: string;
-    class: {
-        id: string;
-        name: string;
-    } | null;
-    averageScore?: number;
-    successRate?: number;
-    grades: {
-        id: string;
-        score: number;
-        subject?: {
-            id: string;
-            name: string;
-        };
-    }[];
-}
-
-interface Teacher {
-    id: string;
-    userName: string;
-    email: string;
-    role: string;
-    subjectsTaught: {
-        id: string;
-        name: string;
-        grades: {
-            id: string;
-            score: number;
-        }[];
-    }[];
-}
-
-interface ClassRoom {
-    id: string;
-    name: string;
-}
+import { dashboardService } from '@/services/dashboard-service';
+import { studentService } from '@/services/student-service';
+import { teacherService } from '@/services/teacher-service';
+import { subjectService } from '@/services/subject-service';
+import { classService } from '@/services/class-service';
+import { userService } from '@/services/user-service';
+import {
+    AdminDashboardStats,
+    Subject,
+    Student,
+    Teacher,
+    ClassRoom
+} from '@/types/admin';
 
 interface AdminState {
     stats: AdminDashboardStats | null;
@@ -103,41 +51,13 @@ export const fetchAdminDashboardData = createAsyncThunk(
             return rejectWithValue('User must be authenticated to fetch admin data');
         }
 
-        const query = `
-      query MyQuery {
-        adminDashboardStats {
-          totalStudents
-          totalTeachers
-          totalClassRooms
-        }
-        subjects {
-          id
-          name
-          grades {
-            id
-            score
-          }
-        }
-        topStudents {
-          id
-          userName
-          averageScore
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', { query });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data;
+            return await dashboardService.getStats();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch data');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -152,44 +72,17 @@ export const fetchMyStudents = createAsyncThunk(
         }
 
         const offset = (params.page - 1) * params.limit;
-        const query = `
-      query MyQuery($limit: Int, $offset: Int, $search: String) {
-        myStudents(limit: $limit, offset: $offset, search: $search) {
-          id
-          userName
-          email
-          role
-          class {
-            id
-            name
-          }
-          grades {
-            id
-            score
-          }
-          successRate
-        }
-        totalStudentsCount
-      }
-    `;
 
         try {
-            const response = await api.post('', {
-                query,
-                variables: {
-                    limit: params.limit,
-                    offset: offset,
-                    search: params.search || ""
-                }
-            }, { signal });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
+            const { students, totalCount } = await studentService.getMyStudents({
+                limit: params.limit,
+                offset: offset,
+                search: params.search
+            }, signal);
 
             return {
-                students: response.data.data.myStudents,
-                totalCount: response.data.data.totalStudentsCount,
+                students,
+                totalCount,
                 page: params.page
             };
         } catch (error: unknown) {
@@ -199,6 +92,7 @@ export const fetchMyStudents = createAsyncThunk(
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch students');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -212,37 +106,13 @@ export const fetchMyTeachers = createAsyncThunk(
             return rejectWithValue('User must be authenticated to fetch teachers');
         }
 
-        const query = `
-      query MyQuery {
-        myTeachers {
-          id
-          userName
-          email
-          role
-          subjectsTaught {
-            id
-            name
-            grades {
-              id
-              score
-            }
-          }
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', { query });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.myTeachers;
+            return await teacherService.getMyTeachers();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch teachers');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -256,39 +126,13 @@ export const fetchSubjects = createAsyncThunk(
             return rejectWithValue('User must be authenticated to fetch subjects');
         }
 
-        const query = `
-      query MyQuery {
-        subjects {
-          id
-          name
-          teacher {
-            id
-            userName
-          }
-          class {
-            id
-            name
-          }
-          grades {
-            id
-            score
-          }
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', { query });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.subjects;
+            return await subjectService.getSubjects();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch subjects');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -302,44 +146,13 @@ export const fetchStudentById = createAsyncThunk(
             return rejectWithValue('User must be authenticated to fetch student details');
         }
 
-        const query = `
-      query MyQuery($id: Int!) {
-        student(id: $id) {
-          id
-          userName
-          email
-          role
-          class {
-            id
-            name
-          }
-          grades {
-            id
-            score
-            subject {
-              id
-              name
-            }
-          }
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query,
-                variables: { id }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.student;
+            return await studentService.getStudentById(id);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch student');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -353,23 +166,13 @@ export const fetchClassRooms = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const query = `
-      query MyQuery {
-        classRooms {
-          id
-          name
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', { query });
-            if (response.data.errors) return rejectWithValue(response.data.errors[0].message);
-            return response.data.data.classRooms;
+            return await classService.getClassRooms();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class rooms');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -383,38 +186,13 @@ export const createNewUser = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
-        createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
-          id
-          userName
-          email
-          role
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: {
-                    userName: userData.userName,
-                    email: userData.email,
-                    role: userData.role,
-                    password: userData.password,
-                    classId: userData.classId ? Number(userData.classId) : undefined
-                }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.createUser;
+            return await userService.createUser(userData);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create user');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -428,39 +206,17 @@ export const createNewSubject = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation CreateSubject($classId: Int!, $name: String!, $teacherId: Int!) {
-        createSubject(classId: $classId, name: $name, teacherId: $teacherId) {
-          id
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: {
-                    classId: Number(subjectData.classId),
-                    teacherId: Number(subjectData.teacherId),
-                    name: subjectData.name
-                }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.createSubject;
+            return await subjectService.createSubject(subjectData);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create subject');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
 );
-
-
 
 export const createNewSchool = createAsyncThunk(
     'admin/createSchool',
@@ -470,30 +226,13 @@ export const createNewSchool = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation CreateSchool($name: String!) {
-        createSchool(name: $name) {
-          id
-          name
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: { name }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.createSchool;
+            return await classService.createSchool(name);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create school');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -507,29 +246,13 @@ export const handleDeleteUser = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation DeleteUser($id: Int!) {
-        deleteUser(id: $id) {
-          id
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: { id: typeof id === 'string' ? parseInt(id) : id }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return id;
+            return await userService.deleteUser(id);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete user');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -543,29 +266,13 @@ export const handleDeleteClassRoom = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation DeleteClassRoom($id: Int!) {
-        deleteClassRoom(id: $id) {
-          id
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: { id: typeof id === 'string' ? parseInt(id) : id }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return id;
+            return await classService.deleteClassRoom(id);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete classroom');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -579,29 +286,13 @@ export const handleDeleteSubject = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation DeleteSubject($id: Int!) {
-        deleteSubject(id: $id) {
-          id
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: { id: typeof id === 'string' ? parseInt(id) : id }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return id;
+            return await subjectService.deleteSubject(id);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete subject');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -615,35 +306,13 @@ export const updateGradesBulk = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation updateBulkGrades($grades: [GradeUpdateInput!]!) {
-        updateBulkGrades(grades: $grades) {
-          id
-          score
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: {
-                    grades: grades.map(g => ({
-                        id: g.id.toString(),
-                        score: g.score
-                    }))
-                }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.updateBulkGrades;
+            return await studentService.updateGradesBulk(grades);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update grades');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -657,33 +326,13 @@ export const createNewClassRoom = createAsyncThunk(
             return rejectWithValue('User must be authenticated');
         }
 
-        const mutation = `
-      mutation CreateClassRoom($name: String!, $schoolId: Int) {
-        createClassRoom(name: $name, schoolId: $schoolId) {
-          id
-          name
-        }
-      }
-    `;
-
         try {
-            const response = await api.post('', {
-                query: mutation,
-                variables: {
-                    name,
-                    schoolId: auth.user?.schoolId ? Number(auth.user.schoolId) : undefined
-                }
-            });
-
-            if (response.data.errors) {
-                return rejectWithValue(response.data.errors[0].message);
-            }
-
-            return response.data.data.createClassRoom;
+            return await classService.createClassRoom(name, auth.user?.schoolId ? Number(auth.user.schoolId) : undefined);
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create class room');
             }
+            if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
         }
     }
@@ -807,7 +456,6 @@ const adminSlice = createSlice({
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             })
-
             // Create School
             .addCase(createNewSchool.pending, (state) => {
                 state.loading = true;
@@ -829,7 +477,6 @@ const adminSlice = createSlice({
                 state.loading = false;
                 const deletedId = action.payload.toString();
 
-                // Identify if it was a student before filtering
                 const wasStudent = state.students.some(s => s.id.toString() === deletedId);
                 const wasTeacher = state.teachers.some(t => t.id.toString() === deletedId);
 
