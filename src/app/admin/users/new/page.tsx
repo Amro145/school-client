@@ -200,6 +200,7 @@ export default function CreateUserPage() {
                         </div>
 
                         {/* Class Selection */}
+                        {formData.role === 'student' && (
                         <div className="space-y-4 md:col-span-2">
                             <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">
                                 Curricular Assignment (Classroom) {formData.role === 'student' && <span className="text-red-500">*</span>}
@@ -233,6 +234,7 @@ export default function CreateUserPage() {
                                 )}
                             </div>
                         </div>
+                        )}
                     </div>
 
                     <div className="pt-10 flex items-center justify-between border-t border-slate-50 dark:border-slate-800/50">
