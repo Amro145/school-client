@@ -116,7 +116,7 @@ export default function ClassesListPage() {
                                                 </div>
                                                 <div>
                                                     <Link href={`/admin/classes/${cls.id}`}>
-                                                        <h3 className="text-lg font-black text-slate-900 leading-none mb-1.5 hover:text-blue-600 transition-colors cursor-pointer">{cls.name}</h3>
+                                                        <h3 className="text-lg font-black text-slate-900 dark:text-white leading-none mb-1.5 hover:text-blue-600 transition-colors cursor-pointer">{cls.name}</h3>
                                                     </Link>
                                                     <div className="flex items-center space-x-2">
                                                         <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ID: {cls.id}</span>

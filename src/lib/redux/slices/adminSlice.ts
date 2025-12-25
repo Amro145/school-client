@@ -28,6 +28,7 @@ interface AdminState {
     loading: boolean;
     error: string | null;
     isAutoSaveEnabled: boolean;
+    currentClass: (ClassRoom & { students: Student[]; subjects: Subject[] }) | null;
 }
 
 const initialState: AdminState = {
@@ -43,6 +44,7 @@ const initialState: AdminState = {
     loading: false,
     error: null,
     isAutoSaveEnabled: true,
+    currentClass: null,
 };
 
 export const fetchAdminDashboardData = createAsyncThunk(
@@ -169,10 +171,32 @@ export const fetchClassRooms = createAsyncThunk(
         }
 
         try {
-            return await classService.getClassRooms();
+            return await classService.getClassById();
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class rooms');
+            }
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const fetchClassById = createAsyncThunk(
+    'admin/fetchClassById',
+    async (id: number, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        try {
+            const classRooms = await classService.getClassRooms();
+            const classRoom = classRooms.find((classRoom: ClassRoom) => classRoom.id === id);
+            return classRoom;
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch class details');
             }
             if (error instanceof Error) return rejectWithValue(error.message);
             return rejectWithValue('An unexpected error occurred');
@@ -573,7 +597,22 @@ const adminSlice = createSlice({
             .addCase(createNewClassRoom.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Fetch Class By Id
+            .addCase(fetchClassById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.currentClass = null;
+            })
+            .addCase(fetchClassById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentClass = action.payload;
+            })
+            .addCase(fetchClassById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
             });
+
     },
 });
 
