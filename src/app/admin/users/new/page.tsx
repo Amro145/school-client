@@ -182,7 +182,14 @@ export default function CreateUserPage() {
                                 <select
                                     name="role"
                                     value={formData.role}
-                                    onChange={handleChange}
+                                    onChange={(e) => {
+                                        const newRole = e.target.value;
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            role: newRole,
+                                            classId: newRole === 'student' ? prev.classId : '' // Clear class if not student, optionally
+                                        }));
+                                    }}
                                     className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
                                 >
                                     <option value="student">STUDENT NODE</option>
@@ -194,7 +201,9 @@ export default function CreateUserPage() {
 
                         {/* Class Selection */}
                         <div className="space-y-4 md:col-span-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">Curricular Assignment (Classroom)</label>
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">
+                                Curricular Assignment (Classroom) {formData.role === 'student' && <span className="text-red-500">*</span>}
+                            </label>
                             <div className="relative group">
                                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
                                     <Layers className="w-5 h-5" />
@@ -203,10 +212,14 @@ export default function CreateUserPage() {
                                     name="classId"
                                     value={formData.classId}
                                     onChange={handleChange}
-                                    className="w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[28px] focus: dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/20 outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer"
+                                    required={formData.role === 'student'}
+                                    className={`w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border rounded-[28px] outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer ${formData.role === 'student' && !formData.classId
+                                            ? 'border-red-300 focus:border-red-500 focus:ring-red-50'
+                                            : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50'
+                                        } focus:ring-4 dark:focus:bg-slate-800 dark:focus:ring-blue-900/20`}
                                     disabled={loading && classRooms.length === 0}
                                 >
-                                    <option value="">AWAITING Curricular MAPPING (NO CLASS)</option>
+                                    <option value="">{formData.role === 'student' ? 'SELECT A CLASS (REQUIRED)' : 'AWAITING Curricular MAPPING (NO CLASS)'}</option>
                                     {classRooms.map((cls) => (
                                         <option key={cls.id} value={cls.id}>
                                             {cls.name.toUpperCase()}

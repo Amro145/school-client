@@ -197,7 +197,7 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
                 <div className="flex items-center space-x-12">
                     <div className="text-right">
                         <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Success Index</div>
-                        <div className={`text-xl font-black tabular-nums ${parseFloat(studentRate) >= 50 ? 'text-green-600' : 'text-blue-600 dark:text-blue-400'}`}>{studentRate}</div>
+                        <div className={`text-xl font-black tabular-nums ${studentRate.toFixed(1) >= 50 ? 'text-green-600' : 'text-blue-600 dark:text-blue-400'}`}>{studentRate}</div>
                     </div>
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isOpen ? 'bg-purple-600 text-white rotate-180' : 'bg-slate-50 dark:bg-slate-800 text-slate-300'}`}>
                         <TrendingUp className="w-4 h-4" />
