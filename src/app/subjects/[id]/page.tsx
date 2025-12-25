@@ -342,73 +342,77 @@ export default function SubjectDetailPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                            {grades.map((grade: any) => (
-                                <tr key={grade.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 transition-all duration-300 group">
-                                    <td className="px-12 py-8">
-                                        <div className="flex items-center space-x-6">
-                                            <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-500">
-                                                <User className="w-6 h-6" />
+                            {grades.map((grade: any) => {
+                                const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
+                                return (
+                                    <tr key={grade.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 transition-all duration-300 group">
+                                        <td className="px-12 py-8">
+                                            <div className="flex items-center space-x-6">
+                                                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-500">
+                                                    <User className="w-6 h-6" />
+                                                </div>
+                                                <div>
+                                                    <Link href={grade.student ? `/students/${grade.student.id}` : '#'}>
+                                                        <span className="block font-black text-slate-900 dark:text-white text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-none mb-1.5 cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
+                                                    </Link>
+                                                    <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {grade.student?.id || grade.id}</span>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <Link href={grade.student ? `/students/${grade.student.id}` : '#'}>
-                                                    <span className="block font-black text-slate-900 dark:text-white text-lg hover:text-blue-600 dark:hover:text-blue-400 transition-colors leading-none mb-1.5 cursor-pointer">{grade.student?.userName || 'Anonymous Node'}</span>
-                                                </Link>
-                                                <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest">SID: {grade.student?.id || grade.id}</span>
+                                        </td>
+                                        <td className="px-12 py-8">
+                                            <div className="flex flex-col space-y-3">
+                                                <div className="flex items-center justify-between w-full max-w-[200px]">
+                                                    {isTeacher ? (
+                                                        <div className="relative group/input">
+                                                            <input
+                                                                type="number"
+                                                                value={currentScore}
+                                                                onChange={(e) => handleScoreChange(grade.id, e.target.value)}
+                                                                className={`w-24 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 dark:hover:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-all py-1 ${currentScore >= 85 ? 'text-emerald-500 dark:text-emerald-400' : currentScore >= 70 ? 'text-blue-500 dark:text-blue-400' : 'text-rose-500 dark:text-rose-400'}`}
+                                                                min="0"
+                                                                max="100"
+                                                            />
+                                                            {modifiedGrades[grade.id] !== undefined && (
+                                                                <span className="absolute -right-16 top-1/2 -translate-y-1/2 text-[10px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md animate-pulse">
+                                                                    Pending
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <span className={`text-xl font-black tabular-nums ${grade.score >= 85 ? 'text-emerald-500 dark:text-emerald-400' : grade.score >= 70 ? 'text-blue-500 dark:text-blue-400' : 'text-rose-500 dark:text-rose-400'
+                                                            }`}>
+                                                            {grade.score}%
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <div className="w-full max-w-[200px] h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                                                    <div
+                                                        className={`h-full rounded-full transition-all duration-1000 ${currentScore >= 85 ? 'bg-emerald-500' : currentScore >= 70 ? 'bg-blue-500' : 'bg-rose-500'}`}
+                                                        style={{ width: `${currentScore}%` }}
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-12 py-8">
-                                        <div className="flex flex-col space-y-3">
-                                            <div className="flex items-center justify-between w-full max-w-[200px]">
-                                                {isTeacher ? (
-                                                    <div className="relative group/input">
-                                                        <input
-                                                            type="number"
-                                                            value={modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}
-                                                            onChange={(e) => handleScoreChange(grade.id, e.target.value)}
-                                                            className={`w-24 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 dark:hover:border-slate-700 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-all py-1 ${grade.score >= 85 ? 'text-emerald-500 dark:text-emerald-400' : grade.score >= 70 ? 'text-blue-500 dark:text-blue-400' : 'text-rose-500 dark:text-rose-400'}`}
-                                                            min="0"
-                                                            max="100"
-                                                        />
-                                                        {modifiedGrades[grade.id] !== undefined && (
-                                                            <span className="absolute -right-16 top-1/2 -translate-y-1/2 text-[10px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-md animate-pulse">
-                                                                Pending
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                ) : (
-                                                    <span className={`text-xl font-black tabular-nums ${grade.score >= 85 ? 'text-emerald-500 dark:text-emerald-400' : grade.score >= 70 ? 'text-blue-500 dark:text-blue-400' : 'text-rose-500 dark:text-rose-400'
-                                                        }`}>
-                                                        {grade.score}%
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <div className="w-full max-w-[200px] h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
-                                                <div
-                                                    className={`h-full rounded-full transition-all duration-1000 ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 70 ? 'bg-blue-500' : 'bg-rose-500'}`}
-                                                    style={{ width: `${modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-12 py-8 text-center">
-                                        {grade.score >= 70 ? (
-                                            <div className="inline-flex items-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-100 dark:border-emerald-900/30 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                                Optimal Flow
-                                            </div>
-                                        ) : (
-                                            <div className="inline-flex items-center px-4 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-full border border-rose-100 dark:border-rose-900/30 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                                                Attention Required
-                                            </div>
-                                        )}
-                                    </td>
-                                    <td className="px-12 py-8 text-right">
-                                        <button className="px-6 py-3  dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-100 dark:hover:border-blue-900 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm transition-all active:scale-95">
-                                            Adjust Metrics
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
+                                        </td>
+
+                                        <td className="px-12 py-8 text-center">
+                                            {grade.score >= 70 ? (
+                                                <div className="inline-flex items-center px-4 py-1.5 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-100 dark:border-emerald-900/30 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                                    Optimal Flow
+                                                </div>
+                                            ) : (
+                                                <div className="inline-flex items-center px-4 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-full border border-rose-100 dark:border-rose-900/30 text-[10px] font-black uppercase tracking-widest shadow-sm">
+                                                    Attention Required
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td className="px-12 py-8 text-right">
+                                            <button className="px-6 py-3  dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-100 dark:hover:border-blue-900 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-sm transition-all active:scale-95">
+                                                Adjust Metrics
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            })}
                         </tbody>
                     </table>
                 </div>

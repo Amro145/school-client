@@ -283,64 +283,67 @@ export default function StudentProfilePage({ params }: PageProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {student.grades && student.grades.length > 0 ? (
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            student.grades.map((grade: any) => (
-                                <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/20 hover:border-blue-200 transition-all group">
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-                                                <GraduationCap className="w-6 h-6" />
-                                            </div>
-                                            {grade.subject ? (
-                                                <Link href={`/subjects/${grade.subject.id}`}>
-                                                    <span className="font-black text-slate-900 hover:text-blue-600 transition-colors cursor-pointer">{grade.subject.name}</span>
-                                                </Link>
-                                            ) : (
-                                                <span className="font-black text-slate-900">N/A</span>
-                                            )}
-                                        </div>
-                                        {(isTeacher || isAdmin) ? (
-                                            <div className="relative group/input">
-                                                <input
-                                                    type="number"
-                                                    value={modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}
-                                                    onChange={(e) => handleScoreChange(grade.id, e.target.value)}
-                                                    // Allow editing always for demo/unification, or restrict: readOnly={!isTeacher} if admin shouldn't edit
-                                                    className={`w-20 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
-                                                        }`}
-                                                    min="0"
-                                                    max="100"
-                                                />
-                                                {modifiedGrades[grade.id] !== undefined && (
-                                                    <span className="absolute -right-12 top-1/2 -translate-y-1/2 text-[9px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 px-1.5 py-0.5 rounded-md">
-                                                        *
-                                                    </span>
+                            student.grades.map((grade: any) => {
+                                const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
+                                return (
+                                    <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/20 hover:border-blue-200 transition-all group">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                                                    <GraduationCap className="w-6 h-6" />
+                                                </div>
+                                                {grade.subject ? (
+                                                    <Link href={`/subjects/${grade.subject.id}`}>
+                                                        <span className="font-black text-slate-900 hover:text-blue-600 transition-colors cursor-pointer">{grade.subject.name}</span>
+                                                    </Link>
+                                                ) : (
+                                                    <span className="font-black text-slate-900">N/A</span>
                                                 )}
                                             </div>
-                                        ) : (
-                                            <div className={`text-2xl font-black ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
-                                                }`}>
-                                                {grade.score}%
-                                            </div>
-                                        )}
+                                            {(isTeacher || isAdmin) ? (
+                                                <div className="relative group/input">
+                                                    <input
+                                                        type="number"
+                                                        value={currentScore}
+                                                        onChange={(e) => handleScoreChange(grade.id, e.target.value)}
+                                                        // Allow editing always for demo/unification, or restrict: readOnly={!isTeacher} if admin shouldn't edit
+                                                        className={`w-20 bg-transparent text-2xl font-black tabular-nums border-b-2 border-transparent hover:border-slate-200 focus:border-blue-500 focus:outline-none transition-all py-1 ${currentScore >= 80 ? 'text-emerald-500' : currentScore >= 60 ? 'text-amber-500' : 'text-rose-500'
+                                                            }`}
+                                                        min="0"
+                                                        max="100"
+                                                    />
+                                                    {modifiedGrades[grade.id] !== undefined && (
+                                                        <span className="absolute -right-12 top-1/2 -translate-y-1/2 text-[9px] text-blue-500 font-black uppercase tracking-widest bg-blue-50 px-1.5 py-0.5 rounded-md">
+                                                            *
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className={`text-2xl font-black ${grade.score >= 80 ? 'text-emerald-500' : grade.score >= 60 ? 'text-amber-500' : 'text-rose-500'
+                                                    }`}>
+                                                    {grade.score}%
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
+                                            <div
+                                                className={`h-full rounded-full transition-all duration-1000 ${currentScore >= 80 ? 'bg-emerald-500' : currentScore >= 60 ? 'bg-amber-500' : 'bg-rose-500'
+                                                    }`}
+                                                style={{ width: `${currentScore}%` }}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-tight">
+                                            <span>Current Metrics</span>
+                                            <Link
+                                                href={grade.subject ? `/subjects/${grade.subject.id}` : '#'}
+                                                className="text-blue-600 flex items-center cursor-pointer hover:underline"
+                                            >
+                                                Details <ArrowUpRight className="w-3 h-3 ml-1" />
+                                            </Link>
+                                        </div>
                                     </div>
-                                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-2">
-                                        <div
-                                            className={`h-full rounded-full transition-all duration-1000 ${grade.score >= 80 ? 'bg-emerald-500' : grade.score >= 60 ? 'bg-amber-500' : 'bg-rose-500'
-                                                }`}
-                                            style={{ width: `${modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score}%` }}
-                                        />
-                                    </div>
-                                    <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 uppercase tracking-tight">
-                                        <span>Current Metrics</span>
-                                        <Link
-                                            href={grade.subject ? `/subjects/${grade.subject.id}` : '#'}
-                                            className="text-blue-600 flex items-center cursor-pointer hover:underline"
-                                        >
-                                            Details <ArrowUpRight className="w-3 h-3 ml-1" />
-                                        </Link>
-                                    </div>
-                                </div>
-                            ))
+                                )
+                            })
                         ) : (
                             <div className="col-span-full py-12  border border-dashed border-slate-200 rounded-[2.5rem] text-center">
                                 <p className="text-slate-400 font-bold">No academic evaluation records found.</p>
