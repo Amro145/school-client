@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /students/
+Disallow: /subjects/
+Disallow: /login
+
+Sitemap: https://main.school-management-frontend-66i.pages.dev/sitemap.xml

@@ -15,8 +15,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EduDash | Modern School Management System",
-  description: "A comprehensive dashboard for managing students, teachers, classes, and subjects with real-time performance tracking.",
+  title: "EduDash | All-in-One School Management & Education Platform",
+  description: "Transform your institution with EduDash, a modern school management system for tracking student progress, teacher performance, and institutional growth.",
+  keywords: ["School Management", "EduDash", "Education Platform", "Student Portal", "Teacher Dashboard"],
+  authors: [{ name: "EduDash Team" }],
+  openGraph: {
+    title: "EduDash | Modern School Management & Education Platform",
+    description: "The all-in-one platform for schools to manage students, track performance, and streamline communication.",
+    url: "https://main.school-management-frontend-66i.pages.dev/",
+    siteName: "EduDash",
+    images: [
+      {
+        url: "/og-image.png", // We should probably generate or suggest this
+        width: 1200,
+        height: 630,
+        alt: "EduDash School Management Platform Dashboard",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EduDash | Modern School Management",
+    description: "Modernize your institution with EduDash - the premium education platform.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({

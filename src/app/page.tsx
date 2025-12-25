@@ -3,8 +3,8 @@ import { GraduationCap, Users, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "Welcome | EduDash School Management",
-  description: "Join our modern educational platform. Access student, teacher, or admin portals.",
+  title: "School Management System | EduDash Education Platform",
+  description: "Welcome to EduDash, the ultimate education platform for modern schools. Access student, teacher, or admin portals to manage academics efficiently.",
 };
 
 export default function LandingPage() {
@@ -110,21 +110,23 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="glass dark:bg-slate-900/50 rounded-[48px] p-12 md:p-20 border-slate-200/50 dark:border-slate-800 shadow-2xl overflow-hidden relative">
             <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-blue-600/5 to-purple-600/5 dark:from-blue-600/10 dark:to-purple-600/10" />
-            <div className="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-12">
-              {[
-                { label: 'Students', value: '1,200+' },
-                { label: 'Active Classes', value: '45' },
-                { label: 'Subject Tracks', value: '180+' },
-                { label: 'Certified Teachers', value: '85' },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-2">{stat.value}</p>
-                  <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
-                </div>
-              ))}
+            <div className="relative z-10">
+              <h2 className="text-center text-sm font-bold text-blue-600 dark:text-blue-400 uppercase tracking-[0.3em] mb-12">Platform Impact</h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-12">
+                {[
+                  { label: 'Students', value: '1,200+' },
+                  { label: 'Active Classes', value: '45' },
+                  { label: 'Subject Tracks', value: '180+' },
+                  { label: 'Certified Teachers', value: '85' },
+                ].map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <p className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-2">{stat.value}</p>
+                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
       </section>
 
       {/* Footer */}
