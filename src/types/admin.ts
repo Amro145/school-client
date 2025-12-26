@@ -18,6 +18,10 @@ export interface Subject {
     grades: {
         id: string;
         score: number;
+        student: {
+            id: string;
+            userName: string;
+        };
     }[];
 }
 
@@ -57,7 +61,21 @@ export interface Teacher {
     }[];
 }
 
+export interface Schedule {
+    id: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    subject: {
+        id: string;
+        name: string;
+    } | null;
+}
+
 export interface ClassRoom {
     id: string;
     name: string;
+    subjects?: Subject[];
+    students?: Student[];
+    schedules?: Schedule[];
 }

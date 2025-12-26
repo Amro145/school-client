@@ -28,7 +28,7 @@ interface AdminState {
     loading: boolean;
     error: string | null;
     isAutoSaveEnabled: boolean;
-    currentClass: (ClassRoom & { students: Student[]; subjects: Subject[] }) | null;
+    currentClass: (ClassRoom & { students: Student[]; subjects: Subject[]; schedules: any[] }) | null;
 }
 
 const initialState: AdminState = {

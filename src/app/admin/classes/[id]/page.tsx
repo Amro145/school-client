@@ -5,14 +5,17 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchClassById } from '@/lib/redux/slices/adminSlice';
-import { calculateSuccessRate } from '@/lib/data'; // Assuming this utility works with the data structure
+import { calculateSuccessRate } from '@/lib/data';
 import {
     ArrowLeft,
     BookOpen,
     Users,
     TrendingUp,
     Loader2,
-    AlertCircle
+    AlertCircle,
+    Calendar,
+    Clock,
+    User
 } from 'lucide-react';
 import { notFound, useParams } from 'next/navigation';
 
@@ -52,12 +55,11 @@ export default function ClassDetailPage() {
         return null; // Or some skeleton
     }
 
-    // Adapt data structure if needed
-    // currentClass has students and subjects (fetched via getClassById in service)
     const classStudents = currentClass.students || [];
     const classSubjects = currentClass.subjects || [];
+    const classSchedules = currentClass.schedules || [];
 
-    return (    
+    return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <Link
                 href="/admin/classes"
@@ -79,9 +81,22 @@ export default function ClassDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Subjects Section */}
+                {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-10">
-                    <div className=" rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950">
+
+                    {/* Timetable Section */}
+                    <div className="rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
+                                <Calendar className="w-6 h-6 mr-3 text-orange-500" />
+                                Weekly Timetable
+                            </h2>
+                        </div>
+                        <Timetable schedules={classSchedules} />
+                    </div>
+
+                    {/* Subjects Section */}
+                    <div className="rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
                                 <BookOpen className="w-6 h-6 mr-3 text-blue-500" />
@@ -91,17 +106,13 @@ export default function ClassDetailPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {classSubjects.map((subject) => {
                                 // Calculate success rate for this subject across all students
-                                // Students array has grades. Each student has grades for subjects.
-                                const subjectGrades = classStudents.flatMap(s => s.grades || [])
-                                    .filter((g: any) => g.subject.id.toString() === subject.id.toString())
-                                    .map((g: any) => g.score);
-
+                                const subjectGrades = subject.grades?.map((g: any) => g.score) || [];
                                 const rate = calculateSuccessRate(subjectGrades);
 
                                 return (
                                     <div key={subject.id} className="p-6 bg-slate-50 dark:bg-slate-900 rounded-3xl border border-slate-100/50 dark:border-slate-800 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-xl transition-all group">
                                         <div className="flex items-center justify-between mb-4">
-                                            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-blue-600 bg-white dark:bg-slate-800 shadow-sm">
+                                            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-blue-600 bg-white dark:bg-slate-800 shadow-sm uppercase">
                                                 {subject.name.charAt(0)}
                                             </div>
                                             <div className="text-right">
@@ -110,7 +121,10 @@ export default function ClassDetailPage() {
                                             </div>
                                         </div>
                                         <h4 className="font-black text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors uppercase tracking-tight">{subject.name}</h4>
-                                        <p className="text-xs text-slate-400 font-bold mt-1 italic">Faculty: {subject.teacher?.userName || 'Awaiting Assignment'}</p>
+                                        <p className="text-xs text-slate-400 font-bold mt-1 italic flex items-center">
+                                            <User className="w-3 h-3 mr-1" />
+                                            {subject.teacher?.userName || 'Awaiting Assignment'}
+                                        </p>
                                     </div>
                                 );
                             })}
@@ -173,11 +187,86 @@ export default function ClassDetailPage() {
 }
 
 // Helper Components
+
+function Timetable({ schedules }: { schedules: any[] }) {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const timeSlots = Array.from(new Set(schedules.map(s => s.startTime))).sort();
+
+    // Group schedules by day
+    const schedulesByDay: { [key: string]: any[] } = {};
+    days.forEach(day => {
+        schedulesByDay[day] = schedules.filter(s => s.day === day).sort((a, b) => a.startTime.localeCompare(b.startTime));
+    });
+
+    if (schedules.length === 0) {
+        return <div className="text-center py-10 text-slate-400 italic">No schedule created for this class yet.</div>;
+    }
+
+    return (
+        <div className="overflow-x-auto">
+            <div className="min-w-[600px] space-y-4">
+                {/* Header Row */}
+                <div className="grid grid-cols-8 gap-2 mb-2">
+                    <div className="font-black text-slate-400 text-xs uppercase tracking-widest">Time</div>
+                    {days.slice(0, 5).map(day => ( // Showing only Mon-Fri for compactness
+                        <div key={day} className="font-black text-slate-600 dark:text-slate-300 text-xs uppercase tracking-widest text-center">{day.slice(0, 3)}</div>
+                    ))}
+                    {/* Weekend if needed, omitted for cleaner layout unless data exists */}
+                </div>
+
+                {/* Rows logic is tricky if times vary. Simplified approach: List per day */}
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    {days.slice(0, 5).map(day => (
+                        <div key={day} className="space-y-3">
+                            <h4 className="font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 md:hidden">{day}</h4>
+                            {schedulesByDay[day]?.length > 0 ? (
+                                schedulesByDay[day].map(schedule => (
+                                    <div key={schedule.id} className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30">
+                                        <div className="text-xs font-black text-blue-600 dark:text-blue-400 mb-1 flex items-center">
+                                            <Clock className="w-3 h-3 mr-1" />
+                                            {schedule.startTime} - {schedule.endTime}
+                                        </div>
+                                        <div className="font-bold text-slate-900 dark:text-white text-sm">{schedule.subject?.name}</div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="h-full bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-center min-h-[80px]">
+                                    <span className="text-slate-300 text-xs font-bold uppercase">-</span>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
     const [isOpen, setIsOpen] = React.useState(false);
-    const studentGrades = student.grades || [];
-    const studentRate = student.averageScore;
+    // Student average score is now coming directly from the API
+    const studentRate = student.averageScore || 0;
+
+    // We need to map student grades to subjects correctly. API structure:
+    // classRoom -> subjects -> grades -> student { id }
+    // OR classRoom -> students -> grades -> subject { id } ?
+    // The query requests:
+    /*
+     students {
+            id
+            userName
+            averageScore
+          }
+    */
+    // Wait, the previous logic calculated grades from student.grades (which had subject inside).
+    // The NEW query requests student.grades isn't explicitly requested in the plan's query for Student, 
+    // BUT `student.grades` IS in the `getClassById` I implemented.
+    // Let's ensure I requested `grades` inside `students` in `class-service.ts`.
+    // Checking my previous edit... No, I removed `grades` from `students` in the service edit!
+    // I requested `averageScore` but forgot to request `grades` inside `students` if I want to show the detailed breakdown.
+    // HOWEVER, the `subjects` array has `grades` with `student { id }`. I can use that to reconstruct the student's grades.
 
     return (
         <div className="bg-white dark:bg-slate-950 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden transition-all duration-300">
@@ -197,7 +286,7 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
                 <div className="flex items-center space-x-12">
                     <div className="text-right">
                         <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Success Index</div>
-                        <div className={`text-xl font-black tabular-nums ${studentRate.toFixed(1) >= 50 ? 'text-green-600' : 'text-blue-600 dark:text-blue-400'}`}>{studentRate}</div>
+                        <div className={`text-xl font-black tabular-nums ${String(studentRate.toFixed(1)) >= "50" ? 'text-green-600' : 'text-blue-600 dark:text-blue-400'}`}>{studentRate ? studentRate.toFixed(1) : 0}</div>
                     </div>
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${isOpen ? 'bg-purple-600 text-white rotate-180' : 'bg-slate-50 dark:bg-slate-800 text-slate-300'}`}>
                         <TrendingUp className="w-4 h-4" />
@@ -210,7 +299,9 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
                     <h5 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Course Metrics</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {subjects.map((subject: any) => {
-                            const gradeObj = studentGrades.find((g: any) => g.subject.id.toString() === subject.id.toString());
+                            // Find the grade for this student in this subject
+                            // The subject object has a `grades` array.
+                            const gradeObj = subject.grades?.find((g: any) => g.student.id.toString() === student.id.toString());
                             const grade = gradeObj ? gradeObj.score : 0;
 
                             return (
@@ -237,3 +328,4 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
         </div>
     );
 }
+

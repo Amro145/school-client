@@ -24,6 +24,10 @@ export const classService = {
           subjects {
             id
             name
+            teacher {
+              id
+              userName
+            }
             grades {
               id
               score
@@ -37,18 +41,19 @@ export const classService = {
             id
             userName
             averageScore
-            grades {
+          }
+          schedules {
+            id
+            day
+            startTime
+            endTime
+            subject {
               id
-              score
-              subject {
-                id
-                name
-              }
+              name
             }
           }
         }
       }
-
     `;
     const response = await api.post('', {
       query,
