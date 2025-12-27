@@ -29,6 +29,7 @@ export interface Teacher {
     email: string;
     role: string;
     subjectsTaught?: TeacherSubject[];
+    schedules?: ScheduleEntry[];
 }
 
 export interface StudentUser {
@@ -40,4 +41,24 @@ export interface StudentUser {
     successRate?: number;
     class?: Class;
     grades?: Grade[];
+    schedules?: ScheduleEntry[];
+}
+
+export interface ScheduleEntry {
+    id: string;
+    day: string;
+    startTime: string;
+    endTime: string;
+    subject: {
+        id: string;
+        name: string;
+        teacher?: {
+            id: string;
+            userName: string;
+        };
+    };
+    classRoom: {
+        id: string;
+        name: string;
+    };
 }

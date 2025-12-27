@@ -6,16 +6,12 @@ import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchSchedules, deleteSchedule, fetchClassRooms } from '@/lib/redux/slices/adminSlice';
 import {
     Calendar,
-    Search,
-    Filter,
     Plus,
-    Clock,
     User,
     Trash2,
     Edit,
     Loader2,
     Users,
-    CheckCircle2,
     BookOpen
 } from 'lucide-react';
 import { Schedule } from '@/types/admin';
@@ -53,7 +49,7 @@ export default function AdminSchedulesPage() {
 function SchedulesContent() {
     const dispatch = useDispatch<AppDispatch>();
     const searchParams = useSearchParams();
-    const { schedules, classRooms, loading, error } = useSelector((state: RootState) => state.admin);
+    const { schedules, classRooms } = useSelector((state: RootState) => state.admin);
 
     // State
     const [selectedClassId, setSelectedClassId] = useState<number | string>('');
@@ -144,8 +140,8 @@ function SchedulesContent() {
                 </div>
             </div>
 
-            {/* Grid Area */}
-            <div className="bg-white dark:bg-slate-950 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden overflow-x-auto">
+            {/* Grid Area - Table Layout */}
+            <div className="bg-white dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden overflow-x-auto">
                 {!selectedClassId ? (
                     <div className="flex flex-col items-center justify-center py-32 space-y-4 text-center">
                         <div className="w-20 h-20 bg-slate-50 dark:bg-slate-900 rounded-full flex items-center justify-center">
@@ -157,56 +153,57 @@ function SchedulesContent() {
                         </div>
                     </div>
                 ) : (
-                    <div className="min-w-[1000px] p-6">
-                        {/* Grid Header (Periods) */}
-                        <div className="grid grid-cols-[150px_repeat(8,1fr)] gap-2 mb-4">
-                            <div className="flex items-center justify-center font-black text-slate-400 uppercase tracking-widest text-xs">Day / Period</div>
+                    <div className="min-w-[1000px]">
+                        {/* CSS Grid Table with border-collapse look */}
+                        <div className="grid grid-cols-[120px_repeat(8,1fr)] border-collapse">
+
+                            {/* Header Row */}
+                            <div className="bg-slate-800 text-white p-4 text-xs font-black uppercase tracking-widest flex items-center justify-center border-b border-r border-slate-700 sticky left-0 z-20">
+                                Day / Time
+                            </div>
                             {PERIODS.map((period, index) => (
-                                <div key={period.value} className="flex flex-col items-center justify-center p-3 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Period {index + 1}</span>
-                                    <span className="text-sm font-black text-slate-900 dark:text-white">{period.label}</span>
+                                <div key={period.value} className="bg-slate-800 text-white p-3 flex flex-col items-center justify-center border-b border-r border-slate-700 last:border-r-0">
+                                    <span className="text-[10px] opacity-70 uppercase tracking-widest mb-1">Period {index + 1}</span>
+                                    <span className="text-sm font-bold">{period.label}</span>
                                 </div>
                             ))}
-                        </div>
 
-                        {/* Grid Rows (Days) */}
-                        <div className="space-y-2">
+                            {/* Data Rows */}
                             {DAYS.map(day => (
-                                <div key={day} className="grid grid-cols-[150px_repeat(8,1fr)] gap-2 h-32">
-                                    {/* Day Label */}
-                                    <div className="bg-slate-900 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-white font-black uppercase tracking-widest text-sm shadow-lg shadow-slate-200 dark:shadow-none">
+                                <React.Fragment key={day}>
+                                    {/* Row Header (Day) */}
+                                    <div className="bg-slate-50 dark:bg-slate-900/50 p-4 border-b border-r border-slate-200 dark:border-slate-800 flex items-center justify-center font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs sticky left-0 z-10">
                                         {day}
                                     </div>
 
-                                    {/* Slots */}
+                                    {/* Time Slots */}
                                     {PERIODS.map(period => {
-                                        // Find schedule
                                         const schedule = classSchedules.find(s => s.day === day && s.startTime === period.value);
+                                        const isSelected = (prefilledSlot && prefilledSlot.day === day && prefilledSlot.startTime === period.value) ||
+                                            (editingSchedule && editingSchedule.id === schedule?.id && schedule !== undefined);
 
                                         return (
                                             <div
                                                 key={`${day}-${period.value}`}
-                                                className={`relative rounded-2xl border transition-all duration-300 flex flex-col items-center justify-center p-2 group
-                                                    ${schedule
-                                                        ? 'bg-blue-50 dark:bg-blue-900/10 border-blue-100 dark:border-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700'
-                                                        : 'bg-slate-50/50 dark:bg-slate-900/20 border-slate-100 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-900 border-dashed'
-                                                    }
+                                                className={`relative h-28 border-b border-r border-slate-200 dark:border-slate-800 last:border-r-0 group transition-all
+                                                    ${isSelected ? 'ring-2 ring-blue-500 ring-inset bg-blue-50/50 dark:bg-blue-900/20 z-10' :
+                                                        schedule
+                                                            ? 'bg-blue-50/30 dark:bg-blue-900/10'
+                                                            : 'hover:bg-slate-50 dark:hover:bg-slate-900/50'}
                                                 `}
                                             >
                                                 {schedule ? (
-                                                    <>
-                                                        <div className="text-center w-full">
-                                                            <div className="font-black text-slate-900 dark:text-white text-xs mb-1 line-clamp-2 leading-tight">
-                                                                {schedule.subject?.name}
-                                                            </div>
-                                                            <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-950 px-2 py-1 rounded-full shadow-sm max-w-full truncate">
-                                                                <User className="w-3 h-3 mr-1 flex-shrink-0" />
-                                                                {schedule.subject?.teacher?.userName || 'N/A'}
-                                                            </div>
+                                                    <div className="w-full h-full p-2 flex flex-col items-center justify-center text-center">
+                                                        <div className="font-black text-slate-900 dark:text-white text-xs mb-2 line-clamp-2 leading-tight">
+                                                            {schedule.subject?.name}
+                                                        </div>
+                                                        <div className="flex items-center justify-center text-[10px] font-bold text-slate-500 dark:text-slate-400 bg-white/50 dark:bg-slate-950/50 px-2 py-1 rounded-full border border-slate-100 dark:border-slate-800 max-w-full truncate">
+                                                            <User className="w-3 h-3 mr-1 shrink-0" />
+                                                            {schedule.subject?.teacher?.userName || 'N/A'}
                                                         </div>
 
                                                         {/* Hover Actions */}
-                                                        <div className="absolute inset-0 bg-white/90 dark:bg-slate-950/90 items-center justify-center gap-2 opacity-0 group-hover:opacity-100 flex transition-opacity backdrop-blur-sm rounded-2xl">
+                                                        <div className="absolute inset-0 bg-white/95 dark:bg-slate-950/95 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-sm">
                                                             <button
                                                                 onClick={() => handleEdit(schedule)}
                                                                 className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:scale-110 transition-transform"
@@ -222,19 +219,19 @@ function SchedulesContent() {
                                                                 <Trash2 className="w-4 h-4" />
                                                             </button>
                                                         </div>
-                                                    </>
+                                                    </div>
                                                 ) : (
-                                                    <button
+                                                    <div
                                                         onClick={() => handleCellClick(day, period.value)}
-                                                        className="w-8 h-8 rounded-full bg-white dark:bg-slate-950 flex items-center justify-center text-slate-300 group-hover:text-blue-500 group-hover:scale-110 transition-all shadow-sm"
+                                                        className="w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                                                     >
-                                                        <Plus className="w-5 h-5" />
-                                                    </button>
+                                                        <Plus className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                                                    </div>
                                                 )}
                                             </div>
                                         );
                                     })}
-                                </div>
+                                </React.Fragment>
                             ))}
                         </div>
                     </div>
@@ -247,8 +244,7 @@ function SchedulesContent() {
                     onClose={handleCloseForm}
                     initialData={editingSchedule}
                     preselectedClassId={Number(selectedClassId)}
-                // Pass prefilled data (for adding new slot)
-                // Note: ScheduleForm needs to accept these or handle initialData being Partial
+                    prefilledSlot={prefilledSlot}
                 />
             )}
         </div>

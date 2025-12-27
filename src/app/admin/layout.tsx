@@ -13,7 +13,9 @@ import {
     LogOut,
     Menu,
     X,
-    ShieldCheck
+    ShieldCheck,
+    Table,
+    
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -28,18 +30,20 @@ const adminItems = [
     { name: 'Subjects', href: '/subjects', icon: BarChart3 },
     { name: 'Students', href: '/students', icon: GraduationCap },
     { name: 'Teachers', href: '/admin/teachers', icon: Users },
+    { name: 'Schedules', href: '/admin/schedules', icon: Table },
 ];
 
 const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'My Classes', href: '/admin/classes', icon: Users },
-
+    { name: 'Schedules', href: '/admin/schedules', icon: Table },
 ];
 
 const studentItems = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { name: 'My Profile', href: `/admin/profile`, icon: Users },
+    { name: 'Schedules', href: '/admin/schedules', icon: Table },
 ];
 
 export default function AdminLayout({

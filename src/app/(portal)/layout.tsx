@@ -11,7 +11,8 @@ import {
     LogOut,
     Menu,
     X,
-    Trophy
+    Trophy,
+    Calendar
 } from 'lucide-react';
 import { useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -22,13 +23,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Schedule', href: '/dashboard/my-schedule', icon: Calendar },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'Profile', href: '/profile', icon: User },
-    { name: "students", href: '/students', icon: User },
+    { name: "Students", href: '/students', icon: User },
 ];
 
 const studentItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Schedule', href: '/dashboard/my-schedule', icon: Calendar },
     { name: 'Profile', href: '/profile', icon: User },
 ];
 

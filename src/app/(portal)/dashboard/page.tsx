@@ -12,10 +12,12 @@ import {
     Award,
     ChevronRight,
     Loader2,
-    Calendar
+    Calendar,
+    Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import { StudentUser, Teacher } from '@/types/portal';
+import TodaysScheduleWidget from '@/components/TodaysScheduleWidget';
 
 export const runtime = 'edge';
 
@@ -55,7 +57,6 @@ export default function DashboardPage() {
 function StudentDashboard({ user }: { user: StudentUser }) {
     const grades = user.grades || [];
     const averageScore = user.averageScore || 0;
-    const successRate = user.successRate || 0;
     const isTopPerformer = averageScore > 90;
 
     return (
@@ -111,7 +112,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Success Rate</span>
                     </div>
                     <div>
-                        <div className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1 tabular-nums">{averageScore ? Number(averageScore.toFixed(1)) : 'N/A'}%</div>
+                        <div className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1 tabular-nums">{user.successRate ? Number(user.successRate.toFixed(1)) : 'N/A'}%</div>
                         <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">Overall Performance</p>
                     </div>
                 </div>
@@ -122,7 +123,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         <Award className="w-24 h-24 text-white" />
                     </div>
                     <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="w-12 h-12 /10 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
                             <Star className="w-6 h-6" />
                         </div>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Average Score</span>
@@ -130,6 +131,23 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                     <div className="relative z-10">
                         <div className="text-5xl font-black text-white tracking-tighter mb-1 tabular-nums">{averageScore ? Number(averageScore.toFixed(1)) : 'N/A'}</div>
                         <p className="text-slate-400 font-bold text-sm tracking-tight uppercase">Current Standing</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Today's Schedule and Academic modules summary */}
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                <div className="lg:col-span-3">
+                    <TodaysScheduleWidget schedules={user.schedules || []} role="student" />
+                </div>
+
+                <div className="hidden lg:flex flex-col gap-6">
+                    <div className="glass p-6 rounded-[32px] border-slate-100 dark:border-slate-800 bg-linear-to-br from-purple-500 to-indigo-600 text-white shadow-xl shadow-purple-500/20">
+                        <h4 className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-4">Daily Reminder</h4>
+                        <p className="text-sm font-bold leading-relaxed">Dont forget to check your full grid for any last-minute lecture changes.</p>
+                        <Link href="/dashboard/my-schedule" className="mt-6 flex items-center text-[10px] font-black uppercase tracking-[0.2em] bg-white/20 hover:bg-white/30 px-4 py-2 rounded-xl transition-colors w-fit">
+                            Open Grid <ChevronRight className="w-3 h-3 ml-1" />
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -148,7 +166,6 @@ function StudentDashboard({ user }: { user: StudentUser }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {user.class?.subjects?.slice(0, 3).map((subject) => {
-                        // Find any grade for this subject
                         const grade = grades.find((g) => g.subject.id === subject.id);
 
                         return (
@@ -180,26 +197,21 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
     if (!currentTeacher) return null;
 
     const subjects = currentTeacher.subjectsTaught || [];
-
-    // Metric 1: Total Number of Subjects Taught
     const totalSubjects = subjects.length;
 
-    // Metric 2: Total Number of Students across all subjects (Unique students)
     const uniqueStudentIds = new Set<string>();
     subjects.forEach(sub => {
         sub.grades.forEach(g => uniqueStudentIds.add(g.student.id));
     });
     const totalStudents = uniqueStudentIds.size;
 
-    // Metric 3: Teacher's Overall Success Rate
-    // Formula: (Total Sum of all 'score' values / Count of 'subjectsTaught')
     let totalScoreSum = 0;
     subjects.forEach(sub => {
         sub.grades.forEach(g => {
@@ -207,7 +219,6 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
         });
     });
 
-    // Handle division by zero if no subjects
     const teacherSuccessRate = totalSubjects > 0 ? Number((totalScoreSum / totalSubjects).toFixed(1)) : 0;
 
     return (
@@ -263,7 +274,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         <TrendingUp className="w-24 h-24 text-white" />
                     </div>
                     <div className="flex items-center justify-between mb-8 relative z-10">
-                        <div className="w-12 h-12 /10 rounded-2xl flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-green-400 group-hover:scale-110 transition-transform">
                             <Star className="w-6 h-6" />
                         </div>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate</span>
@@ -273,7 +284,36 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         <p className="text-slate-400 font-bold text-sm tracking-tight uppercase">Success Rate Index</p>
                     </div>
                 </div>
+            </div>
 
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                    <TodaysScheduleWidget schedules={currentTeacher.schedules || []} role="teacher" />
+                </div>
+                <div className="glass p-8 rounded-[40px] border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 transition-transform duration-1000">
+                        <Clock className="w-24 h-24" />
+                    </div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8 relative z-10">System Integrity</h4>
+                    <div className="space-y-6 relative z-10">
+                        <div className="flex items-center justify-between">
+                            <span className="text-slate-400 text-sm font-bold">Sync Status</span>
+                            <span className="text-green-400 font-black text-xs uppercase tracking-widest">Online</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <span className="text-slate-400 text-sm font-bold">Auto-Sync</span>
+                            <span className="text-slate-200 font-black text-xs uppercase tracking-widest">Every 60s</span>
+                        </div>
+                        <div className="pt-6 border-t border-white/5">
+                            <Link href="/dashboard/my-schedule" className="block text-center py-4 bg-purple-600 hover:bg-purple-700 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-colors">
+                                Review Full Timetable
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-3 glass p-8 rounded-[48px] border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-none">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center">

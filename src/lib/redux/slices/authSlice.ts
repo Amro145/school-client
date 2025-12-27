@@ -36,6 +36,24 @@ interface User {
             name: string;
         };
     }[];
+    schedules?: {
+        id: string;
+        day: string;
+        startTime: string;
+        endTime: string;
+        subject: {
+            id: string;
+            name: string;
+            teacher?: {
+                id: string;
+                userName: string;
+            };
+        };
+        classRoom: {
+            id: string;
+            name: string;
+        };
+    }[];
 }
 
 interface AuthState {
@@ -143,6 +161,24 @@ export const fetchMe = createAsyncThunk(
             class {
                 id
                 name
+            }
+          }
+          schedules {
+            id
+            day
+            startTime
+            endTime
+            subject {
+              id
+              name
+              teacher {
+                id
+                userName
+              }
+            }
+            classRoom {
+              id
+              name
             }
           }
         }

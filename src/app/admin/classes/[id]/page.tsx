@@ -14,10 +14,15 @@ import {
     Loader2,
     AlertCircle,
     Calendar,
-    Clock,
-    User
+    User,
+    Plus,
+    Edit,
+    Trash2
 } from 'lucide-react';
-import { notFound, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { Schedule } from '@/types/admin';
+import ScheduleForm from '@/components/ScheduleForm';
+import { deleteSchedule } from '@/lib/redux/slices/adminSlice';
 
 export const runtime = 'edge';
 
@@ -26,11 +31,41 @@ export default function ClassDetailPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { currentClass, loading, error } = useSelector((state: RootState) => state.admin);
 
+    const [isFormOpen, setIsFormOpen] = React.useState(false);
+    const [editingSchedule, setEditingSchedule] = React.useState<Schedule | null>(null);
+    const [prefilledSlot, setPrefilledSlot] = React.useState<{ day: string, startTime: string } | null>(null);
+
     useEffect(() => {
         if (id) {
             dispatch(fetchClassById(Number(id)));
         }
     }, [dispatch, id]);
+
+    const handleCellClick = (day: string, startTime: string) => {
+        setEditingSchedule(null);
+        setPrefilledSlot({ day, startTime });
+        setIsFormOpen(true);
+    };
+
+    const handleEdit = (schedule: Schedule) => {
+        setEditingSchedule(schedule);
+        setPrefilledSlot(null);
+        setIsFormOpen(true);
+    };
+
+    const handleDelete = async (scheduleId: number) => {
+        if (confirm('Are you sure you want to delete this schedule slot?')) {
+            await dispatch(deleteSchedule(scheduleId));
+            dispatch(fetchClassById(Number(id))); // Refresh class data
+        }
+    };
+
+    const handleCloseForm = () => {
+        setIsFormOpen(false);
+        setEditingSchedule(null);
+        setPrefilledSlot(null);
+        dispatch(fetchClassById(Number(id))); // Refresh after add/edit
+    };
 
     if (loading) {
         return (
@@ -95,7 +130,14 @@ export default function ClassDetailPage() {
                                 + Add Slot
                             </Link>
                         </div>
-                        <Timetable schedules={classSchedules} />
+                        <Timetable
+                            schedules={classSchedules}
+                            onCellClick={handleCellClick}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                            prefilledSlot={prefilledSlot}
+                            editingSchedule={editingSchedule}
+                        />
                     </div>
 
                     {/* Subjects Section */}
@@ -185,61 +227,120 @@ export default function ClassDetailPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal */}
+            {isFormOpen && (
+                <ScheduleForm
+                    onClose={handleCloseForm}
+                    initialData={editingSchedule}
+                    preselectedClassId={Number(id)}
+                    prefilledSlot={prefilledSlot}
+                />
+            )}
         </div>
     );
 }
 
 // Helper Components
 
-function Timetable({ schedules }: { schedules: any[] }) {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const timeSlots = Array.from(new Set(schedules.map(s => s.startTime))).sort();
+function Timetable({
+    schedules,
+    onCellClick,
+    onEdit,
+    onDelete,
+    prefilledSlot,
+    editingSchedule
+}: {
+    schedules: any[],
+    onCellClick: (day: string, startTime: string) => void,
+    onEdit: (schedule: any) => void,
+    onDelete: (id: number) => void,
+    prefilledSlot?: { day: string, startTime: string } | null,
+    editingSchedule?: Schedule | null
+}) {
+    const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+    const PERIODS = [
+        { label: '08:00', value: '08:00' },
+        { label: '09:00', value: '09:00' },
+        { label: '10:00', value: '10:00' },
+        { label: '11:00', value: '11:00' },
+        { label: '12:00', value: '12:00' },
+        { label: '13:00', value: '13:00' },
+        { label: '14:00', value: '14:00' },
+        { label: '15:00', value: '15:00' },
+    ];
 
-    // Group schedules by day
-    const schedulesByDay: { [key: string]: any[] } = {};
-    days.forEach(day => {
-        schedulesByDay[day] = schedules.filter(s => s.day === day).sort((a, b) => a.startTime.localeCompare(b.startTime));
-    });
 
-    if (schedules.length === 0) {
-        return <div className="text-center py-10 text-slate-400 italic">No schedule created for this class yet.</div>;
-    }
 
     return (
-        <div className="overflow-x-auto">
-            <div className="min-w-[600px] space-y-4">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 dark:border-slate-800">
+            <div className="min-w-[1000px] grid grid-cols-[120px_repeat(8,1fr)] bg-slate-200 dark:bg-slate-800 border-collapse gap-px">
                 {/* Header Row */}
-                <div className="grid grid-cols-8 gap-2 mb-2">
-                    <div className="font-black text-slate-400 text-xs uppercase tracking-widest">Time</div>
-                    {days.slice(0, 5).map(day => ( // Showing only Mon-Fri for compactness
-                        <div key={day} className="font-black text-slate-600 dark:text-slate-300 text-xs uppercase tracking-widest text-center">{day.slice(0, 3)}</div>
-                    ))}
-                    {/* Weekend if needed, omitted for cleaner layout unless data exists */}
+                <div className="bg-slate-800 text-white p-4 text-[10px] font-black uppercase tracking-widest flex items-center justify-center sticky left-0 z-20">
+                    Day / Time
                 </div>
+                {PERIODS.map((period, index) => (
+                    <div key={period.value} className="bg-slate-800 text-white p-3 flex flex-col items-center justify-center">
+                        <span className="text-[9px] opacity-70 uppercase tracking-widest mb-0.5">Period {index + 1}</span>
+                        <span className="text-sm font-bold">{period.label}</span>
+                    </div>
+                ))}
 
-                {/* Rows logic is tricky if times vary. Simplified approach: List per day */}
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    {days.slice(0, 5).map(day => (
-                        <div key={day} className="space-y-3">
-                            <h4 className="font-bold text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2 md:hidden">{day}</h4>
-                            {schedulesByDay[day]?.length > 0 ? (
-                                schedulesByDay[day].map(schedule => (
-                                    <div key={schedule.id} className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-900/30">
-                                        <div className="text-xs font-black text-blue-600 dark:text-blue-400 mb-1 flex items-center">
-                                            <Clock className="w-3 h-3 mr-1" />
-                                            {schedule.startTime} - {schedule.endTime}
-                                        </div>
-                                        <div className="font-bold text-slate-900 dark:text-white text-sm">{schedule.subject?.name}</div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="h-full bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 flex items-center justify-center min-h-[80px]">
-                                    <span className="text-slate-300 text-xs font-bold uppercase">-</span>
-                                </div>
-                            )}
+                {/* Data Rows */}
+                {DAYS.map(day => (
+                    <React.Fragment key={day}>
+                        {/* Row Header (Day) */}
+                        <div className="bg-white dark:bg-slate-900 p-4 flex items-center justify-center font-black text-slate-900 dark:text-white uppercase tracking-widest text-xs sticky left-0 z-10">
+                            {day}
                         </div>
-                    ))}
-                </div>
+
+                        {/* Cells */}
+                        {PERIODS.map(period => {
+                            const schedule = schedules.find(s => s.day === day && s.startTime === period.value);
+                            const isSelected = (prefilledSlot && prefilledSlot.day === day && prefilledSlot.startTime === period.value) ||
+                                (editingSchedule && editingSchedule.id === schedule?.id && schedule !== undefined);
+
+                            return (
+                                <div key={`${day}-${period.value}`} className={`bg-white dark:bg-slate-900 relative h-24 group transition-all ${isSelected ? 'ring-2 ring-blue-500 ring-inset bg-blue-50/50 dark:bg-blue-900/20 z-10' : ''}`}>
+                                    {schedule ? (
+                                        <div className="w-full h-full p-2 flex flex-col items-center justify-center text-center bg-blue-50/50 dark:bg-blue-900/10">
+                                            <div className="font-black text-slate-900 dark:text-white text-xs mb-1 line-clamp-2 leading-tight">
+                                                {schedule.subject?.name}
+                                            </div>
+                                            <div className="flex items-center justify-center text-[9px] font-bold text-slate-500 dark:text-slate-400 bg-white/60 dark:bg-slate-950/60 px-2 py-0.5 rounded-full max-w-full truncate">
+                                                <User className="w-2.5 h-2.5 mr-1 shrink-0" />
+                                                {schedule.subject?.teacher?.userName || 'N/A'}
+                                            </div>
+
+                                            {/* Actions toggle on hover */}
+                                            <div className="absolute inset-0 bg-white/95 dark:bg-slate-950/95 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 backdrop-blur-sm">
+                                                <button
+                                                    onClick={() => onEdit(schedule)}
+                                                    className="p-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full hover:scale-110 transition-transform"
+                                                >
+                                                    <Edit className="w-3.5 h-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => onDelete(Number(schedule.id))}
+                                                    className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full hover:scale-110 transition-transform"
+                                                >
+                                                    <Trash2 className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div
+                                            onClick={() => onCellClick(day, period.value)}
+                                            className="w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer bg-slate-50/50 dark:bg-white/5"
+                                        >
+                                            <Plus className="w-5 h-5 text-slate-300" />
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </React.Fragment>
+                ))}
             </div>
         </div>
     );

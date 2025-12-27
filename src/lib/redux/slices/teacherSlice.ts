@@ -33,6 +33,24 @@ export interface TeacherProfile {
     email: string;
     role: string;
     subjectsTaught: TeacherSubject[];
+    schedules?: {
+        id: string;
+        day: string;
+        startTime: string;
+        endTime: string;
+        subject: {
+            id: string;
+            name: string;
+            teacher?: {
+                id: string;
+                userName: string;
+            };
+        };
+        classRoom: {
+            id: string;
+            name: string;
+        };
+    }[];
 }
 
 interface TeacherState {
@@ -75,6 +93,20 @@ export const fetchTeacherById = createAsyncThunk(
                                 userName
                                 email
                             }
+                        }
+                    }
+                    schedules {
+                        id
+                        day
+                        startTime
+                        endTime
+                        subject {
+                            id
+                            name
+                        }
+                        classRoom {
+                            id
+                            name
                         }
                     }
                 }
@@ -123,6 +155,20 @@ export const fetchTeacher = createAsyncThunk(
                       userName
                       email
                     }
+                  }
+                }
+                schedules {
+                  id
+                  day
+                  startTime
+                  endTime
+                  subject {
+                    id
+                    name
+                  }
+                  classRoom {
+                    id
+                    name
                   }
                 }
               }

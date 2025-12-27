@@ -120,7 +120,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                     {/* Error Display */}
                     {(error || formError) && (
                         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-start space-x-3 text-red-600 dark:text-red-400 text-sm font-bold">
-                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <AlertCircle className="w-5 h-5 shrink-0" />
                             <p>{formError || error}</p>
                         </div>
                     )}
@@ -169,7 +169,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                         <select
                             value={day}
                             onChange={(e) => setDay(e.target.value)}
-                            className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                            disabled={!!prefilledSlot}
+                            className={`w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none ${prefilledSlot ? 'bg-blue-50/50 dark:bg-blue-900/20 border-blue-200 cursor-not-allowed opacity-80' : ''}`}
                         >
                             {DAYS_ORDER.map(d => (
                                 <option key={d} value={d}>{d}</option>
@@ -185,7 +186,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                             <select
                                 value={startTime}
                                 onChange={(e) => setStartTime(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                                disabled={!!prefilledSlot}
+                                className={`w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none ${prefilledSlot ? 'bg-blue-50/50 dark:bg-blue-900/20 border-blue-200 cursor-not-allowed opacity-80' : ''}`}
                             >
                                 <option value="">Select Period</option>
                                 {PERIODS.map(p => (
