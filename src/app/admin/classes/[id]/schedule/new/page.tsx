@@ -18,7 +18,18 @@ import { useParams, useRouter } from 'next/navigation';
 
 export const runtime = 'edge';
 
-const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+
+const PERIODS = [
+    { label: '08:00 - 09:00', value: '08:00' },
+    { label: '09:00 - 10:00', value: '09:00' },
+    { label: '10:00 - 11:00', value: '10:00' },
+    { label: '11:00 - 12:00', value: '11:00' },
+    { label: '12:00 - 13:00', value: '12:00' },
+    { label: '13:00 - 14:00', value: '13:00' },
+    { label: '14:00 - 15:00', value: '14:00' },
+    { label: '15:00 - 16:00', value: '15:00' },
+];
 
 export default function CreateSchedulePage() {
     const { id } = useParams();
@@ -29,8 +40,7 @@ export default function CreateSchedulePage() {
     const [formData, setFormData] = useState({
         subjectId: '',
         day: 'Monday',
-        startTime: '',
-        endTime: ''
+        startTime: ''
     });
 
     const [validationError, setValidationError] = useState<string | null>(null);
@@ -48,8 +58,10 @@ export default function CreateSchedulePage() {
         if (validationError) setValidationError(null);
     };
 
-    const isOverlapping = (start1: string, end1: string, start2: string, end2: string) => {
-        return start1 < end2 && end1 > start2;
+    const calculateEndTime = (start: string) => {
+        const [hour, minute] = start.split(':').map(Number);
+        const endHour = hour + 1;
+        return `${endHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -57,13 +69,19 @@ export default function CreateSchedulePage() {
         setValidationError(null);
 
         if (!currentClass) return;
+        if (!formData.startTime) {
+            setValidationError("Please select a time slot.");
+            return;
+        }
 
-        // Client-side Validation: Conflict Detection
+        const endTime = calculateEndTime(formData.startTime);
+
+        // Simple Client-side check for this exact slot
         const existingSchedules = currentClass.schedules?.filter(s => s.day === formData.day) || [];
-        const conflict = existingSchedules.find(s => isOverlapping(formData.startTime, formData.endTime, s.startTime, s.endTime));
+        const conflict = existingSchedules.find(s => s.startTime === formData.startTime);
 
         if (conflict) {
-            setValidationError(`This time slot is already occupied for this class (${conflict.startTime} - ${conflict.endTime}).`);
+            setValidationError(`This time slot is already occupied by ${conflict.subject?.name}.`);
             return;
         }
 
@@ -72,7 +90,7 @@ export default function CreateSchedulePage() {
             subjectId: Number(formData.subjectId),
             day: formData.day,
             startTime: formData.startTime,
-            endTime: formData.endTime
+            endTime: endTime
         }));
 
         if (createNewSchedule.fulfilled.match(result)) {
@@ -158,29 +176,20 @@ export default function CreateSchedulePage() {
                             </select>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Start Time</label>
-                                <input
-                                    type="time"
-                                    name="startTime"
-                                    value={formData.startTime}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-white font-medium transition-all"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 dark:text-slate-300">End Time</label>
-                                <input
-                                    type="time"
-                                    name="endTime"
-                                    value={formData.endTime}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-white font-medium transition-all"
-                                />
-                            </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-bold text-slate-700 dark:text-slate-300">Time Slot (1 Hour)</label>
+                            <select
+                                name="startTime"
+                                value={formData.startTime}
+                                onChange={handleChange}
+                                required
+                                className="w-full h-12 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border-none focus:ring-2 focus:ring-blue-500/20 text-slate-900 dark:text-white font-medium transition-all"
+                            >
+                                <option value="">Select Period</option>
+                                {PERIODS.map(p => (
+                                    <option key={p.value} value={p.value}>{p.label}</option>
+                                ))}
+                            </select>
                         </div>
 
                         <button
@@ -219,22 +228,6 @@ export default function CreateSchedulePage() {
                             ))
                         ) : (
                             <div className="text-center py-10 text-slate-400 italic">No classes scheduled for {formData.day} yet.</div>
-                        )}
-
-                        {/* Visual Gap Indicator for simple feedback */}
-                        {formData.startTime && formData.endTime && !validationError && (
-                            <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl border-2 border-dashed border-blue-200 dark:border-blue-800 flex items-center justify-between">
-                                <div>
-                                    <div className="text-xs font-black text-blue-600 dark:text-blue-400 mb-1 flex items-center">
-                                        <Clock className="w-3 h-3 mr-1" />
-                                        {formData.startTime} - {formData.endTime}
-                                    </div>
-                                    <div className="font-bold text-slate-900 dark:text-white text-sm">New: {currentClass.subjects?.find(s => s.id.toString() === formData.subjectId)?.name || 'Selected Subject'}</div>
-                                </div>
-                                <div className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-widest rounded-full">
-                                    Planning
-                                </div>
-                            </div>
                         )}
                     </div>
                 </div>

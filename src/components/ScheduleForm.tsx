@@ -10,30 +10,43 @@ import { Schedule } from '@/types/admin';
 interface ScheduleFormProps {
     initialData?: Schedule | null;
     preselectedClassId?: number;
+    prefilledSlot?: { day: string; startTime: string } | null;
     onClose: () => void;
     onSuccess?: () => void;
 }
 
-export default function ScheduleForm({ initialData, preselectedClassId, onClose, onSuccess }: ScheduleFormProps) {
+export default function ScheduleForm({ initialData, preselectedClassId, prefilledSlot, onClose, onSuccess }: ScheduleFormProps) {
     const dispatch = useDispatch<AppDispatch>();
     const { subjects, classRooms, loading, error } = useSelector((state: RootState) => state.admin);
 
     // Form State
     const [classId, setClassId] = useState<number | string>(preselectedClassId || initialData?.classRoom?.id || '');
     const [subjectId, setSubjectId] = useState<number | string>(initialData?.subject?.id || '');
-    const [day, setDay] = useState<string>(initialData?.day || 'Monday');
-    const [startTime, setStartTime] = useState<string>(initialData?.startTime || '');
+    const [day, setDay] = useState<string>(initialData?.day || prefilledSlot?.day || 'Monday');
+    const [startTime, setStartTime] = useState<string>(initialData?.startTime || prefilledSlot?.startTime || '');
     const [endTime, setEndTime] = useState<string>(initialData?.endTime || '');
     const [formError, setFormError] = useState<string | null>(null);
 
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    // Fixed Periods Configuration
+    const PERIODS = [
+        { label: 'Period 1 (08:00 - 09:00)', value: '08:00' },
+        { label: 'Period 2 (09:00 - 10:00)', value: '09:00' },
+        { label: 'Period 3 (10:00 - 11:00)', value: '10:00' },
+        { label: 'Period 4 (11:00 - 12:00)', value: '11:00' },
+        { label: 'Period 5 (12:00 - 13:00)', value: '12:00' },
+        { label: 'Period 6 (13:00 - 14:00)', value: '13:00' },
+        { label: 'Period 7 (14:00 - 15:00)', value: '14:00' },
+        { label: 'Period 8 (15:00 - 16:00)', value: '15:00' },
+    ];
+
+    const DAYS_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']; // Match grid requirement
 
     useEffect(() => {
         if (subjects.length === 0) dispatch(fetchSubjects());
         if (classRooms.length === 0) dispatch(fetchClassRooms());
     }, [dispatch, subjects.length, classRooms.length]);
 
-    // Update state when initialData changes (if reusing component)
+    // Update state when initialData changes or prefilledSlot changes
     useEffect(() => {
         if (initialData) {
             setClassId(initialData.classRoom?.id || classId);
@@ -41,35 +54,38 @@ export default function ScheduleForm({ initialData, preselectedClassId, onClose,
             setDay(initialData.day);
             setStartTime(initialData.startTime);
             setEndTime(initialData.endTime);
-        } else if (preselectedClassId) {
-            setClassId(preselectedClassId);
-            // Reset others if switching to 'add' mode
-            setSubjectId('');
-            setStartTime('');
-            setEndTime('');
+        } else {
+            if (preselectedClassId) setClassId(preselectedClassId);
+            if (prefilledSlot) {
+                setDay(prefilledSlot.day);
+                setStartTime(prefilledSlot.startTime);
+            }
         }
-    }, [initialData, preselectedClassId]);
+    }, [initialData, preselectedClassId, prefilledSlot, classId]);
+
+    const calculateEndTime = (start: string) => {
+        const [hour, minute] = start.split(':').map(Number);
+        const endHour = hour + 1;
+        return `${endHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
 
-        if (!classId || !subjectId || !day || !startTime || !endTime) {
+        if (!classId || !subjectId || !day || !startTime) {
             setFormError("All fields are required.");
             return;
         }
 
-        if (startTime >= endTime) {
-            setFormError("Start time must be before end time.");
-            return;
-        }
+        const calculatedEndTime = calculateEndTime(startTime);
 
         const payload = {
             classId: Number(classId),
             subjectId: Number(subjectId),
             day,
             startTime,
-            endTime
+            endTime: calculatedEndTime
         };
 
         try {
@@ -109,7 +125,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, onClose,
                         </div>
                     )}
 
-                    {/* Class Selection (Only if not preselected or if admin wants to change) */}
+                    {/* Class Selection */}
                     {!preselectedClassId && (
                         <div className="space-y-2">
                             <label className="text-xs font-black uppercase tracking-widest text-slate-400">Classroom</label>
@@ -155,37 +171,27 @@ export default function ScheduleForm({ initialData, preselectedClassId, onClose,
                             onChange={(e) => setDay(e.target.value)}
                             className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
                         >
-                            {days.map(d => (
+                            {DAYS_ORDER.map(d => (
                                 <option key={d} value={d}>{d}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* Time Selection */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400">Start Time</label>
-                            <div className="relative">
-                                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                <input
-                                    type="time"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                />
-                            </div>
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-xs font-black uppercase tracking-widest text-slate-400">End Time</label>
-                            <div className="relative">
-                                <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                <input
-                                    type="time"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                />
-                            </div>
+                    {/* Period/Time Selection */}
+                    <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-slate-400">Period Slot (1 Hour)</label>
+                        <div className="relative">
+                            <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                            <select
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                            >
+                                <option value="">Select Period</option>
+                                {PERIODS.map(p => (
+                                    <option key={p.value} value={p.value}>{p.label}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
