@@ -91,6 +91,9 @@ export default function ClassDetailPage() {
                                 <Calendar className="w-6 h-6 mr-3 text-orange-500" />
                                 Weekly Timetable
                             </h2>
+                            <Link href={`/admin/classes/${id}/schedule/new`} className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">
+                                + Add Slot
+                            </Link>
                         </div>
                         <Timetable schedules={classSchedules} />
                     </div>

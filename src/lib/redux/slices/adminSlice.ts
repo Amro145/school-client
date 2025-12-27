@@ -12,7 +12,8 @@ import {
     Subject,
     Student,
     Teacher,
-    ClassRoom
+    ClassRoom,
+    Schedule
 } from '@/types/admin';
 
 interface AdminState {
@@ -28,7 +29,7 @@ interface AdminState {
     loading: boolean;
     error: string | null;
     isAutoSaveEnabled: boolean;
-    currentClass: (ClassRoom & { students: Student[]; subjects: Subject[]; schedules: any[] }) | null;
+    currentClass: (ClassRoom & { students: Student[]; subjects: Subject[]; schedules: Schedule[] }) | null;
 }
 
 const initialState: AdminState = {
@@ -362,6 +363,26 @@ export const createNewClassRoom = createAsyncThunk(
     }
 );
 
+export const createNewSchedule = createAsyncThunk(
+    'admin/createSchedule',
+    async (scheduleData: { classId: number; subjectId: number; day: string; startTime: string; endTime: string }, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        try {
+            return await classService.createSchedule(scheduleData);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create schedule');
+            }
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -607,6 +628,21 @@ const adminSlice = createSlice({
                 state.currentClass = action.payload;
             })
             .addCase(fetchClassById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Create New Schedule
+            .addCase(createNewSchedule.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(createNewSchedule.fulfilled, (state, action) => {
+                state.loading = false;
+                if (state.currentClass && state.currentClass.schedules) {
+                    state.currentClass.schedules.push(action.payload);
+                }
+            })
+            .addCase(createNewSchedule.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
             });

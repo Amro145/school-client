@@ -118,5 +118,29 @@ export const classService = {
 
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return response.data.data.createSchool;
+  },
+
+  async createSchedule(scheduleData: { classId: number; subjectId: number; day: string; startTime: string; endTime: string }) {
+    const mutation = `
+        mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+            createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
+                id
+                day
+                startTime
+                endTime
+                subject {
+                    id
+                    name
+                }
+            }
+        }
+    `;
+    const response = await api.post('', {
+      query: mutation,
+      variables: scheduleData
+    });
+
+    if (response.data.errors) throw new Error(response.data.errors[0].message);
+    return response.data.data.createSchedule;
   }
 };
