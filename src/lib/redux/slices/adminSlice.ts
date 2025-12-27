@@ -30,6 +30,7 @@ interface AdminState {
     error: string | null;
     isAutoSaveEnabled: boolean;
     currentClass: (ClassRoom & { students: Student[]; subjects: Subject[]; schedules: Schedule[] }) | null;
+    schedules: Schedule[];
 }
 
 const initialState: AdminState = {
@@ -46,6 +47,7 @@ const initialState: AdminState = {
     error: null,
     isAutoSaveEnabled: true,
     currentClass: null,
+    schedules: [],
 };
 
 export const fetchAdminDashboardData = createAsyncThunk(
@@ -383,6 +385,66 @@ export const createNewSchedule = createAsyncThunk(
     }
 );
 
+export const fetchSchedules = createAsyncThunk(
+    'admin/fetchSchedules',
+    async (_, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        try {
+            return await classService.getAllSchedules();
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch schedules');
+            }
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const updateScheduleThunk = createAsyncThunk(
+    'admin/updateSchedule',
+    async ({ id, data }: { id: number | string, data: { classId: number; subjectId: number; day: string; startTime: string; endTime: string } }, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        try {
+            return await classService.updateSchedule(id, data);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update schedule');
+            }
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
+export const deleteSchedule = createAsyncThunk(
+    'admin/deleteSchedule',
+    async (id: number | string, { rejectWithValue, getState }) => {
+        const { auth } = getState() as RootState;
+        if (!auth.isAuthenticated) {
+            return rejectWithValue('User must be authenticated');
+        }
+
+        try {
+            return await classService.deleteSchedule(id);
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to delete schedule');
+            }
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 const adminSlice = createSlice({
     name: 'admin',
     initialState,
@@ -597,7 +659,7 @@ const adminSlice = createSlice({
                     state.currentStudent.grades = state.currentStudent.grades.map(grade => {
                         const updated = updatedGrades.find(u => u.id.toString() === grade.id.toString());
                         return updated ? { ...grade, score: updated.score } : grade;
-                    });
+                    })
                 }
             })
             .addCase(updateGradesBulk.rejected, (state, action) => {
@@ -645,8 +707,61 @@ const adminSlice = createSlice({
             .addCase(createNewSchedule.rejected, (state, action) => {
                 state.loading = false;
                 state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Fetch Schedules
+            .addCase(fetchSchedules.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchSchedules.fulfilled, (state, action) => {
+                state.loading = false;
+                state.schedules = action.payload;
+            })
+            .addCase(fetchSchedules.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Update Schedule
+            .addCase(updateScheduleThunk.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateScheduleThunk.fulfilled, (state, action) => {
+                state.loading = false;
+                const index = state.schedules.findIndex(s => s.id === action.payload.id);
+                if (index !== -1) {
+                    state.schedules[index] = action.payload;
+                }
+                // Also update currentClass schedules if applicable
+                if (state.currentClass && state.currentClass.schedules) {
+                    const classIndex = state.currentClass.schedules.findIndex(s => s.id === action.payload.id);
+                    if (classIndex !== -1) {
+                        state.currentClass.schedules[classIndex] = action.payload;
+                    }
+                }
+            })
+            .addCase(updateScheduleThunk.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
+            })
+            // Delete Schedule
+            .addCase(deleteSchedule.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(deleteSchedule.fulfilled, (state, action) => {
+                state.loading = false;
+                const deletedId = Number(action.payload);
+                state.schedules = state.schedules.filter(s => s.id !== deletedId);
+                // Also update currentClass schedules if applicable
+                if (state.currentClass && state.currentClass.schedules) {
+                    state.currentClass.schedules = state.currentClass.schedules.filter(s => s.id !== deletedId);
+                }
+            })
+            .addCase(deleteSchedule.rejected, (state, action) => {
+                state.loading = false;
+                state.error = (action.payload as string) || 'An error occurred';
             });
-
     },
 });
 

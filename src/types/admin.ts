@@ -69,7 +69,15 @@ export interface Schedule {
     subject: {
         id: string;
         name: string;
+        teacher?: {
+            id: string;
+            userName: string;
+        };
     } | null;
+    classRoom?: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface ClassRoom {
