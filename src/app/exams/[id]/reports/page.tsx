@@ -2,38 +2,28 @@
 
 export const runtime = "edge";
 
-import { useEffect, use } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "next/navigation";
 import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchTeacherExamReports, fetchAvailableExams } from "@/lib/redux/slices/examSlice";
-import { useRouter } from "next/navigation";
-import {
-    ChevronLeft,
-    Users,
-    Download,
-    Search,
-    Filter,
-    ArrowUpRight,
-    TrendingUp,
-    Clock,
-    CheckCircle2
-} from "lucide-react";
-import { motion } from "framer-motion";
+import { fetchTeacherExamReports } from "@/lib/redux/slices/examSlice";
+import { ArrowLeft, Search } from "lucide-react";
+import Link from "next/link";
 
-export default function ExamReportsPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id } = use(params);
+export default function ExamReportsPage() {
+    const params = useParams();
     const dispatch = useDispatch<AppDispatch>();
-    const router = useRouter();
-    const { reports, availableExams, loading } = useSelector((state: RootState) => state.exam);
+    const { reports, loading, error } = useSelector((state: RootState) => state.exam);
+    const { user } = useSelector((state: RootState) => state.auth);
+    const id = params.id as string;
+
+    const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        dispatch(fetchTeacherExamReports(Number(id)));
-        if (availableExams.length === 0) {
-            dispatch(fetchAvailableExams());
+        if (id) {
+            dispatch(fetchTeacherExamReports(Number(id)));
         }
-    }, [dispatch, id, availableExams.length]);
-
-    const exam = availableExams.find(e => e.id === id);
+    }, [dispatch, id]);
 
     if (loading) {
         return (
@@ -43,120 +33,108 @@ export default function ExamReportsPage({ params }: { params: Promise<{ id: stri
         );
     }
 
+    if (error) {
+        return <div className="p-8 text-center text-red-500 font-bold">Error loading reports: {error}</div>;
+    }
+
+    if (user?.role === "student") {
+        return <div className="p-8 text-center text-red-500">Access Denied</div>;
+    }
+
+    const filteredReports = reports.filter(r =>
+        r.student?.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.student?.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const averageScore = reports.length > 0
-        ? (reports.reduce((acc, r) => acc + r.totalScore, 0) / reports.length).toFixed(1)
+        ? Math.round(reports.reduce((acc, curr) => acc + curr.totalScore, 0) / reports.length)
+        : 0;
+
+    const maxScore = reports.length > 0
+        ? Math.max(...reports.map(r => r.totalScore))
         : 0;
 
     return (
-        <div className="space-y-8 pb-20">
+        <div className="space-y-8">
             <div className="flex items-center gap-4">
-                <button
-                    onClick={() => router.back()}
-                    className="p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/60 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-500"
-                >
-                    <ChevronLeft className="w-5 h-5" />
-                </button>
+                <Link href="/exams" className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                    <ArrowLeft className="w-6 h-6 text-slate-500" />
+                </Link>
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Performance Reports</h1>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium">Detailed breakdown of student evaluations for &quot;{exam?.title || 'Exam'}&quot;</p>
+                    <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Exam Report</h1>
+                    <p className="text-slate-500 dark:text-slate-400">Student performance analytics</p>
                 </div>
             </div>
 
-            {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {[
-                    { label: "Submissions", value: reports.length, icon: Users },
-                    { label: "Average Score", value: averageScore, icon: TrendingUp },
-                    { label: "Completion", value: "94%", icon: CheckCircle2 },
-                    { label: "Status", value: "Live", icon: Clock }
-                ].map((stat, i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                        className="bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-200/60 dark:border-slate-800 shadow-sm"
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400">
-                                <stat.icon className="w-6 h-6" />
-                            </div>
-                            <button className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                                <ArrowUpRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                        <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest leading-none mb-2">{stat.label}</h4>
-                        <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">{stat.value}</span>
-                    </motion.div>
-                ))}
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-[24px] border border-slate-200/60 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Submissions</span>
+                    <span className="text-3xl font-black text-slate-900 dark:text-white">{reports.length}</span>
+                </div>
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-[24px] border border-slate-200/60 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Average Score</span>
+                    <span className="text-3xl font-black text-blue-600 dark:text-blue-400">{averageScore}</span>
+                </div>
+                <div className="bg-white dark:bg-slate-900 p-6 rounded-[24px] border border-slate-200/60 dark:border-slate-800 shadow-sm">
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Highest Score</span>
+                    <span className="text-3xl font-black text-green-600 dark:text-green-400">{maxScore}</span>
+                </div>
             </div>
 
-            {/* Main Content */}
-            <div className="bg-white dark:bg-slate-900 rounded-[40px] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
-                <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            {/* Table Section */}
+            <div className="bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200/60 dark:border-slate-800 shadow-sm overflow-hidden">
+                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between gap-4">
                     <div className="relative flex-1 max-w-md">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Search students or emails..."
-                            className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 rounded-2xl outline-hidden focus:border-blue-500 transition-all font-medium"
+                            placeholder="Search student..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none ring-0 focus:ring-2 focus:ring-blue-500 transition-all font-medium"
                         />
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <button className="flex items-center gap-2 px-6 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl font-bold text-slate-600 dark:text-slate-300">
-                            <Filter className="w-5 h-5" />
-                            Filter
-                        </button>
-                        <button className="flex items-center gap-2 px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-bold shadow-xl shadow-slate-900/10">
-                            <Download className="w-5 h-5" />
-                            Export CSV
-                        </button>
                     </div>
                 </div>
 
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-slate-50/50 dark:bg-slate-800/20">
-                                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">Student Name</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">Email Address</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">Submission Date</th>
-                                <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800 text-center">Final Score</th>
+                    <table className="w-full">
+                        <thead className="bg-slate-50 dark:bg-slate-800/50">
+                            <tr>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Student</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Email</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Submitted At</th>
+                                <th className="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Score</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {reports.length === 0 ? (
+                        <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                            {filteredReports.length === 0 ? (
                                 <tr>
-                                    <td colSpan={4} className="px-8 py-20 text-center text-slate-400 font-medium">
-                                        No submissions recorded yet for this exam.
+                                    <td colSpan={4} className="px-6 py-12 text-center text-slate-500 font-medium">
+                                        No submissions found matching your search.
                                     </td>
                                 </tr>
                             ) : (
-                                reports.map((report) => (
-                                    <tr key={report.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                        <td className="px-8 py-6 border-b border-slate-50 dark:border-slate-800">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-xs uppercase shadow-sm">
-                                                    {report.student?.userName.substring(0, 2)}
+                                filteredReports.map((report) => (
+                                    <tr key={report.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-xs font-bold text-blue-600 dark:text-blue-400">
+                                                    {report.student?.userName.substring(0, 2).toUpperCase()}
                                                 </div>
-                                                <span className="font-bold text-slate-900 dark:text-white tracking-tight">{report.student?.userName}</span>
+                                                <span className="font-bold text-slate-900 dark:text-white">{report.student?.userName}</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6 border-b border-slate-50 dark:border-slate-800">
-                                            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{report.student?.email}</span>
+                                        <td className="px-6 py-4 font-medium text-slate-600 dark:text-slate-400 text-sm">
+                                            {report.student?.email}
                                         </td>
-                                        <td className="px-8 py-6 border-b border-slate-50 dark:border-slate-800">
-                                            <span className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                                                {new Date(report.submittedAt).toLocaleDateString()}
-                                            </span>
-                                            <span className="block text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">
-                                                {new Date(report.submittedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                            </span>
+                                        <td className="px-6 py-4 font-medium text-slate-500 text-sm">
+                                            {new Date(report.submittedAt).toLocaleString()}
                                         </td>
-                                        <td className="px-8 py-6 border-b border-slate-50 dark:border-slate-800 text-center">
-                                            <div className="inline-flex items-center justify-center px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl font-black text-lg min-w-[80px] shadow-sm">
+                                        <td className="px-6 py-4 text-right">
+                                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                                                 {report.totalScore}
-                                            </div>
+                                            </span>
                                         </td>
                                     </tr>
                                 ))

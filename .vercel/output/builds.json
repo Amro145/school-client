@@ -16,23 +16,7 @@
       "config": {
         "zeroConfig": true,
         "framework": "nextjs"
-      },
-      "error": {
-        "name": "Error",
-        "stack": "Error: The file \"/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.next/routes-manifest.json\" couldn't be found. This is often caused by a misconfiguration in your project.\n    at getRoutesManifest (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/next/dist/index.js:11336:11)\n    at async Object.build (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/next/dist/index.js:16719:26)\n    at async _Span.trace (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/build-utils/dist/index.js:26487:14)\n    at async doBuild (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:149786:23)\n    at async _Span.trace (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/build-utils/dist/index.js:26487:14)\n    at async main3 (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:149515:7)\n    at async main18 (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:191780:19)",
-        "message": "The file \"/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.next/routes-manifest.json\" couldn't be found. This is often caused by a misconfiguration in your project.",
-        "hideStackTrace": true,
-        "code": "NEXT_NO_ROUTES_MANIFEST",
-        "link": "https://err.sh/vercel/vercel/now-next-routes-manifest"
       }
     }
-  ],
-  "error": {
-    "name": "Error",
-    "stack": "Error: The file \"/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.next/routes-manifest.json\" couldn't be found. This is often caused by a misconfiguration in your project.\n    at getRoutesManifest (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/next/dist/index.js:11336:11)\n    at async Object.build (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/next/dist/index.js:16719:26)\n    at async _Span.trace (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/build-utils/dist/index.js:26487:14)\n    at async doBuild (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:149786:23)\n    at async _Span.trace (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/@vercel/build-utils/dist/index.js:26487:14)\n    at async main3 (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:149515:7)\n    at async main18 (/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/vercel/dist/index.js:191780:19)",
-    "message": "The file \"/home/nasor/Programming/SCHOOL-PROJECT/Project/newClient/.next/routes-manifest.json\" couldn't be found. This is often caused by a misconfiguration in your project.",
-    "hideStackTrace": true,
-    "code": "NEXT_NO_ROUTES_MANIFEST",
-    "link": "https://err.sh/vercel/vercel/now-next-routes-manifest"
-  }
+  ]
 }

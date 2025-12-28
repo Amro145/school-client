@@ -13,8 +13,6 @@ import {
     FileText,
     Clock,
     ChevronRight,
-    Users,
-    GraduationCap,
     BookOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -23,7 +21,6 @@ export default function ExamsPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const { availableExams, loading } = useSelector((state: RootState) => state.exam);
-    const { subjects } = useSelector((state: RootState) => state.admin);
 
     useEffect(() => {
         dispatch(fetchAvailableExams());
@@ -31,7 +28,6 @@ export default function ExamsPage() {
     }, [dispatch]);
 
     const isTeacher = user?.role === "teacher" || user?.role === "admin";
-    const isStudent = user?.role === "student";
 
     if (loading) {
         return (
@@ -54,7 +50,7 @@ export default function ExamsPage() {
                 </div>
                 {isTeacher && (
                     <Link
-                        href="/admin/exams/create"
+                        href="/exams/create"
                         className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/25 active:scale-95"
                     >
                         <Plus className="w-5 h-5" />
@@ -91,7 +87,7 @@ export default function ExamsPage() {
                                 </div>
                             </div>
 
-                            <Link href={isTeacher ? `/admin/exams/${exam.id}/reports` : `/admin/exams/${exam.id}`}>
+                            <Link href={isTeacher ? `/exams/${exam.id}/reports` : `/exams/${exam.id}`}>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
                                     {exam.title}
                                 </h3>
@@ -123,7 +119,7 @@ export default function ExamsPage() {
                                     </div>
                                 </div>
                                 <Link
-                                    href={isTeacher ? `/admin/exams/${exam.id}/reports` : `/admin/exams/${exam.id}`}
+                                    href={isTeacher ? `/exams/${exam.id}/reports` : `/exams/${exam.id}`}
                                     className="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl hover:bg-blue-600 hover:text-white transition-all text-slate-400"
                                 >
                                     <ChevronRight className="w-5 h-5" />

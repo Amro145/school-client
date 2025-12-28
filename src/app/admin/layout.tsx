@@ -30,7 +30,7 @@ const adminItems = [
     { name: 'Subjects', href: '/subjects', icon: BarChart3 },
     { name: 'Students', href: '/students', icon: GraduationCap },
     { name: 'Teachers', href: '/admin/teachers', icon: Users },
-    { name: 'Examinations', href: '/admin/exams', icon: FileText },
+    { name: 'Examinations', href: '/exams', icon: FileText },
     { name: 'Schedules', href: '/admin/schedules', icon: Table },
 ];
 
@@ -38,7 +38,7 @@ const teacherItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'My Classes', href: '/admin/classes', icon: Users },
-    { name: 'Examinations', href: '/admin/exams', icon: FileText },
+    { name: 'Examinations', href: '/exams', icon: FileText },
     { name: 'Schedules', href: '/admin/schedules', icon: Table },
 ];
 
