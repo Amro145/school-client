@@ -32,6 +32,18 @@ export const fetchAvailableExams = createAsyncThunk(
     }
 );
 
+export const fetchExamDetails = createAsyncThunk(
+    'exam/fetchExamDetails',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            return await examService.getExamDetails(id);
+        } catch (error: unknown) {
+            if (error instanceof Error) return rejectWithValue(error.message);
+            return rejectWithValue('An unexpected error occurred');
+        }
+    }
+);
+
 export const fetchExamForTaking = createAsyncThunk(
     'exam/fetchExamForTaking',
     async (id: number, { rejectWithValue }) => {
@@ -114,6 +126,20 @@ const examSlice = createSlice({
                 state.availableExams = action.payload;
             })
             .addCase(fetchAvailableExams.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+                state.error = action.payload as string;
+            })
+            .addCase(fetchExamDetails.pending, (state) => {
+                state.loading = true;
+                state.currentExam = null;
+                state.error = null;
+            })
+            .addCase(fetchExamDetails.fulfilled, (state, action) => {
+                state.loading = false;
+                state.currentExam = action.payload;
+            })
+            .addCase(fetchExamDetails.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })

@@ -6,8 +6,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
 import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchExamForTaking, clearExamState } from "@/lib/redux/slices/examSlice";
-import { ArrowLeft, Clock, AlertCircle, PlayCircle, BookOpen, User } from "lucide-react";
+import { fetchExamDetails, clearExamState } from "@/lib/redux/slices/examSlice";
+import { ArrowLeft, Clock, AlertCircle, PlayCircle, BookOpen, User, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function ExamLobbyPage() {
@@ -21,7 +21,7 @@ export default function ExamLobbyPage() {
     useEffect(() => {
         if (id) {
             dispatch(clearExamState());
-            dispatch(fetchExamForTaking(Number(id)));
+            dispatch(fetchExamDetails(Number(id)));
         }
     }, [dispatch, id]);
 
@@ -34,6 +34,34 @@ export default function ExamLobbyPage() {
     }
 
     if (error) {
+        const isSubmitted = error?.toString().toLowerCase().includes("already submitted") ||
+            error?.toString().includes("EXAM_ALREADY_SUBMITTED");
+
+        if (isSubmitted) {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                    <div className="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
+                        <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="text-center space-y-2">
+                        <h3 className="text-2xl font-black text-slate-900 dark:text-white">Exam Completed</h3>
+                        <p className="text-slate-500 max-w-md mx-auto font-medium">
+                            You have already submitted this exam. You can view your results and performance report.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <Link href="/exams" className="px-6 py-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                            Back to Exams
+                        </Link>
+                        <Link href={`/exams/${id}/result`} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-500/25 transition-all flex items-center gap-2">
+                            View Results
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
                 <div className="w-16 h-16 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">

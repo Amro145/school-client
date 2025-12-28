@@ -69,6 +69,27 @@ export const examService = {
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return response.data.data.getAvailableExams;
   },
+  async getExamDetails(id: number) {
+    const query = `
+      query GetExam($id: Int!) {
+        getExam(id: $id) {
+          id
+          title
+          description
+          durationInMinutes
+          type
+          teacher { userName }
+          subject { name }
+        }
+      }
+    `;
+    const response = await api.post('', {
+      query,
+      variables: { id }
+    });
+    if (response.data.errors) throw new Error(response.data.errors[0].message);
+    return response.data.data.getExam;
+  },
 
   async getExamForTaking(id: number) {
     const query = `
