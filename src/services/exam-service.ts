@@ -99,6 +99,7 @@ export const examService = {
           title
           description
           durationInMinutes
+          type
           questions {
             id
             questionText

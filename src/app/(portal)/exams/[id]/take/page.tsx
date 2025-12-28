@@ -107,7 +107,24 @@ export default function TakeExamPage() {
     }
 
     const questions = currentExam.questions || [];
+    if (!questions.length) {
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto">
+                        <AlertTriangle className="w-8 h-8 text-yellow-600" />
+                    </div>
+                    <h1 className="text-2xl font-bold text-slate-900">No Questions Found</h1>
+                    <p className="text-slate-500">This exam has no questions configured. Please contact your administrator.</p>
+                    <button onClick={() => router.back()} className="text-blue-600 font-bold hover:underline">Go Back</button>
+                </div>
+            </div>
+        );
+    }
+
     const currentQuestion = questions[activeQuestionIndex];
+    if (!currentQuestion) return null; // Should not happen with above check, but safe
+
     const progress = ((activeQuestionIndex + 1) / questions.length) * 100;
     const isLastQuestion = activeQuestionIndex === questions.length - 1;
 
