@@ -14,7 +14,6 @@ import {
     Save,
     ChevronLeft,
     HelpCircle,
-    List,
     CheckCircle2,
     Clock,
     FileText
@@ -26,6 +25,7 @@ export default function CreateExamPage() {
     const router = useRouter();
     const { subjects, classRooms } = useSelector((state: RootState) => state.admin);
     const { loading } = useSelector((state: RootState) => state.exam);
+    const { user } = useSelector((state: RootState) => state.auth);
 
     const [examData, setExamData] = useState({
         title: "",
@@ -55,9 +55,13 @@ export default function CreateExamPage() {
         setExamData({ ...examData, questions: newQuestions });
     };
 
-    const handleQuestionChange = (index: number, field: string, value: any) => {
+    const handleQuestionChange = <K extends keyof (typeof examData.questions)[0]>(
+        index: number,
+        field: K,
+        value: (typeof examData.questions)[0][K]
+    ) => {
         const newQuestions = [...examData.questions];
-        (newQuestions[index] as any)[field] = value;
+        newQuestions[index] = { ...newQuestions[index], [field]: value };
         setExamData({ ...examData, questions: newQuestions });
     };
 
@@ -168,10 +172,17 @@ export default function CreateExamPage() {
                                 className="w-full px-6 py-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 focus:border-blue-500 rounded-[20px] outline-hidden transition-all text-slate-900 dark:text-white font-bold appearance-none disabled:opacity-50"
                             >
                                 <option value="">Select Subject</option>
-                                {subjects.filter(s => s.class?.id === examData.classId).map(sub => (
+                                {subjects.filter(s => String(s.class?.id) === examData.classId).map(sub => (
                                     <option key={sub.id} value={sub.id}>{sub.name}</option>
                                 ))}
                             </select>
+                            {examData.classId && subjects.filter(s => String(s.class?.id) === examData.classId).length === 0 && (
+                                <p className="text-xs text-red-500 font-bold mt-2 ml-1">
+                                    {user?.role === 'teacher'
+                                        ? "No subjects assigned to you for this class."
+                                        : "No subjects found for this class in your school."}
+                                </p>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">Duration (Minutes)</label>
