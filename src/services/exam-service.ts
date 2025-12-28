@@ -58,6 +58,7 @@ export const examService = {
           class { name }
           teacher { userName }
           createdAt
+          hasSubmitted
         }
       }
     `;

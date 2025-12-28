@@ -135,6 +135,15 @@ const examSlice = createSlice({
             .addCase(submitExam.fulfilled, (state, action) => {
                 state.loading = false;
                 state.lastSubmission = action.payload;
+                // Optimistically update the local state to reflect submission
+                const examId = action.meta.arg.examId;
+                const examIndex = state.availableExams.findIndex(e => String(e.id) === String(examId));
+                if (examIndex !== -1) {
+                    state.availableExams[examIndex] = {
+                        ...state.availableExams[examIndex],
+                        hasSubmitted: true
+                    };
+                }
             })
             .addCase(submitExam.rejected, (state, action) => {
                 state.loading = false;

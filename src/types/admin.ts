@@ -102,6 +102,7 @@ export interface Exam {
     teacher?: { userName: string };
     questions?: Question[];
     submissions?: ExamSubmission[];
+    hasSubmitted?: boolean;
 }
 
 export interface Question {
