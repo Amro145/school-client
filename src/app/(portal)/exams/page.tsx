@@ -37,9 +37,6 @@ export default function ExamsPage() {
         );
     }
 
-    const activeExams = availableExams.filter(e => !e.hasSubmitted);
-    const completedExams = availableExams.filter(e => e.hasSubmitted);
-
     return (
         <div className="space-y-12">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -62,30 +59,35 @@ export default function ExamsPage() {
                 )}
             </div>
 
-            {/* Active Exams Section */}
+            {/* All Exams Section */}
             <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                     <span className="w-2 h-8 bg-blue-600 rounded-full inline-block"></span>
                     Available Exams
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {activeExams.length === 0 ? (
+                    {availableExams.length === 0 ? (
                         <div className="col-span-full flex flex-col items-center justify-center py-20 bg-white dark:bg-slate-900 rounded-[32px] border border-slate-200/60 dark:border-slate-800 animate-in fade-in duration-700">
                             <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-3xl flex items-center justify-center mb-6">
                                 <FileText className="w-10 h-10 text-slate-300 dark:text-slate-600" />
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">No active exams</h3>
-                            <p className="text-slate-500 dark:text-slate-400">You have no pending exams to take.</p>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">No exams available</h3>
+                            <p className="text-slate-500 dark:text-slate-400">There are no exams assigned to you at this time.</p>
                         </div>
                     ) : (
-                        activeExams.map((exam, index) => (
+                        availableExams.map((exam, index) => (
                             <motion.div
                                 key={exam.id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="group bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-200/60 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5"
+                                className="group bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-200/60 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 relative overflow-hidden"
                             >
+                                {exam.hasSubmitted && (
+                                    <div className="absolute top-0 right-0 px-4 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black uppercase tracking-widest rounded-bl-2xl border-l border-b border-green-500/20">
+                                        Previously Completed
+                                    </div>
+                                )}
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl">
                                         <BookOpen className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -127,12 +129,14 @@ export default function ExamsPage() {
                                             <p className="text-slate-400 font-medium leading-none mt-1">Examiner</p>
                                         </div>
                                     </div>
-                                    <Link
-                                        href={isTeacher ? `/exams/${exam.id}/reports` : `/exams/${exam.id}`}
-                                        className="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl hover:bg-blue-600 hover:text-white transition-all text-slate-400"
-                                    >
-                                        <ChevronRight className="w-5 h-5" />
-                                    </Link>
+                                    {!exam.hasSubmitted && (
+                                        <Link
+                                            href={isTeacher ? `/exams/${exam.id}/reports` : `/exams/${exam.id}`}
+                                            className={`p-2 rounded-xl transition-all ${exam.hasSubmitted ? 'bg-green-50 dark:bg-green-900/20 text-green-600 hover:bg-green-600 hover:text-white' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 hover:bg-blue-600 hover:text-white'}`}
+                                        >
+                                            <ChevronRight className="w-5 h-5" />
+                                        </Link>
+                                    )}
                                 </div>
                             </motion.div>
                         ))
@@ -140,51 +144,6 @@ export default function ExamsPage() {
                 </div>
             </div>
 
-            {/* Completed Exams Section */}
-            {completedExams.length > 0 && (
-                <div className="opacity-60 grayscale pointer-events-none select-none">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                        <span className="w-2 h-8 bg-slate-400 rounded-full inline-block"></span>
-                        Completed Exams
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {completedExams.map((exam, index) => (
-                            <div
-                                key={exam.id}
-                                className="bg-slate-100 dark:bg-slate-800/50 rounded-[32px] p-6 border border-slate-200 dark:border-slate-700"
-                            >
-                                <div className="flex justify-between items-start mb-6">
-                                    <div className="p-3 bg-slate-200 dark:bg-slate-700 rounded-2xl">
-                                        <BookOpen className="w-6 h-6 text-slate-500 dark:text-slate-400" />
-                                    </div>
-                                    <div className="flex items-center text-xs font-bold text-slate-500 uppercase tracking-wider bg-slate-200 dark:bg-slate-700 px-3 py-1.5 rounded-full">
-                                        Completed
-                                    </div>
-                                </div>
-
-                                <h3 className="text-xl font-bold text-slate-600 dark:text-slate-400 mb-2">
-                                    {exam.title}
-                                </h3>
-
-                                <p className="text-slate-500 dark:text-slate-500 text-sm line-clamp-2 mb-6 font-medium">
-                                    {exam.description}
-                                </p>
-
-                                <div className="grid grid-cols-2 gap-4 mb-6">
-                                    <div className="bg-slate-200 dark:bg-slate-700/50 rounded-2xl p-3">
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Subject</span>
-                                        <span className="text-sm font-bold text-slate-600 dark:text-slate-400 truncate block">{exam.subject?.name}</span>
-                                    </div>
-                                    <div className="bg-slate-200 dark:bg-slate-700/50 rounded-2xl p-3">
-                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Class</span>
-                                        <span className="text-sm font-bold text-slate-600 dark:text-slate-400 truncate block">{exam.class?.name}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
