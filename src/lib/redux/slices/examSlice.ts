@@ -48,6 +48,7 @@ export const createExamTransition = createAsyncThunk(
     'exam/createExam',
     async (data: {
         title: string;
+        type: string;
         description?: string;
         durationInMinutes: number;
         subjectId: number;

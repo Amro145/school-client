@@ -18,6 +18,7 @@ export interface Subject {
     grades: {
         id: string;
         score: number;
+        type: string;
         student: {
             id: string;
             userName: string;
@@ -39,6 +40,7 @@ export interface Student {
     grades: {
         id: string;
         score: number;
+        type: string;
         subject?: {
             id: string;
             name: string;
@@ -91,6 +93,7 @@ export interface ClassRoom {
 export interface Exam {
     id: string;
     title: string;
+    type: string;
     description?: string;
     durationInMinutes: number;
     subjectId: string;

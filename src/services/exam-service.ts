@@ -4,6 +4,7 @@ import { Exam, ExamSubmission } from '@/types/admin';
 export const examService = {
   async createExam(data: {
     title: string;
+    type: string;
     description?: string;
     durationInMinutes: number;
     subjectId: number;
@@ -18,6 +19,7 @@ export const examService = {
     const mutation = `
       mutation CreateExamWithQuestions(
         $title: String!, 
+        $type: String!,
         $description: String, 
         $durationInMinutes: Int!, 
         $subjectId: Int!, 
@@ -26,6 +28,7 @@ export const examService = {
       ) {
         createExamWithQuestions(
           title: $title, 
+          type: $type,
           description: $description, 
           durationInMinutes: $durationInMinutes, 
           subjectId: $subjectId, 

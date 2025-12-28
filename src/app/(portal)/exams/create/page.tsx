@@ -28,6 +28,7 @@ export default function CreateExamPage() {
 
     const [examData, setExamData] = useState({
         title: "",
+        type: "Midterm",
         description: "",
         durationInMinutes: 30,
         classId: "",
@@ -129,7 +130,7 @@ export default function CreateExamPage() {
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="col-span-2">
+                        <div className="col-span-2 md:col-span-1">
                             <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Exam Title</label>
                             <input
                                 type="text"
@@ -137,8 +138,23 @@ export default function CreateExamPage() {
                                 value={examData.title}
                                 onChange={(e) => handleExamChange("title", e.target.value)}
                                 className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 ring-0 transition-all font-semibold"
-                                placeholder="e.g. Final Mathematics Assessment"
+                                placeholder="e.g. Mathematics Assessment"
                             />
+                        </div>
+
+                        <div className="col-span-2 md:col-span-1">
+                            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Exam Type</label>
+                            <select
+                                required
+                                value={examData.type}
+                                onChange={(e) => handleExamChange("type", e.target.value)}
+                                className="w-full px-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 ring-0 transition-all font-semibold"
+                            >
+                                <option value="Midterm">Midterm</option>
+                                <option value="Final">Final</option>
+                                <option value="Quiz">Quiz</option>
+                                <option value="Assignment">Assignment</option>
+                            </select>
                         </div>
 
                         <div className="col-span-2">
