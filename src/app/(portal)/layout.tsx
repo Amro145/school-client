@@ -27,12 +27,14 @@ const teacherItems = [
     { name: 'My Subjects', href: '/subjects', icon: BookOpen },
     { name: 'Profile', href: '/profile', icon: User },
     { name: "Students", href: '/students', icon: User },
+    { name: "Exams", href: '/exams', icon: BookOpen },
 ];
 
 const studentItems = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { name: 'My Schedule', href: '/dashboard/my-schedule', icon: Calendar },
     { name: 'Profile', href: '/profile', icon: User },
+    { name: "Exams", href: '/exams', icon: BookOpen },
 ];
 
 export default function TeacherLayout({
