@@ -13,6 +13,8 @@ import {
     FileText,
     Clock,
     ChevronRight,
+    Users,
+    GraduationCap,
     BookOpen
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -21,6 +23,7 @@ export default function ExamsPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const { availableExams, loading } = useSelector((state: RootState) => state.exam);
+    const { subjects } = useSelector((state: RootState) => state.admin);
 
     useEffect(() => {
         dispatch(fetchAvailableExams());
@@ -28,6 +31,7 @@ export default function ExamsPage() {
     }, [dispatch]);
 
     const isTeacher = user?.role === "teacher" || user?.role === "admin";
+    const isStudent = user?.role === "student";
 
     if (loading) {
         return (
