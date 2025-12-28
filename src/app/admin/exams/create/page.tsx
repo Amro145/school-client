@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = "edge";
+
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/lib/redux/store";
@@ -15,8 +17,7 @@ import {
     List,
     CheckCircle2,
     Clock,
-    FileText,
-    DashedLine
+    FileText
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -269,8 +270,8 @@ export default function CreateExamPage() {
                                                             type="button"
                                                             onClick={() => handleQuestionChange(qIndex, "correctAnswerIndex", oIndex)}
                                                             className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${q.correctAnswerIndex === oIndex
-                                                                    ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
-                                                                    : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200"
+                                                                ? "bg-green-500 text-white shadow-lg shadow-green-500/30"
+                                                                : "bg-slate-100 dark:bg-slate-800 text-slate-400 hover:bg-slate-200"
                                                                 }`}
                                                         >
                                                             {q.correctAnswerIndex === oIndex ? <CheckCircle2 className="w-5 h-5" /> : <div className="w-2 h-2 rounded-full bg-slate-300" />}
@@ -282,8 +283,8 @@ export default function CreateExamPage() {
                                                             onChange={(e) => handleOptionChange(qIndex, oIndex, e.target.value)}
                                                             placeholder={`Option ${oIndex + 1}`}
                                                             className={`flex-1 px-5 py-3 rounded-xl border outline-hidden transition-all font-medium text-sm ${q.correctAnswerIndex === oIndex
-                                                                    ? "border-green-500 bg-green-50/10 dark:bg-green-500/5 text-slate-900 dark:text-white"
-                                                                    : "border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 text-slate-600 dark:text-slate-400"
+                                                                ? "border-green-500 bg-green-50/10 dark:bg-green-500/5 text-slate-900 dark:text-white"
+                                                                : "border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 text-slate-600 dark:text-slate-400"
                                                                 }`}
                                                         />
                                                         {q.options.length > 2 && (

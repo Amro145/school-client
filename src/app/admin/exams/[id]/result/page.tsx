@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = "edge";
+
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
@@ -60,8 +62,8 @@ export default function ExamResultPage() {
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", damping: 12, delay: 0.2 }}
                             className={`w-36 h-36 rounded-full flex items-center justify-center mx-auto shadow-2xl ${isPassed
-                                    ? "bg-linear-to-br from-green-400 to-green-600 shadow-green-500/40"
-                                    : "bg-linear-to-br from-red-400 to-red-600 shadow-red-500/40"
+                                ? "bg-linear-to-br from-green-400 to-green-600 shadow-green-500/40"
+                                : "bg-linear-to-br from-red-400 to-red-600 shadow-red-500/40"
                                 }`}
                         >
                             {isPassed ? <Trophy className="w-20 h-20 text-white" /> : <XCircle className="w-20 h-20 text-white" />}

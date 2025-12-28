@@ -1,5 +1,7 @@
 "use client";
 
+export const runtime = "edge";
+
 import { useEffect, useState, use, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/lib/redux/store";
@@ -20,7 +22,7 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
     const { id } = use(params);
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const { currentExam, loading, error } = useSelector((state: RootState) => state.exam);
+    const { currentExam, loading } = useSelector((state: RootState) => state.exam);
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<{ questionId: number, selectedIndex: number }[]>([]);
@@ -43,8 +45,8 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
         try {
             await dispatch(submitExam({ examId: Number(id), answers })).unwrap();
             router.push(`/admin/exams/${id}/result`);
-        } catch (err) {
-            console.error("Auto-submit failed", err);
+        } catch {
+            console.error("Auto-submit failed");
             setIsSubmitting(false);
         }
     }, [dispatch, id, answers, router, isSubmitting]);
@@ -75,7 +77,7 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
         try {
             await dispatch(submitExam({ examId: Number(id), answers })).unwrap();
             router.push(`/admin/exams/${id}/result`);
-        } catch (err) {
+        } catch {
             alert("Submission failed. Please try again.");
             setIsSubmitting(false);
         }
@@ -114,8 +116,8 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
 
                 <div className="flex items-center gap-6">
                     <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl border font-black text-lg transition-all ${timeLeft < 60
-                            ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900 text-red-600 animate-pulse"
-                            : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
+                        ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900 text-red-600 animate-pulse"
+                        : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200"
                         }`}>
                         <Clock className={`w-5 h-5 ${timeLeft < 60 ? "text-red-500" : "text-blue-500"}`} />
                         {formatTime(timeLeft)}
@@ -196,13 +198,13 @@ export default function TakeExamPage({ params }: { params: Promise<{ id: string 
                                             key={oIndex}
                                             onClick={() => handleSelectOption(Number(currentQuestion.id), oIndex)}
                                             className={`flex items-center gap-5 p-6 rounded-[24px] border-2 text-left transition-all group/option relative overflow-hidden ${isSelected
-                                                    ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/40"
-                                                    : "bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-500/50 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
+                                                ? "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/40"
+                                                : "bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:border-blue-500/50 hover:bg-white dark:hover:bg-slate-800 shadow-sm"
                                                 }`}
                                         >
                                             <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shrink-0 transition-all ${isSelected
-                                                    ? "bg-white text-blue-600"
-                                                    : "bg-white dark:bg-slate-700 text-slate-400 group-hover/option:text-blue-500"
+                                                ? "bg-white text-blue-600"
+                                                : "bg-white dark:bg-slate-700 text-slate-400 group-hover/option:text-blue-500"
                                                 }`}>
                                                 {String.fromCharCode(65 + oIndex)}
                                             </div>
