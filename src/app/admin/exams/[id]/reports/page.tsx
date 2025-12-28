@@ -4,7 +4,7 @@ export const runtime = "edge";
 
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { RootState, AppDispatch } from "@/lib/redux/store";
 import { fetchTeacherExamReports } from "@/lib/redux/slices/examSlice";
 import { ArrowLeft, Search } from "lucide-react";
@@ -12,7 +12,6 @@ import Link from "next/link";
 
 export default function ExamReportsPage() {
     const params = useParams();
-    const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
     const { reports, loading, error } = useSelector((state: RootState) => state.exam);
     const { user } = useSelector((state: RootState) => state.auth);
@@ -25,6 +24,18 @@ export default function ExamReportsPage() {
             dispatch(fetchTeacherExamReports(Number(id)));
         }
     }, [dispatch, id]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div className="p-8 text-center text-red-500 font-bold">Error loading reports: {error}</div>;
+    }
 
     if (user?.role === "student") {
         return <div className="p-8 text-center text-red-500">Access Denied</div>;
@@ -118,7 +129,7 @@ export default function ExamReportsPage() {
                                             {report.student?.email}
                                         </td>
                                         <td className="px-6 py-4 font-medium text-slate-500 text-sm">
-                                            {new Date(Number(report.submittedAt)).toLocaleString()}
+                                            {new Date(report.submittedAt).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
