@@ -87,3 +87,39 @@ export interface ClassRoom {
     students?: Student[];
     schedules?: Schedule[];
 }
+
+export interface Exam {
+    id: string;
+    title: string;
+    description?: string;
+    durationInMinutes: number;
+    subjectId: string;
+    classId: string;
+    teacherId: string;
+    createdAt: string;
+    subject?: { name: string };
+    class?: { name: string };
+    teacher?: { userName: string };
+    questions?: Question[];
+    submissions?: ExamSubmission[];
+}
+
+export interface Question {
+    id: string;
+    examId: string;
+    questionText: string;
+    options: string[];
+    correctAnswerIndex?: number;
+    points: number;
+}
+
+export interface ExamSubmission {
+    id: string;
+    studentId: string;
+    examId: string;
+    totalScore: number;
+    answers: string; // JSON string
+    submittedAt: string;
+    student?: { userName: string; email: string };
+    exam?: { title: string };
+}
