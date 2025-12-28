@@ -21,6 +21,11 @@ export default function TakeExamPage() {
     const [answers, setAnswers] = useState<Record<string, number>>({});
     const [timeLeft, setTimeLeft] = useState<number | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         if (id) {
@@ -80,7 +85,9 @@ export default function TakeExamPage() {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    if (loading || !currentExam) {
+    if (!isMounted) return null;
+
+    if (loading || !currentExam || !currentExam.questions) {
         return (
             <div className="flex items-center justify-center min-h-screen">
                 <div className="flex flex-col items-center gap-4">
