@@ -37,6 +37,7 @@ const studentItems = [
     { name: "Exams", href: '/exams', icon: BookOpen },
 ];
 
+
 export default function TeacherLayout({
     children,
 }: {
