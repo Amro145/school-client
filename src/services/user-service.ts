@@ -23,7 +23,18 @@ export const userService = {
             }
         });
 
-        if (response.data.errors) throw new Error(response.data.errors[0].message);
+        if (response.data.errors) {
+            let errorMessage = response.data.errors[0].message;
+            try {
+                const parsed = JSON.parse(errorMessage);
+                if (Array.isArray(parsed) && parsed[0]?.message) {
+                    errorMessage = parsed[0].message;
+                }
+            } catch (e) {
+                // Keep original message if parsing fails
+            }
+            throw new Error(errorMessage);
+        }
         return response.data.data.createUser;
     },
 
@@ -40,7 +51,18 @@ export const userService = {
             variables: { id: typeof id === 'string' ? parseInt(id) : id }
         });
 
-        if (response.data.errors) throw new Error(response.data.errors[0].message);
+        if (response.data.errors) {
+            let errorMessage = response.data.errors[0].message;
+            try {
+                const parsed = JSON.parse(errorMessage);
+                if (Array.isArray(parsed) && parsed[0]?.message) {
+                    errorMessage = parsed[0].message;
+                }
+            } catch (e) {
+                // Keep original message if parsing fails
+            }
+            throw new Error(errorMessage);
+        }
         return id;
     }
 };
