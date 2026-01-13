@@ -308,22 +308,22 @@ export default function StudentProfilePage({ params }: PageProps) {
                         {selectedType === 'Final' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Final Grades</p>
-                                
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.finalAverageScore ? student.finalAverageScore.toFixed(1) : 'N/A'}%</span></p>
                             </div>
                         ) : selectedType === 'Midterm' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Midterm Grades</p>
-                                
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.midtermAverageScore ? student.midtermAverageScore.toFixed(1) : 'N/A'}%</span></p>
                             </div>
                         ) : selectedType === 'Quiz' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Quiz Grades</p>
-                                
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.quizAverageScore ? student.quizAverageScore.toFixed(1) : 'N/A'}%</span></p>
                             </div>
                         ) : (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">All Grades</p>
-                                
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.averageScore ? student.averageScore.toFixed(1) : 'N/A'}%</span></p>
                             </div>
                         )}
                     </div>
@@ -385,7 +385,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                                             <div
                                                 className="text-blue-600 flex items-center cursor-pointer hover:underline"
                                             >
-                                                {grade.type}  
+                                                {grade.type}
                                             </div>
                                         </div>
                                     </div>
