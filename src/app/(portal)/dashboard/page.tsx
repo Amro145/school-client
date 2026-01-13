@@ -324,6 +324,8 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         <Link href="/subjects" className="text-xs font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest hover:underline flex items-center group">
                             Full Syllabus <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </Link>
+
+                        
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {subjects.slice(0, 3).map(subject => {

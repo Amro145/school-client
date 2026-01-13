@@ -84,9 +84,20 @@ export default function ExamsPage() {
                                 className="group bg-white dark:bg-slate-900 rounded-[32px] p-6 border border-slate-200/60 dark:border-slate-800 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/5 relative overflow-hidden"
                             >
                                 {exam.hasSubmitted ? (
+                                    <>
                                     <div className="absolute top-0 right-0 px-4 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black uppercase tracking-widest rounded-bl-2xl border-l border-b border-green-500/20">
-                                        Previously Completed
+                                        Previously Complete 
                                     </div>
+
+                                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
+                                                {exam.title}
+                                            </h3>
+                                            <p className="text-slate-500 dark:text-slate-400 mb-2">
+                                                {exam.description}
+                                            </p>
+                                            <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.type}</p>
+                                            <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.subject?.name}</p>
+                                    </>
                                 ) : (
                                     <>
 
