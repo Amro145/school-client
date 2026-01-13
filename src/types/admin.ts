@@ -46,6 +46,33 @@ export interface Student {
             name: string;
         };
     }[];
+    finalGrades?: {
+        id: string;
+        score: number;
+        type: string;
+        subject?: {
+            id: string;
+            name: string;
+        };
+    }[];
+    midtermGrades?: {
+        id: string;
+        score: number;
+        type: string;
+        subject?: {
+            id: string;
+            name: string;
+        };
+    }[];
+    quizGrades?: {
+        id: string;
+        score: number;
+        type: string;
+        subject?: {
+            id: string;
+            name: string;
+        };
+    }[];
 }
 
 export interface Teacher {

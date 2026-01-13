@@ -42,6 +42,7 @@ export default function StudentProfilePage({ params }: PageProps) {
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
     const [isSaving, setIsSaving] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [selectedType, setSelectedType] = useState<string>('All');
 
     const isAdmin = authUser?.role === 'admin';
     const isTeacher = authUser?.role === 'teacher';
@@ -178,6 +179,11 @@ export default function StudentProfilePage({ params }: PageProps) {
 
     if (!student) return null;
 
+    const filteredGrades = student.grades ? student.grades.filter((g: any) => {
+        if (selectedType === 'All') return true;
+        return g.type === selectedType;
+    }) : [];
+
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20 p-4 md:p-8 max-w-7xl mx-auto">
             {/* Header / Breadcrumb */}
@@ -284,10 +290,27 @@ export default function StudentProfilePage({ params }: PageProps) {
                         </div>
                     </div>
 
+
+                    {/* Tabs */}
+                    <div className="flex space-x-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
+                        {['All', 'Final', 'Midterm', 'Quiz'].map((type) => (
+                            <button
+                                key={type}
+                                onClick={() => setSelectedType(type)}
+                                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${selectedType === type
+                                    ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                    }`}
+                            >
+                                {type}
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {student.grades && student.grades.length > 0 ? (
+                        {filteredGrades && filteredGrades.length > 0 ? (
                             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            student.grades.map((grade: any) => {
+                            filteredGrades.map((grade: any) => {
                                 const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
                                 return (
                                     <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-slate-900/20 hover:border-blue-200 dark:hover:border-blue-900 transition-all group">

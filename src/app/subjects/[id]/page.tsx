@@ -212,9 +212,15 @@ export default function SubjectDetailPage() {
 
     if (!subject) return null;
 
+    const [selectedType, setSelectedType] = useState<string>('All');
+
     const grades = subject.grades || [];
-    const avgScore = grades.length > 0
-        ? Number((grades.reduce((acc: number, g: any) => acc + (g.score || 0), 0) / grades.length).toFixed(1))
+    const visibleGrades = grades.filter((g: any) => selectedType === 'All' || g.type === selectedType);
+
+    // Calculate average based on ALL grades or Visible grades? Usually specific context matters. 
+    // If I select 'Final', I probably want to see the average for Finals.
+    const avgScore = visibleGrades.length > 0
+        ? Number((visibleGrades.reduce((acc: number, g: any) => acc + (g.score || 0), 0) / visibleGrades.length).toFixed(1))
         : null;
 
     return (
@@ -283,7 +289,7 @@ export default function SubjectDetailPage() {
                             <span className="text-6xl font-black tracking-tighter tabular-nums">{avgScore !== null ? avgScore : '--'}</span>
                             <span className="text-2xl font-black text-slate-500 leading-none">%</span>
                         </div>
-                        <p className="text-slate-400 font-medium mt-4 text-sm leading-relaxed">Composite average across {grades.length} active student nodes.</p>
+                        <p className="text-slate-400 font-medium mt-4 text-sm leading-relaxed">Composite average across {visibleGrades.length} active student nodes.</p>
 
                         <div className="mt-8 space-y-3">
                             <div className="h-2 /5 rounded-full overflow-hidden">
@@ -306,10 +312,25 @@ export default function SubjectDetailPage() {
                         </div>
                         <div>
                             <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none">Intelligence Ledger</h2>
-                            <p className="text-slate-400 dark:text-slate-500 font-medium mt-1.5 text-sm uppercase tracking-widest">{grades.length} Evaluated Student Nodes</p>
+                            <p className="text-slate-400 dark:text-slate-500 font-medium mt-1.5 text-sm uppercase tracking-widest">{visibleGrades.length} Evaluated Student Nodes</p>
                         </div>
                     </div>
                     <div className="flex items-center space-x-4">
+                        {/* Tabs */}
+                        <div className="flex space-x-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mr-4">
+                            {['All', 'Final', 'Midterm', 'Quiz'].map((type) => (
+                                <button
+                                    key={type}
+                                    onClick={() => setSelectedType(type)}
+                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedType === type
+                                            ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                        }`}
+                                >
+                                    {type}
+                                </button>
+                            ))}
+                        </div>
                         <AutoSaveToggle />
                         {showSuccess && (
                             <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-xl animate-in fade-in slide-in-from-right-4">
@@ -346,7 +367,7 @@ export default function SubjectDetailPage() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                            {grades.map((grade: any) => {
+                            {visibleGrades.map((grade: any) => {
                                 const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
                                 return (
                                     <tr key={grade.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/30 transition-all duration-300 group">

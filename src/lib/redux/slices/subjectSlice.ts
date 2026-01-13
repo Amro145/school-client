@@ -72,6 +72,7 @@ export const fetchSubjectById = createAsyncThunk(
               userName
             }
             score
+            type
           }
         }
       }

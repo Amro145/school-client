@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 
 export default function ExamResultPage() {
     const router = useRouter();
-    const { lastSubmission, loading } = useSelector((state: RootState) => state.exam);
+    const { lastSubmission, loading, currentExam } = useSelector((state: RootState) => state.exam);
 
     useEffect(() => {
         if (!lastSubmission && !loading) {
@@ -22,16 +22,18 @@ export default function ExamResultPage() {
 
     if (!lastSubmission) return null;
 
-    // Calculate percentage (Assuming total score is available or we need to know max score)
-    // The submission object has `totalScore`.
-    // The previous summary mentions `totalScore`. 
-    // We don't have max score in submission usually. We might need exam details.
-    // Let's assume passed score is the points obtained. 
-    // Wait, submission `totalScore` usually means "Points student got".
-    // We can't calculate percentage easily without knowing the max possible score of the exam.
-    // But for now, let's just display the score.
+    // Calculate score details if exam data is available
+    let maxPoints = 0;
+    let percentage = 0;
 
-    const isPass = lastSubmission.totalScore >= 40; // Arbitrary pass mark, or maybe we don't say pass/fail.
+    if (currentExam && currentExam.questions) {
+        maxPoints = currentExam.questions.reduce((acc, q) => acc + q.points, 0);
+        if (maxPoints > 0) {
+            percentage = Math.round((lastSubmission.totalScore / maxPoints) * 100);
+        }
+    }
+
+    const isPass = percentage >= 50;
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center p-6">
@@ -42,10 +44,10 @@ export default function ExamResultPage() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", duration: 0.6 }}
-                    className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${isPass ? "bg-green-100 text-green-600 dark:bg-green-900/20" : "bg-red-100 text-red-600 dark:bg-red-900/20"
+                    className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 ${isPass ? "bg-green-100 text-green-600 dark:bg-green-900/20" : "bg-zinc-100 text-zinc-600 dark:bg-zinc-900/20"
                         }`}
                 >
-                    {isPass ? <CheckCircle className="w-12 h-12" /> : <XCircle className="w-12 h-12" />}
+                    {isPass ? <CheckCircle className="w-12 h-12" /> : <FileText className="w-12 h-12" />}
                 </motion.div>
 
                 <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">
@@ -57,10 +59,21 @@ export default function ExamResultPage() {
 
                 <div className="bg-slate-50 dark:bg-slate-800 rounded-3xl p-6 mb-8">
                     <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">Total Score</span>
-                    <span className="text-5xl font-black text-slate-900 dark:text-white">
-                        {lastSubmission.totalScore}
-                    </span>
-                    <span className="text-sm font-bold text-slate-400 block mt-2">points secured</span>
+                    <div className="flex items-baseline justify-center gap-2">
+                        <span className="text-5xl font-black text-slate-900 dark:text-white">
+                            {lastSubmission.totalScore}
+                        </span>
+                        {maxPoints > 0 && (
+                            <span className="text-2xl font-bold text-slate-400">
+                                / {maxPoints}
+                            </span>
+                        )}
+                    </div>
+                    {maxPoints > 0 && (
+                        <div className={`text-sm font-bold mt-2 px-3 py-1 rounded-full inline-block ${isPass ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                            {percentage}% Score
+                        </div>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

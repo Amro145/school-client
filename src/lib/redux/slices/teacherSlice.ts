@@ -88,6 +88,7 @@ export const fetchTeacherById = createAsyncThunk(
                         grades {
                             id
                             score
+                            type
                             student {
                                 id
                                 userName
@@ -150,6 +151,7 @@ export const fetchTeacher = createAsyncThunk(
                   grades {
                     id
                     score
+                    type
                     student{
                       id
                       userName

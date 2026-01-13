@@ -56,7 +56,7 @@ export default function ExamsPage() {
                         <Plus className="w-5 h-5" />
                         Create New Exam
                     </Link>
-                )}  
+                )}
             </div>
 
             {/* All Exams Section */}
@@ -89,7 +89,7 @@ export default function ExamsPage() {
                                     </div>
                                 ) : (
                                     <>
-                                      
+
 
                                         <div className="flex justify-between items-start mb-6">
                                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl">
@@ -98,6 +98,12 @@ export default function ExamsPage() {
                                             <div className="flex items-center text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-100 dark:border-slate-700">
                                                 <Clock className="w-3.5 h-3.5 mr-1.5 text-blue-500" />
                                                 {exam.durationInMinutes} mins
+                                            </div>
+                                            <div className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ml-2 ${exam.type === 'Final' ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-900/30' :
+                                                    exam.type === 'Midterm' ? 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/30' :
+                                                        'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30'
+                                                }`}>
+                                                {exam.type}
                                             </div>
                                         </div>
 

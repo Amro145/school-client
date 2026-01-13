@@ -57,6 +57,7 @@ export const examService = {
           title
           description
           durationInMinutes
+          type
           subject { name }
           class { name }
           teacher { userName }

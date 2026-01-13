@@ -153,7 +153,6 @@ export default function CreateExamPage() {
                                 <option value="Midterm">Midterm</option>
                                 <option value="Final">Final</option>
                                 <option value="Quiz">Quiz</option>
-                                <option value="Assignment">Assignment</option>
                             </select>
                         </div>
 
