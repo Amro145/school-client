@@ -129,7 +129,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Average Score</span>
                     </div>
                     <div className="relative z-10">
-                        <div className="text-5xl font-black text-white tracking-tighter mb-1 tabular-nums">{averageScore ? Number(averageScore.toFixed(1)) : 'N/A'}</div>
+                        <div className="text-5xl font-black text-white tracking-tighter mb-1 tabular-nums">{averageScore ? Number(averageScore.toFixed(1)) : 'N/A'} %</div>
                         <p className="text-slate-400 font-bold text-sm tracking-tight uppercase">Current Standing</p>
                     </div>
                 </div>
