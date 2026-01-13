@@ -16,21 +16,9 @@ import {
     User
 } from 'lucide-react';
 import Link from 'next/link';
-import Swal from 'sweetalert2';
 
 export const runtime = 'edge';
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
 
 export default function CreateUserPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -69,6 +57,20 @@ export default function CreateUserPage() {
             ...formData,
             classId: formData.classId ? parseInt(formData.classId) : undefined
         };
+
+        // Dynamic import
+        const Swal = (await import('sweetalert2')).default;
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
 
         const resultAction = await dispatch(createNewUser(payload));
         if (createNewUser.fulfilled.match(resultAction)) {
@@ -201,39 +203,39 @@ export default function CreateUserPage() {
 
                         {/* Class Selection */}
                         {formData.role === 'student' && (
-                        <div className="space-y-4 md:col-span-2">
-                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">
-                                Curricular Assignment (Classroom) {formData.role === 'student' && <span className="text-red-500">*</span>}
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
-                                    <Layers className="w-5 h-5" />
-                                </div>
-                                <select
-                                    name="classId"
-                                    value={formData.classId}
-                                    onChange={handleChange}
-                                    required={formData.role === 'student'}
-                                    className={`w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border rounded-[28px] outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer ${formData.role === 'student' && !formData.classId
+                            <div className="space-y-4 md:col-span-2">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] ml-2">
+                                    Curricular Assignment (Classroom) {formData.role === 'student' && <span className="text-red-500">*</span>}
+                                </label>
+                                <div className="relative group">
+                                    <div className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 dark:text-slate-600 group-focus-within:text-blue-500 transition-colors">
+                                        <Layers className="w-5 h-5" />
+                                    </div>
+                                    <select
+                                        name="classId"
+                                        value={formData.classId}
+                                        onChange={handleChange}
+                                        required={formData.role === 'student'}
+                                        className={`w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border rounded-[28px] outline-none font-bold text-slate-900 dark:text-white transition-all appearance-none cursor-pointer ${formData.role === 'student' && !formData.classId
                                             ? 'border-red-300 focus:border-red-500 focus:ring-red-50'
                                             : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50'
-                                        } focus:ring-4 dark:focus:bg-slate-800 dark:focus:ring-blue-900/20`}
-                                    disabled={loading && classRooms.length === 0}
-                                >
-                                    <option value="">{formData.role === 'student' ? 'SELECT A CLASS (REQUIRED)' : 'AWAITING Curricular MAPPING (NO CLASS)'}</option>
-                                    {classRooms.map((cls) => (
-                                        <option key={cls.id} value={cls.id}>
-                                            {cls.name.toUpperCase()}
-                                        </option>
-                                    ))}
-                                </select>
-                                {loading && classRooms.length === 0 && (
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                                        <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
-                                    </div>
-                                )}
+                                            } focus:ring-4 dark:focus:bg-slate-800 dark:focus:ring-blue-900/20`}
+                                        disabled={loading && classRooms.length === 0}
+                                    >
+                                        <option value="">{formData.role === 'student' ? 'SELECT A CLASS (REQUIRED)' : 'AWAITING Curricular MAPPING (NO CLASS)'}</option>
+                                        {classRooms.map((cls) => (
+                                            <option key={cls.id} value={cls.id}>
+                                                {cls.name.toUpperCase()}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {loading && classRooms.length === 0 && (
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                                            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
                         )}
                     </div>
 

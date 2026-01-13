@@ -20,7 +20,7 @@ import {
     Loader2 as Spinner,
     CheckCircle2
 } from 'lucide-react';
-import Swal from 'sweetalert2';
+
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 
 export const runtime = 'edge';
@@ -144,6 +144,7 @@ export default function SubjectDetailPage() {
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
 
+            const Swal = (await import('sweetalert2')).default;
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
@@ -158,6 +159,7 @@ export default function SubjectDetailPage() {
 
         } catch (err) {
             console.error('Failed to save grades:', err);
+            const Swal = (await import('sweetalert2')).default;
             Swal.fire({
                 title: 'Sync Failed',
                 text: err as string,

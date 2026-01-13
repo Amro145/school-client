@@ -4,7 +4,7 @@ import { Trash2 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/lib/redux/store';
 import { handleDeleteUser } from '@/lib/redux/slices/adminSlice';
-import Swal from 'sweetalert2';
+
 
 interface DeleteActionButtonProps {
     userId: string | number;
@@ -18,6 +18,7 @@ export default function DeleteActionButton({ userId, userName, warning, action }
     const dispatch = useDispatch<AppDispatch>();
 
     const handleDelete = async () => {
+        const Swal = (await import('sweetalert2')).default;
         const result = await Swal.fire({
             title: 'Are you sure?',
             text: warning || "This action cannot be undone and will delete related data!",
