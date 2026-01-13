@@ -178,6 +178,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
                                         <span className={`text-xs font-black px-2 py-1 rounded-lg ${grade.score >= 50 ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'}`}>
                                             {grade.score}
                                         </span>
+
                                     )}
                                 </div>
                                 <h4 className="font-black text-slate-900 dark:text-white uppercase tracking-tight group-hover/card:text-purple-600 dark:group-hover/card:text-purple-400 transition-colors">{subject.name}</h4>

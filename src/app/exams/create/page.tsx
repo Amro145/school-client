@@ -219,6 +219,9 @@ export default function CreateExamPage() {
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-green-500" />
                         Questions ({questions.length})
+                        <span className="ml-auto text-sm font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                            Total: {questions.reduce((sum, q) => sum + (q.points || 0), 0)} Points
+                        </span>
                     </h3>
 
                     <AnimatePresence>
