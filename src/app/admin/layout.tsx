@@ -15,7 +15,9 @@ import {
     X,
     ShieldCheck,
     Table,
-    FileText
+    FileText,
+    Calendar,
+    User
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -43,10 +45,10 @@ const teacherItems = [
 ];
 
 const studentItems = [
-    { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-    { name: 'My Profile', href: `/admin/profile`, icon: Users },
-    { name: 'My Exams', href: '/exams', icon: FileText },
-    { name: 'Schedules', href: '/admin/schedules', icon: Table },
+    { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { name: 'My Schedule', href: '/dashboard/my-schedule', icon: Calendar },
+    { name: 'Profile', href: '/profile', icon: User },
+    { name: "Exams", href: '/exams', icon: BookOpen },
 ];
 
 export default function AdminLayout({
