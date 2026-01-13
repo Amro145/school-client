@@ -305,6 +305,27 @@ export default function StudentProfilePage({ params }: PageProps) {
                                 {type}
                             </button>
                         ))}
+                        {selectedType === 'Final' ? (
+                            <div>
+                                <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Final Grades</p>
+                                
+                            </div>
+                        ) : selectedType === 'Midterm' ? (
+                            <div>
+                                <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Midterm Grades</p>
+                                
+                            </div>
+                        ) : selectedType === 'Quiz' ? (
+                            <div>
+                                <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Quiz Grades</p>
+                                
+                            </div>
+                        ) : (
+                            <div>
+                                <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">All Grades</p>
+                                
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -361,12 +382,11 @@ export default function StudentProfilePage({ params }: PageProps) {
                                         </div>
                                         <div className="flex items-center justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">
                                             <span>Current Metrics</span>
-                                            <Link
-                                                href={grade.subject ? `/subjects/${grade.subject.id}` : '#'}
+                                            <div
                                                 className="text-blue-600 flex items-center cursor-pointer hover:underline"
                                             >
-                                                Details <ArrowUpRight className="w-3 h-3 ml-1" />
-                                            </Link>
+                                                {grade.type}  
+                                            </div>
                                         </div>
                                     </div>
                                 )

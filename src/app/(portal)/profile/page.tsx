@@ -50,10 +50,27 @@ export default function ProfilePage() {
 }
 
 function StudentProfileView({ user }: { user: StudentUser }) {
-    const grades = user.grades || [];
+    const [filterType, setFilterType] = React.useState('All');
+
+    const processedGrades = React.useMemo(() => {
+        const rawGrades = user.grades || [];
+        const uniqueMap = new Map();
+
+        // Deduplicate: Keep only one entry per Subject+Type
+        rawGrades.forEach(g => {
+            const key = `${g.subject.id}-${g.type}`;
+            uniqueMap.set(key, g);
+        });
+
+        const uniqueGrades = Array.from(uniqueMap.values());
+
+        if (filterType === 'All') return uniqueGrades;
+        return uniqueGrades.filter(g => g.type === filterType);
+    }, [user.grades, filterType]);
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 pb-20">
+            {/* ... (Header and Identity Card sections remain unchanged) ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                 <div>
                     <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
@@ -119,17 +136,27 @@ function StudentProfileView({ user }: { user: StudentUser }) {
 
                 {/* Performance Table */}
                 <div className="lg:col-span-2">
-                    <div className=" dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden">
-                        <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
+                    <div className=" dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden h-full flex flex-col">
+                        <div className="p-8 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <h3 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">Academic Performance</h3>
-                            <div className="flex items-center space-x-2">
-                                <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Pass</span>
-                                <div className="w-3 h-3 rounded-full bg-rose-500 ml-2"></div>
-                                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Attention Needed</span>
+
+                            {/* Filter Controls */}
+                            <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                                {['All', 'Midterm', 'Final', 'Quiz'].map((type) => (
+                                    <button
+                                        key={type}
+                                        onClick={() => setFilterType(type)}
+                                        className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${filterType === type
+                                            ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm'
+                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                            }`}
+                                    >
+                                        {type}
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                        <div className="overflow-x-auto">
+                        <div className="overflow-x-auto flex-1">
                             <table className="w-full text-left">
                                 <thead className="bg-slate-50/50 dark:bg-slate-800/50">
                                     <tr>
@@ -140,7 +167,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                                    {grades.map((grade, i) => {
+                                    {processedGrades.map((grade, i) => {
                                         const isPass = grade.score >= 50;
                                         return (
                                             <tr key={grade.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
@@ -159,10 +186,12 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                             </tr>
                                         )
                                     })}
-                                    {grades.length === 0 && (
+                                    {processedGrades.length === 0 && (
                                         <tr>
-                                            <td colSpan={3} className="px-8 py-12 text-center text-slate-400 dark:text-slate-500 font-bold italic">
-                                                No grades recorded in the system yet.
+                                            <td colSpan={4} className="px-8 py-12 text-center text-slate-400 dark:text-slate-500 font-bold italic">
+                                                {user.grades?.length === 0
+                                                    ? "No grades recorded in the system yet."
+                                                    : "No grades found for the selected filter."}
                                             </td>
                                         </tr>
                                     )}
