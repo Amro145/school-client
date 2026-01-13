@@ -43,6 +43,7 @@ export default function SubjectDetailPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [showExitModal, setShowExitModal] = useState(false);
     const [pendingDestination, setPendingDestination] = useState<string | null>(null);
+    const [selectedType, setSelectedType] = useState<string>('All');
 
     const isAdmin = user?.role === 'admin';
     const isTeacher = user?.role === 'teacher';
@@ -212,8 +213,6 @@ export default function SubjectDetailPage() {
 
     if (!subject) return null;
 
-    const [selectedType, setSelectedType] = useState<string>('All');
-
     const grades = subject.grades || [];
     const visibleGrades = grades.filter((g: any) => selectedType === 'All' || g.type === selectedType);
 
@@ -323,8 +322,8 @@ export default function SubjectDetailPage() {
                                     key={type}
                                     onClick={() => setSelectedType(type)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${selectedType === type
-                                            ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                        ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                                         }`}
                                 >
                                     {type}
