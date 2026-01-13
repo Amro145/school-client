@@ -7,6 +7,7 @@ export interface Grade {
     id: string;
     score: number;
     subject: Subject;
+    type: string;
 }
 
 export interface Class {
@@ -20,6 +21,7 @@ export interface TeacherSubject extends Subject {
     grades: Array<{
         student: { id: string };
         score: number;
+        type?: string;
     }>;
 }
 
@@ -38,6 +40,9 @@ export interface StudentUser {
     email: string;
     role: string;
     averageScore?: number;
+    finalAverageScore?: number;
+    midtermAverageScore?: number;
+    quizAverageScore?: number;
     successRate?: number;
     class?: Class;
     grades?: Grade[];

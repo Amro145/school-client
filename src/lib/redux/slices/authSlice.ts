@@ -10,6 +10,9 @@ interface User {
     role: string;
     schoolId: number | null;
     averageScore?: number;
+    finalAverageScore?: number;
+    midtermAverageScore?: number;
+    quizAverageScore?: number;
     successRate?: number;
     subjectsTaught?: {
         id: string;
@@ -35,6 +38,7 @@ interface User {
             id: string;
             name: string;
         };
+        type: string;
     }[];
     schedules?: {
         id: string;
@@ -133,6 +137,9 @@ export const fetchMe = createAsyncThunk(
         me {
           id
           averageScore
+          finalAverageScore
+          midtermAverageScore
+          quizAverageScore
           successRate
           userName
           email
@@ -153,6 +160,7 @@ export const fetchMe = createAsyncThunk(
               id
               name
             }
+            type
           }
           subjectsTaught {
             id

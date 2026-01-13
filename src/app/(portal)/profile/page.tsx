@@ -93,8 +93,25 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                 <p className="font-bold text-slate-700 dark:text-slate-200">{user.class?.name || 'Unassigned'}</p>
                             </div>
                             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
-                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Average Score</p>
-                                <p className="font-bold text-slate-700 dark:text-slate-200">{user.averageScore ? Number(user.averageScore.toFixed(1)) : 'N/A'}</p>
+                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Performance Overview</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Overall</p>
+                                        <p className="font-black text-slate-900 dark:text-white text-lg">{user.averageScore ? Number(user.averageScore.toFixed(1)) : 'N/A'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Finals</p>
+                                        <p className="font-black text-blue-600 dark:text-blue-400 text-lg">{user.finalAverageScore ? Number(user.finalAverageScore.toFixed(1)) : 'N/A'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Midterms</p>
+                                        <p className="font-black text-indigo-600 dark:text-indigo-400 text-lg">{user.midtermAverageScore ? Number(user.midtermAverageScore.toFixed(1)) : 'N/A'}</p>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase">Quizzes</p>
+                                        <p className="font-black text-purple-600 dark:text-purple-400 text-lg">{user.quizAverageScore ? Number(user.quizAverageScore.toFixed(1)) : 'N/A'}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -119,6 +136,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                         <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Subject Module</th>
                                         <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-center">Score Achieved</th>
                                         <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Status</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Type</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -131,6 +149,11 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                                 <td className="px-8 py-6 text-right">
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${isPass ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400'}`}>
                                                         {isPass ? 'Satisfactory' : 'Unsatisfactory'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <span className={`inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${isPass ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400'}`}>
+                                                        {grade.type}
                                                     </span>
                                                 </td>
                                             </tr>
