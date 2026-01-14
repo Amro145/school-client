@@ -214,13 +214,15 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
     const totalStudents = uniqueStudentIds.size;
 
     let totalScoreSum = 0;
+    let totalGradesCount = 0;
     subjects.forEach(sub => {
         sub.grades.forEach(g => {
             totalScoreSum += g.score;
+            totalGradesCount++;
         });
     });
 
-    const teacherSuccessRate = totalSubjects > 0 ? Number((totalScoreSum / totalSubjects).toFixed(1)) : 0;
+    const teacherSuccessRate = totalGradesCount > 0 ? Number((totalScoreSum / totalGradesCount).toFixed(1)) : 0;
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
@@ -281,7 +283,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Aggregate</span>
                     </div>
                     <div className="relative z-10">
-                        <div className="text-5xl font-black text-white tracking-tighter mb-1 tabular-nums">{teacherSuccessRate}</div>
+                        <div className="text-5xl font-black text-white tracking-tighter mb-1 tabular-nums">{teacherSuccessRate}%</div>
                         <p className="text-slate-400 font-bold text-sm tracking-tight uppercase">Success Rate Index</p>
                     </div>
                 </div>
@@ -325,7 +327,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
                             Full Syllabus <ChevronRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                         </Link>
 
-                        
+
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         {subjects.slice(0, 3).map(subject => {
