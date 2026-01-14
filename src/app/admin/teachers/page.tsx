@@ -160,7 +160,7 @@ export default function TeachersListPage() {
                         <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between glass">
                             <button className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 px-6 py-3  rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
                             {
-                                teacher.subjectsTaught.length === 0 ? (
+                                teacher.subjectsTaught.length !== 0 ? (
                                     <div className="flex items-center space-x-2">
                                         <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
                                     </div>
