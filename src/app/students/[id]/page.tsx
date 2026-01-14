@@ -198,8 +198,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                     Back to Directory
                 </Link>
                 <div className="flex space-x-3">
-                    {/* Teachers generally don't edit student profiles (metadata), only grades */}
-                    {isAdmin && <button className="px-6 py-2.5  border border-slate-200 rounded-xl font-bold text-slate-600 hover:bg-slate-50 transition-all active:scale-95 shadow-sm">Edit Record</button>}
+
                 </div>
             </div>
 

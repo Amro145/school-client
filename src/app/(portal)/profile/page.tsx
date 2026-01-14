@@ -80,12 +80,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                         Permanent Academic Record
                     </p>
                 </div>
-                <button className="relative group overflow-hidden opacity-50 cursor-not-allowed" title="Feature coming soon">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur opacity-25"></div>
-                    <div className="relative  dark:bg-slate-900 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-800 px-8 py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center shadow-lg uppercase tracking-widest leading-none">
-                        <Printer className="w-5 h-5 mr-3" /> Print Report Card
-                    </div>
-                </button>
+
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -220,7 +220,7 @@ export default function ClassDetailPage() {
                             <div className="pt-8 border-t border-white/5">
                                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 block mb-4">Aggregate Success Rate</span>
                                 <div className="text-6xl font-black tracking-tighter tabular-nums text-white">
-                                    {calculateSuccessRate(classStudents.flatMap((s: any) => s.grades?.map((g: any) => g.score) || []))}
+                                    {calculateSuccessRate(classStudents.reduce((acc, s) => acc + (s.averageScore || 0), 0))}
                                 </div>
                             </div>
                         </div>
