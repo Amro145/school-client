@@ -84,7 +84,7 @@ export const studentService = {
               name
             }
           }
-          }
+
           finalAverageScore
           midtermAverageScore
           quizAverageScore
