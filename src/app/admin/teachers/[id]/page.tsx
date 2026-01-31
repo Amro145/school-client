@@ -188,8 +188,8 @@ export default function TeacherDetailPage() {
                                             <table className="w-full text-left">
                                                 <thead>
                                                     <tr className="bg-slate-50/50 text-slate-400 text-[10px] font-black uppercase tracking-widest border-b border-slate-100">
-                                                        <th className="px-6 py-4">Student Name</th>
-                                                        <th className="px-6 py-4">Performance Mark</th>
+                                                        <th className="px-6 py-4 text-left">Student</th>
+                                                        <th className="px-6 py-4 text-center hidden sm:table-cell">Performance</th>
                                                         <th className="px-6 py-4 text-right">Actions</th>
                                                     </tr>
                                                 </thead>
@@ -206,12 +206,12 @@ export default function TeacherDetailPage() {
                                                                     </Link>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-6 py-5">
-                                                                <div className="flex items-center space-x-3">
+                                                            <td className="px-6 py-5 hidden sm:table-cell">
+                                                                <div className="flex items-center justify-center space-x-3">
                                                                     <span className={`text-lg font-black tabular-nums ${grade.score >= 50 ? 'text-slate-900' : 'text-rose-600'}`}>
                                                                         {grade.score}%
                                                                     </span>
-                                                                    <div className="flex-grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
+                                                                    <div className="hidden md:block flex-grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
                                                                         <div
                                                                             className={`h-full rounded-full ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 50 ? 'bg-blue-500' : 'bg-rose-500'}`}
                                                                             style={{ width: `${grade.score}%` }}

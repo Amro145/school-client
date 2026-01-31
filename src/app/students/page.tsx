@@ -191,9 +191,9 @@ export default function StudentsPage() {
                         <thead>
                             <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
                                 <th className="px-10 py-6">Identity & Profile</th>
-                                <th className="px-10 py-6 text-center">Academic Class</th>
-                                <th className="px-10 py-6 text-center">Performance Matrix</th>
-                                {isAdmin && <th className="px-10 py-6 text-right">Administrative Actions</th>}
+                                <th className="px-10 py-6 text-center hidden md:table-cell">Academic Class</th>
+                                <th className="px-10 py-6 text-center hidden sm:table-cell">Performance Matrix</th>
+                                {isAdmin && <th className="px-10 py-6 text-right">Actions</th>}
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -236,7 +236,7 @@ export default function StudentsPage() {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
+                                            <td className="px-10 py-8 hidden md:table-cell">
                                                 <div className="flex justify-center">
                                                     {student.class ? (
                                                         <span className="flex items-center text-slate-900 dark:text-white font-black  border border-slate-100 dark:border-slate-800 shadow-sm px-4 py-2 rounded-2xl w-fit">
@@ -251,7 +251,7 @@ export default function StudentsPage() {
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8">
+                                            <td className="px-10 py-8 hidden sm:table-cell">
                                                 {/* Only show Success Rate if actually available (Admin fetches deep, Teacher might not have all grades for success calculation unless refined) 
                                                     Teacher sees grades for THEIR subject. Success rate across ALL subjects might not be visible.
                                                     We'll show what we have.
@@ -269,7 +269,7 @@ export default function StudentsPage() {
                                             </td>
                                             {isAdmin && (
                                                 <td className="px-10 py-8 text-right">
-                                                    <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
+                                                    <div className="flex items-center justify-end space-x-3 md:opacity-0 group-hover:opacity-100 transition-all duration-300 md:translate-x-4 group-hover:translate-x-0">
                                                         <Link href={`/students/${student.id}`} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all shadow-sm border border-slate-200/50 dark:border-slate-700/50 hover:border-blue-100 active:scale-95">
                                                             <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                                         </Link>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { GraduationCap, Users, ShieldCheck, ArrowRight } from 'lucide-react';
 import { Metadata } from 'next';
+import LandingNavbar from '@/components/LandingNavbar';
 
 export const metadata: Metadata = {
   title: "School Management System | EduDash Education Platform",
@@ -44,19 +45,7 @@ export default function LandingPage() {
         <div className="absolute top-1/2 left-0 w-72 h-72 bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl -z-10 animate-float" />
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/10 rounded-full blur-3xl -z-10" />
 
-        <nav className="max-w-7xl mx-auto px-6 py-8 flex items-center justify-between relative z-10">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-              <GraduationCap className="text-white w-6 h-6" />
-            </div>
-            <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">EDUDASH</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-8">
-            <Link href="#features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</Link>
-            <Link href="#about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
-            <Link href="/login" className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-lg hover:shadow-slate-200 dark:hover:shadow-slate-800">Get Started</Link>
-          </div>
-        </nav>
+        <LandingNavbar />
 
         <main className="max-w-7xl mx-auto px-6 pt-16 pb-24 text-center relative z-10">
           <div className="inline-flex items-center px-4 py-1.5 mb-8 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-sm font-bold animate-bounce-slow">

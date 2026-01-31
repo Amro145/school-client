@@ -102,8 +102,8 @@ export default function ExamReportsPage() {
                         <thead className="bg-slate-50 dark:bg-slate-800/50">
                             <tr>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Student</th>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Email</th>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider">Submitted At</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider hidden sm:table-cell">Email</th>
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-400 uppercase tracking-wider hidden md:table-cell">Submitted At</th>
                                 <th className="px-6 py-4 text-right text-xs font-bold text-slate-400 uppercase tracking-wider">Score</th>
                             </tr>
                         </thead>
@@ -125,10 +125,10 @@ export default function ExamReportsPage() {
                                                 <span className="font-bold text-slate-900 dark:text-white">{report.student?.userName}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-slate-600 dark:text-slate-400 text-sm">
+                                        <td className="px-6 py-4 font-medium text-slate-600 dark:text-slate-400 text-sm hidden sm:table-cell">
                                             {report.student?.email}
                                         </td>
-                                        <td className="px-6 py-4 font-medium text-slate-500 text-sm">
+                                        <td className="px-6 py-4 font-medium text-slate-500 text-sm hidden md:table-cell">
                                             {new Date(report.submittedAt).toLocaleString()}
                                         </td>
                                         <td className="px-6 py-4 text-right">

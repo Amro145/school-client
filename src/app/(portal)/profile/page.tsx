@@ -155,10 +155,10 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                             <table className="w-full text-left">
                                 <thead className="bg-slate-50/50 dark:bg-slate-800/50">
                                     <tr>
-                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Subject Module</th>
-                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-center">Score Achieved</th>
-                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Status</th>
-                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Type</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Module</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-center">Score</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right hidden sm:table-cell">Status</th>
+                                        <th className="px-8 py-6 text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right hidden md:table-cell">Type</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -168,12 +168,12 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                                             <tr key={grade.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
                                                 <td className="px-8 py-6 font-bold text-slate-700 dark:text-slate-200">{grade.subject.name}</td>
                                                 <td className="px-8 py-6 font-black text-slate-900 dark:text-white text-center text-lg">{grade.score}</td>
-                                                <td className="px-8 py-6 text-right">
+                                                <td className="px-8 py-6 text-right hidden sm:table-cell">
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${isPass ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400'}`}>
-                                                        {isPass ? 'Satisfactory' : 'Unsatisfactory'}
+                                                        {isPass ? 'Pass' : 'Fail'}
                                                     </span>
                                                 </td>
-                                                <td className="px-8 py-6 text-right">
+                                                <td className="px-8 py-6 text-right hidden md:table-cell">
                                                     <span className={`inline-flex items-center px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${isPass ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400' : 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400'}`}>
                                                         {grade.type}
                                                     </span>

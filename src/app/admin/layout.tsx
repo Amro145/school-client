@@ -143,7 +143,22 @@ export default function AdminLayout({
                 <main className="grow md:ml-20 group-hover/sidebar:md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
                     {/* Header - Glass Effect */}
                     <header className="sticky top-0 z-40 /80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 px-6 py-5 md:px-10 flex items-center justify-between transition-colors duration-300">
-                        <div className="flex items-center">
+                        <div className="flex items-center gap-4">
+                            {/* Mobile Menu Trigger */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(true)}
+                                className="md:hidden p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-300 active:scale-90 transition-transform"
+                            >
+                                <Menu className="w-6 h-6" />
+                            </button>
+
+                            <div className="flex items-center space-x-2 md:hidden">
+                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
+                                    <ShieldCheck className="text-white w-5 h-5" />
+                                </div>
+                                <span className="text-lg font-black text-slate-900 dark:text-white tracking-tighter leading-none">EDU</span>
+                            </div>
+
                             <div className="hidden md:block">
                                 <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                                     {user?.role === 'teacher' ? 'Academic Hub' : 'Management Overview'}
@@ -166,13 +181,13 @@ export default function AdminLayout({
                         </div>
                     </header>
 
-                    {/* Mobile Floating Trigger */}
-                    <button
+                    {/* Mobile Floating Trigger - Hidden but kept for logic if needed (optional) */}
+                    {/* <button
                         onClick={() => setIsMobileMenuOpen(true)}
                         className="md:hidden fixed bottom-6 right-6 z-50 w-16 h-16 bg-blue-600 text-white rounded-full shadow-2xl shadow-blue-500/40 flex items-center justify-center transition-transform active:scale-90"
                     >
                         <Menu className="w-8 h-8" />
-                    </button>
+                    </button> */}
 
                     {/* Mobile Sidebar Overlay */}
                     {isMobileMenuOpen && (

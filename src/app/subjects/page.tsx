@@ -126,10 +126,10 @@ export default function SubjectsPage() {
                             <thead>
                                 <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
                                     <th className="px-10 py-6">Subject Specification</th>
-                                    <th className="px-10 py-6">Lead Instructor</th>
-                                    <th className="px-10 py-6">Target Cohort</th>
-                                    <th className="px-10 py-6 text-center">Outcome Analytics</th>
-                                    <th className="px-10 py-6 text-right">Operational Status</th>
+                                    <th className="px-10 py-6 hidden sm:table-cell">Lead instructor</th>
+                                    <th className="px-10 py-6 hidden md:table-cell">Cohort</th>
+                                    <th className="px-10 py-6 text-center hidden lg:table-cell">Outcome Analytics</th>
+                                    <th className="px-10 py-6 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -149,7 +149,7 @@ export default function SubjectsPage() {
                                                 transition={{ delay: idx * 0.05 }}
                                                 className="hover:bg-slate-50/30 transition-all duration-300 group"
                                             >
-                                                <div className="px-10 py-8">
+                                                <td className="px-10 py-8">
                                                     <div className="flex items-center space-x-5">
                                                         <div className="w-14 h-14 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
                                                             <BookOpen className="w-8 h-8" />
@@ -164,8 +164,8 @@ export default function SubjectsPage() {
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <td className="px-10 py-8">
+                                                </td>
+                                                <td className="px-10 py-8 hidden sm:table-cell">
                                                     <div className="flex items-center space-x-3 text-slate-900 dark:text-white font-black">
                                                         <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center border border-slate-100 dark:border-slate-800 group-hover:border-blue-100 dark:group-hover:border-blue-800 transition-colors">
                                                             <User className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
@@ -179,7 +179,7 @@ export default function SubjectsPage() {
                                                         )}
                                                     </div>
                                                 </td>
-                                                <td className="px-10 py-8">
+                                                <td className="px-10 py-8 hidden md:table-cell">
                                                     {subject.class ? (
                                                         <div className="inline-flex items-center px-4 py-2  border border-slate-100 dark:border-slate-800 shadow-sm rounded-2xl font-black text-sm text-blue-600 dark:text-blue-400">
                                                             <Layers className="w-4 h-4 mr-2.5 text-blue-600 dark:text-blue-400" />
@@ -192,7 +192,7 @@ export default function SubjectsPage() {
                                                         </div>
                                                     )}
                                                 </td>
-                                                <td className="px-10 py-8">
+                                                <td className="px-10 py-8 hidden lg:table-cell">
                                                     <div className="flex flex-col items-center">
                                                         {avgScore !== null ? (
                                                             <>
@@ -214,7 +214,7 @@ export default function SubjectsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-10 py-8 text-right">
-                                                    <div className="flex items-center justify-end space-x-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                                    <div className="flex items-center justify-end space-x-3 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                         <Link href={`/subjects/${subject.id}`} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all shadow-sm border border-slate-200/50 dark:border-slate-700/50 hover:border-blue-100 active:scale-95">
                                                             <Eye className="w-5 h-5" />
                                                         </Link>

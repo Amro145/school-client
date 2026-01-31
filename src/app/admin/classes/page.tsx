@@ -94,8 +94,8 @@ export default function ClassesListPage() {
                         <thead>
                             <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
                                 <th className="px-10 py-6">Cohort Identification</th>
-                                <th className="px-10 py-6">Operational Status</th>
-                                <th className="px-10 py-6 text-right">Administrative Actions</th>
+                                <th className="px-10 py-6 hidden sm:table-cell">Operational Status</th>
+                                <th className="px-10 py-6 text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -125,7 +125,7 @@ export default function ClassesListPage() {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-10 py-8">
+                                        <td className="px-10 py-8 hidden sm:table-cell">
                                             <div className="inline-flex items-center px-4 py-2 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 rounded-2xl font-black text-[10px] uppercase tracking-widest">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
                                                 Active System Node
