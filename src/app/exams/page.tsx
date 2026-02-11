@@ -2,37 +2,70 @@
 
 export const runtime = "edge";
 
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchAvailableExams } from "@/lib/redux/slices/examSlice";
-import { fetchSubjects } from "@/lib/redux/slices/adminSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { useFetchData } from "@/hooks/useFetchData";
 import Link from "next/link";
 import {
     Plus,
     FileText,
     Clock,
     ChevronRight,
-    BookOpen
+    BookOpen,
+    LayoutDashboard
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function ExamsPage() {
-    const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-    const { availableExams, loading } = useSelector((state: RootState) => state.exam);
 
-    useEffect(() => {
-        dispatch(fetchAvailableExams());
-        dispatch(fetchSubjects());
-    }, [dispatch]);
+    const { data: examData, isLoading: loading } = useFetchData<{ getAvailableExams: any[] }>(
+        ['exams', 'available'],
+        `
+        query GetAvailableExams {
+          getAvailableExams {
+            id
+            title
+            description
+            type
+            durationInMinutes
+            hasSubmitted
+            subject {
+              id
+              name
+            }
+            class {
+              id
+              name
+            }
+            teacher {
+              id
+              userName
+            }
+          }
+        }
+        `
+    );
+
+    const availableExams = examData?.getAvailableExams || [];
 
     const isTeacher = user?.role === "teacher" || user?.role === "admin";
 
-    if (loading) {
+    if (loading && availableExams.length === 0) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <div className="w-20 h-20 border-4 border-blue-50 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
+                    <FileText className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </motion.div>
+                <div className="text-center">
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Syncing Evaluations...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Retrieving secure examination protocols...</p>
+                </div>
             </div>
         );
     }
@@ -85,18 +118,18 @@ export default function ExamsPage() {
                             >
                                 {exam.hasSubmitted ? (
                                     <>
-                                    <div className="absolute top-0 right-0 px-4 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black uppercase tracking-widest rounded-bl-2xl border-l border-b border-green-500/20">
-                                        Previously Complete 
-                                    </div>
+                                        <div className="absolute top-0 right-0 px-4 py-1.5 bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-black uppercase tracking-widest rounded-bl-2xl border-l border-b border-green-500/20">
+                                            Previously Complete
+                                        </div>
 
-                                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
-                                                {exam.title}
-                                            </h3>
-                                            <p className="text-slate-500 dark:text-slate-400 mb-2">
-                                                {exam.description}
-                                            </p>
-                                            <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.type}</p>
-                                            <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.subject?.name}</p>
+                                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 transition-colors">
+                                            {exam.title}
+                                        </h3>
+                                        <p className="text-slate-500 dark:text-slate-400 mb-2">
+                                            {exam.description}
+                                        </p>
+                                        <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.type}</p>
+                                        <p className="text-slate-500 dark:text-slate-400 mb-2">{exam.subject?.name}</p>
                                     </>
                                 ) : (
                                     <>
@@ -111,8 +144,8 @@ export default function ExamsPage() {
                                                 {exam.durationInMinutes} mins
                                             </div>
                                             <div className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ml-2 ${exam.type === 'Final' ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-900/30' :
-                                                    exam.type === 'Midterm' ? 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/30' :
-                                                        'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30'
+                                                exam.type === 'Midterm' ? 'bg-indigo-50 text-indigo-600 border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-900/30' :
+                                                    'bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-900/30'
                                                 }`}>
                                                 {exam.type}
                                             </div>

@@ -1,42 +1,100 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/lib/redux/store';
-import { fetchTeacher } from '@/lib/redux/slices/teacherSlice';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData } from '@/hooks/useFetchData';
+import { Teacher as TeacherProfile } from '@shared/types/models';
 import {
-    BookOpen,
+    Calendar,
     Users,
-    TrendingUp,
+    BookOpen,
+    ArrowUpRight,
+    Search,
+    Bell,
+    Settings,
+    LayoutDashboard,
     Star,
     Award,
+    TrendingUp,
     ChevronRight,
-    Loader2,
-    Calendar,
     Clock
 } from 'lucide-react';
 import Link from 'next/link';
 import { StudentUser, Teacher } from '@/types/portal';
 import TodaysScheduleWidget from '@/components/TodaysScheduleWidget';
+import { motion } from 'framer-motion';
 
 export const runtime = 'edge';
 
-export default function DashboardPage() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentTeacher, loading: teacherLoading } = useSelector((state: RootState) => state.teacher);
+export default function Dashboard() {
     const { user, loading: authLoading } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        if (user?.role === 'teacher') {
-            dispatch(fetchTeacher());
+    const { data: teacherData, isLoading } = useFetchData<{ me: TeacherProfile }>(
+        ['teacher', 'me'],
+        `
+        query GetMyProfile {
+          me {
+            id
+            userName
+            email
+            role
+            subjectsTaught {
+              id
+              name
+              class {
+                id
+                name
+              }
+              grades {
+                id
+                score
+                type
+                student {
+                  id
+                  userName
+                  email
+                }
+              }
+            }
+            schedules {
+              id
+              day
+              startTime
+              endTime
+              subject {
+                id
+                name
+              }
+              classRoom {
+                id
+                name
+              }
+            }
+          }
         }
-    }, [dispatch, user]);
+        `,
+        {},
+        { enabled: user?.role === 'teacher' }
+    );
 
-    if (authLoading || (user?.role === 'teacher' && teacherLoading)) {
+    const currentTeacher = teacherData?.me;
+
+    if (authLoading || (user?.role === 'teacher' && isLoading)) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
-                <p className="text-slate-500 font-medium italic">Synchronizing academic data...</p>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <div className="w-20 h-20 border-4 border-blue-50 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
+                    <LayoutDashboard className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </motion.div>
+                <div className="text-center">
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Initializing Terminal...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Fetching real-time portal metrics...</p>
+                </div>
             </div>
         );
     }

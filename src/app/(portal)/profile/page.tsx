@@ -1,41 +1,76 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '@/lib/redux/store';
-import { fetchTeacher } from '@/lib/redux/slices/teacherSlice';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData } from '@/hooks/useFetchData';
+import { Teacher as TeacherProfile } from '@shared/types/models';
 import {
     User,
     Mail,
     Shield,
-    Loader2,
-    Briefcase,
-    Settings,
     ShieldCheck,
-    BookOpen,
+    Briefcase,
     GraduationCap,
-    Printer
+    LayoutDashboard
 } from 'lucide-react';
 import { StudentUser, Teacher } from '@/types/portal';
+import { motion } from 'framer-motion';
 
 export const runtime = 'edge';
 
 export default function ProfilePage() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentTeacher, loading: teacherLoading } = useSelector((state: RootState) => state.teacher);
     const { user, loading: authLoading } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        if (user?.role === 'teacher') {
-            dispatch(fetchTeacher());
+    const { data: teacherData, isLoading } = useFetchData<{ me: TeacherProfile }>(
+        ['teacher', 'me'],
+        `
+        query GetMyProfile {
+          me {
+            id
+            userName
+            email
+            role
+            subjectsTaught {
+              id
+              name
+              class {
+                id
+                name
+              }
+              grades {
+                id
+                score
+                type
+                student {
+                  id
+                  userName
+                  email
+                }
+              }
+            }
+          }
         }
-    }, [dispatch, user]);
+        `,
+        {},
+        { enabled: user?.role === 'teacher' }
+    );
 
-    if (authLoading || (user?.role === 'teacher' && teacherLoading)) {
+    if (authLoading || (user?.role === 'teacher' && isLoading)) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
-                <p className="text-slate-500 font-medium italic">Retrieving profile data...</p>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <div className="w-20 h-20 border-4 border-purple-50 dark:border-purple-900 border-t-purple-600 rounded-full animate-spin"></div>
+                    <User className="w-8 h-8 text-purple-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </motion.div>
+                <div className="text-center">
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Syncing Profile...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Retrieving secure biometric data...</p>
+                </div>
             </div>
         );
     }
@@ -46,6 +81,7 @@ export default function ProfilePage() {
         return <StudentProfileView user={user as unknown as StudentUser} />;
     }
 
+    const currentTeacher = teacherData?.me;
     return <TeacherProfilePage currentTeacher={(currentTeacher || user) as unknown as Teacher} />;
 }
 
@@ -87,7 +123,7 @@ function StudentProfileView({ user }: { user: StudentUser }) {
                 {/* Identity Card */}
                 <div className="lg:col-span-1 space-y-8">
                     <div className=" dark:bg-slate-900 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none overflow-hidden p-8 text-center relative">
-                        <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mx-auto flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 shadow-inner relative z-10">
+                        <div className="w-32 h-32 bg-linear-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-full mx-auto flex items-center justify-center text-blue-600 dark:text-blue-400 mb-6 shadow-inner relative z-10">
                             <GraduationCap className="w-16 h-16" />
                         </div>
                         <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2">{user.userName}</h2>
@@ -209,7 +245,7 @@ function TeacherProfilePage({ currentTeacher }: { currentTeacher: Teacher }) {
 
             <div className=" dark:bg-slate-900 rounded-[48px] border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-100/50 dark:shadow-none overflow-hidden relative">
                 {/* Decorative Background */}
-                <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-r from-purple-600 to-indigo-700"></div>
+                <div className="absolute top-0 left-0 w-full h-48 bg-linear-to-r from-purple-600 to-indigo-700"></div>
                 <div className="absolute top-0 right-0 p-10 opacity-10 text-white">
                     <Shield className="w-64 h-64 translate-x-20 -translate-y-20" />
                 </div>

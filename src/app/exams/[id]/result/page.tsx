@@ -2,17 +2,45 @@
 
 export const runtime = "edge";
 
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
-import { RootState } from "@/lib/redux/store";
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useFetchData } from "@/hooks/useFetchData";
+import { Exam } from "@shared/types/models";
 import { CheckCircle, XCircle, Home, FileText } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
 export default function ExamResultPage() {
     const router = useRouter();
-    const { lastSubmission, loading, currentExam } = useSelector((state: RootState) => state.exam);
+    const params = useParams();
+    const id = params.id as string;
+
+    const [lastSubmission] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const saved = sessionStorage.getItem(`last_submission_${id}`);
+            return saved ? JSON.parse(saved) : null;
+        }
+        return null;
+    });
+
+    const { data: examData, isLoading: loading } = useFetchData<{ exam: Exam }>(
+        ['exam', id, 'result'],
+        `
+        query GetExamResultBasics($id: ID!) {
+          exam(id: $id) {
+            id
+            questions {
+              id
+              points
+            }
+          }
+        }
+        `,
+        { id },
+        { enabled: !!id }
+    );
+
+    const currentExam = examData?.exam;
 
     useEffect(() => {
         if (!lastSubmission && !loading) {

@@ -1,4 +1,4 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions, useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
@@ -30,11 +30,31 @@ export function useFetchData<T>(
             );
 
             if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
+                const message = response.data.errors.map((e: any) => e.message).join(', ');
+                throw new Error(message || 'GraphQL Execution Error');
             }
 
             return response.data.data;
         },
         ...options,
+    });
+}
+
+export function useMutateData<TData = any, TVariables = any>(
+    mutationFn: (variables: TVariables) => Promise<TData>,
+    invalidateKeys?: string[][],
+    options?: UseMutationOptions<TData, Error, TVariables>
+) {
+    const queryClient = useQueryClient();
+
+    return useMutation<TData, Error, TVariables>({
+        mutationFn,
+        onSuccess: (data, variables, context) => {
+            if (invalidateKeys) {
+                invalidateKeys.forEach(key => queryClient.invalidateQueries({ queryKey: key }));
+            }
+            if (options?.onSuccess) options.onSuccess(data, variables, context);
+        },
+        ...options
     });
 }

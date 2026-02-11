@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchClassById, createNewSchedule } from '@/lib/redux/slices/adminSlice';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { ClassRoom } from '@shared/types/models';
+import axios from 'axios';
 import {
     ArrowLeft,
     Clock,
@@ -17,6 +16,7 @@ import {
     BookOpen
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { scheduleSchema, ScheduleFormValues } from '@/lib/validations/exams';
@@ -44,10 +44,41 @@ const PERIODS = [
 ];
 
 export default function CreateSchedulePage() {
-    const { id } = useParams();
+    const params = useParams();
+    const id = params.id as string;
     const router = useRouter();
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentClass, loading: adminLoading, error: serverError } = useSelector((state: RootState) => state.admin);
+
+    const { data: classData, isLoading: adminLoading, error: fetchError } = useFetchData<{ class: ClassRoom }>(
+        ['class', id],
+        `
+        query GetClassDetails($id: ID!) {
+          class(id: $id) {
+            id
+            name
+            subjects {
+              id
+              name
+              teacher {
+                userName
+              }
+            }
+            schedules {
+              id
+              day
+              startTime
+              endTime
+              subject {
+                name
+              }
+            }
+          }
+        }
+        `,
+        { id }
+    );
+
+    const currentClass = classData?.class;
+    const serverError = fetchError ? (fetchError as any).message : null;
 
     const {
         register,
@@ -67,11 +98,28 @@ export default function CreateSchedulePage() {
     const watchDay = watch('day');
     const watchStartTime = watch('startTime');
 
-    useEffect(() => {
-        if (id) {
-            dispatch(fetchClassById(Number(id)));
-        }
-    }, [dispatch, id]);
+    const { mutateAsync: createSchedule } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                        createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
+                            id
+                        }
+                    }
+                `,
+                variables: payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data;
+        },
+        [['class', id]]
+    );
 
     const calculateEndTime = (start: string) => {
         if (!start) return '';
@@ -101,15 +149,14 @@ export default function CreateSchedulePage() {
 
         const endTime = calculateEndTime(data.startTime);
 
-        const result = await dispatch(createNewSchedule({
-            classId: Number(id),
-            subjectId: Number(data.subjectId),
-            day: data.day,
-            startTime: data.startTime,
-            endTime: endTime
-        }));
-
-        if (createNewSchedule.fulfilled.match(result)) {
+        try {
+            await createSchedule({
+                classId: Number(id),
+                subjectId: Number(data.subjectId),
+                day: data.day,
+                startTime: data.startTime,
+                endTime: endTime
+            });
             Swal.fire({
                 icon: 'success',
                 title: 'Schedule Registered',
@@ -117,6 +164,12 @@ export default function CreateSchedulePage() {
                 showConfirmButton: false
             });
             router.push(`/admin/classes/${id}`);
+        } catch (err: any) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Sync Error',
+                text: err.message || 'Failed to register schedule'
+            });
         }
     };
 

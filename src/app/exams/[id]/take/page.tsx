@@ -3,19 +3,41 @@
 export const runtime = "edge";
 
 import { useState, useEffect, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
-import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchExamForTaking, submitExam } from "@/lib/redux/slices/examSlice";
+import { useFetchData, useMutateData } from "@/hooks/useFetchData";
+import axios from "axios";
+import { Exam } from "@shared/types/models";
 import { Clock, ChevronRight, ChevronLeft, CheckCircle2, AlertTriangle, Save } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function TakeExamPage() {
     const params = useParams();
-    const router = useRouter();
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentExam, loading, error } = useSelector((state: RootState) => state.exam);
     const id = params.id as string;
+    const router = useRouter();
+
+    const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ exam: Exam }>(
+        ['exam', id, 'taking'],
+        `
+        query GetExamForTaking($id: ID!) {
+          exam(id: $id) {
+            id
+            title
+            description
+            durationInMinutes
+            questions {
+              id
+              questionText
+              options
+              points
+            }
+          }
+        }
+        `,
+        { id }
+    );
+
+    const currentExam = examData?.exam;
+    const error = fetchError ? (fetchError as any).message : null;
 
     const [activeQuestionIndex, setActiveQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, number>>({});
@@ -28,12 +50,6 @@ export default function TakeExamPage() {
     }, []);
 
     useEffect(() => {
-        if (id) {
-            dispatch(fetchExamForTaking(Number(id)));
-        }
-    }, [dispatch, id]);
-
-    useEffect(() => {
         if (currentExam && timeLeft === null) {
             setTimeLeft(currentExam.durationInMinutes * 60);
         }
@@ -42,6 +58,30 @@ export default function TakeExamPage() {
     const handleOptionSelect = (questionId: string, optionIndex: number) => {
         setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
     };
+
+    const { mutateAsync: submitExamMutation } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation SubmitExamResponse($examId: Int!, $answers: [StudentAnswerInput!]!) {
+                        submitExamResponse(examId: $examId, answers: $answers) {
+                            id
+                            totalScore
+                        }
+                    }
+                `,
+                variables: payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data.data.submitExam;
+        },
+        [['student-exams'], ['exam-attempts']]
+    );
 
     const handleSubmit = useCallback(async () => {
         if (!currentExam || isSubmitting) return;
@@ -53,17 +93,20 @@ export default function TakeExamPage() {
         }));
 
         try {
-            await dispatch(submitExam({
+            const result = await submitExamMutation({
                 examId: Number(currentExam.id),
                 answers: formattedAnswers
-            })).unwrap();
+            });
+            // Store result in local storage or session storage to be picked up by the result page
+            // Since we're moving away from Redux state for this.
+            sessionStorage.setItem(`last_submission_${id}`, JSON.stringify(result));
             router.push(`/exams/${id}/result`);
-        } catch (error) {
-            console.error("Submission failed:", error);
+        } catch (err: any) {
+            console.error("Submission failed:", err);
             setIsSubmitting(false);
-            alert("Failed to submit exam. Please try again.");
+            alert(err.message || "Failed to submit exam. Please try again.");
         }
-    }, [currentExam, isSubmitting, answers, dispatch, id, router]);
+    }, [currentExam, isSubmitting, answers, id, router, submitExamMutation]);
 
     useEffect(() => {
         if (timeLeft === null) return;

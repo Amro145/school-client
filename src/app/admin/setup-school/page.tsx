@@ -4,8 +4,9 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
-import { createNewSchool } from '@/lib/redux/slices/adminSlice';
+import { useMutateData } from '@/hooks/useFetchData';
 import { setSchoolId } from '@/lib/redux/slices/authSlice';
+import axios from 'axios';
 import { ShieldCheck, GraduationCap, Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,19 +32,38 @@ export default function SetupSchoolPage() {
 
     const [serverError, setServerError] = React.useState<string | null>(null);
 
+    const { mutateAsync: createSchool } = useMutateData(
+        async (name: string) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateSchool($name: String!) {
+                        createSchool(name: $name) {
+                            id
+                            name
+                        }
+                    }
+                `,
+                variables: { name }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data.data.createSchool;
+        },
+        []
+    );
+
     const onSubmit = async (data: SchoolSetupFormValues) => {
         setServerError(null);
         try {
-            const resultAction = await dispatch(createNewSchool(data.name));
-
-            if (createNewSchool.fulfilled.match(resultAction)) {
-                dispatch(setSchoolId(resultAction.payload.id));
-                router.push('/admin');
-            } else {
-                setServerError(resultAction.payload as string || 'Failed to create school');
-            }
-        } catch {
-            setServerError('An unexpected error occurred');
+            const school = await createSchool(data.name);
+            dispatch(setSchoolId(school.id));
+            router.push('/admin');
+        } catch (err: any) {
+            setServerError(err.message || 'Failed to create school');
         }
     };
 

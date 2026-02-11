@@ -3,11 +3,12 @@
 export const runtime = "edge";
 
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
 import { useRouter } from "next/navigation";
-import { RootState, AppDispatch } from "@/lib/redux/store";
-import { createExamTransition } from "@/lib/redux/slices/examSlice";
-import { fetchSubjects, fetchClassRooms } from "@/lib/redux/slices/adminSlice";
+import { useFetchData, useMutateData } from "@/hooks/useFetchData";
+import axios from "axios";
+import { Subject, ClassRoom } from "@shared/types/models";
 import { ArrowLeft, Save, Plus, Trash2, HelpCircle, CheckCircle2, FileText, Clock, Layers, BookOpen, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,11 +19,30 @@ import FormInput from '@/components/FormInput';
 import FormSelect from '@/components/FormSelect';
 
 export default function CreateExamPage() {
-    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const { user } = useSelector((state: RootState) => state.auth);
-    const { subjects, classRooms, loading: adminLoading } = useSelector((state: RootState) => state.admin);
-    const { loading: examLoading } = useSelector((state: RootState) => state.exam);
+
+    const { data: adminData, isLoading: adminLoading } = useFetchData<{ subjects: Subject[], classRooms: ClassRoom[] }>(
+        ['admin', 'subjects-and-classes'],
+        `
+        query GetAdminSubjectsAndClasses {
+          subjects {
+            id
+            name
+            class {
+                id
+            }
+          }
+          classRooms {
+            id
+            name
+          }
+        }
+        `
+    );
+
+    const subjects = adminData?.subjects || [];
+    const classRooms = adminData?.classRooms || [];
 
     const {
         register,
@@ -55,10 +75,29 @@ export default function CreateExamPage() {
     const watchClassId = watch('classId');
     const watchQuestions = watch('questions');
 
-    useEffect(() => {
-        dispatch(fetchClassRooms());
-        dispatch(fetchSubjects());
-    }, [dispatch]);
+    const { mutateAsync: createExam, isPending: examLoading } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: Int!, $subjectId: Int!, $questions: [QuestionInput!]!) {
+                        createExam(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
+                            id
+                            title
+                        }
+                    }
+                `,
+                variables: payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data;
+        },
+        [['exams'], ['dashboard']]
+    );
 
     const availableSubjects = subjects.filter(subject =>
         watchClassId && String(subject.class?.id) === String(watchClassId)
@@ -69,11 +108,11 @@ export default function CreateExamPage() {
         const Swal = (await import('sweetalert2')).default;
 
         try {
-            await dispatch(createExamTransition({
+            await createExam({
                 ...data,
                 classId: Number(data.classId),
                 subjectId: Number(data.subjectId),
-            })).unwrap();
+            });
 
             Swal.fire({
                 icon: 'success',

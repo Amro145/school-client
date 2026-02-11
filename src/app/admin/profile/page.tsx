@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchStudentById } from '@/lib/redux/slices/adminSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData } from '@/hooks/useFetchData';
+import { Student } from '@shared/types/models';
 import {
     Mail,
     BookOpen,
@@ -15,15 +16,37 @@ import {
 import { motion } from 'framer-motion';
 
 export default function StudentProfilePage() {
-    const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-    const { currentStudent, loading } = useSelector((state: RootState) => state.admin);
 
-    useEffect(() => {
-        if (user?.id) {
-            dispatch(fetchStudentById(parseInt(user.id)));
+    const { data: studentData, isLoading: loading } = useFetchData<{ student: Student }>(
+        ['student', user?.id],
+        `
+        query GetStudentProfile($id: ID!) {
+          student(id: $id) {
+            id
+            userName
+            email
+            class {
+                id
+                name
+            }
+            grades {
+                id
+                score
+                subject {
+                    id
+                    name
+                }
+            }
+            averageScore
+          }
         }
-    }, [dispatch, user?.id]);
+        `,
+        { id: user?.id as string },
+        { enabled: !!user?.id }
+    );
+
+    const currentStudent = studentData?.student;
 
     if (loading || !currentStudent) {
         return (

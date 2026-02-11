@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchSchedules, deleteSchedule, fetchClassRooms } from '@/lib/redux/slices/adminSlice';
+import React, { useState, useEffect, Suspense } from 'react';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { Schedule, ClassRoom } from '@shared/types/models';
+import axios from 'axios';
 import {
     Calendar,
     Plus,
@@ -14,7 +15,6 @@ import {
     Users,
     BookOpen
 } from 'lucide-react';
-import { Schedule } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
 import { useSearchParams } from 'next/navigation';
 
@@ -47,9 +47,39 @@ export default function AdminSchedulesPage() {
 }
 
 function SchedulesContent() {
-    const dispatch = useDispatch<AppDispatch>();
     const searchParams = useSearchParams();
-    const { schedules, classRooms } = useSelector((state: RootState) => state.admin);
+
+    const { data: adminData, isLoading: loading, refetch } = useFetchData<{ schedules: Schedule[], classRooms: ClassRoom[] }>(
+        ['admin', 'schedules-and-classes'],
+        `
+        query GetAdminSchedulesAndClasses {
+          schedules {
+            id
+            day
+            startTime
+            endTime
+            subject {
+              id
+              name
+              teacher {
+                userName
+              }
+            }
+            classRoom {
+              id
+              name
+            }
+          }
+          classRooms {
+            id
+            name
+          }
+        }
+        `
+    );
+
+    const schedules = adminData?.schedules || [];
+    const classRooms = adminData?.classRooms || [];
 
     // State
     const [selectedClassId, setSelectedClassId] = useState<number | string>('');
@@ -60,19 +90,30 @@ function SchedulesContent() {
     // Initial load from URL
     useEffect(() => {
         const paramClassId = searchParams.get('classId');
-        if (paramClassId) setSelectedClassId(Number(paramClassId));
+        if (paramClassId) setSelectedClassId(paramClassId);
 
         if (searchParams.get('action') === 'new') {
-            // We keep the generic add modal open if action=new is present, 
-            // though the grid interactions are preferred.
             setIsFormOpen(true);
         }
     }, [searchParams]);
 
-    useEffect(() => {
-        dispatch(fetchSchedules());
-        if (classRooms.length === 0) dispatch(fetchClassRooms());
-    }, [dispatch, classRooms.length]);
+    const { mutateAsync: performDeleteSchedule } = useMutateData(
+        async (id: number | string) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation DeleteSchedule($id: ID!) {
+                        deleteSchedule(id: $id)
+                    }
+                `,
+                variables: { id }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            return response.data;
+        },
+        [['admin', 'schedules-and-classes'], ['class']]
+    );
 
     const handleCellClick = (day: string, startTime: string, existingSchedule?: Schedule) => {
         if (existingSchedule) {
@@ -93,9 +134,10 @@ function SchedulesContent() {
         setIsFormOpen(true);
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number | string) => {
         if (confirm('Are you sure you want to delete this schedule slot?')) {
-            await dispatch(deleteSchedule(id));
+            await performDeleteSchedule(id);
+            refetch();
         }
     };
 
@@ -242,8 +284,9 @@ function SchedulesContent() {
             {isFormOpen && (
                 <ScheduleForm
                     onClose={handleCloseForm}
+                    onSuccess={() => refetch()}
                     initialData={editingSchedule}
-                    preselectedClassId={Number(selectedClassId)}
+                    preselectedClassId={selectedClassId ? Number(selectedClassId) : undefined}
                     prefilledSlot={prefilledSlot}
                 />
             )}

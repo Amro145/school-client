@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { Teacher, ClassRoom } from '@shared/types/models';
+import axios from 'axios';
+import { Plus, Save, Loader2, ArrowLeft, BarChart3, Layers, User } from 'lucide-react';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BarChart3, User, Layers } from 'lucide-react';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchMyTeachers, fetchClassRooms, createNewSubject } from '@/lib/redux/slices/adminSlice';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createSubjectSchema, CreateSubjectFormValues } from '@/lib/validations/admin';
@@ -17,10 +19,26 @@ export const runtime = 'edge';
 
 export default function CreateSubjectPage() {
     const router = useRouter();
-    const dispatch = useDispatch<AppDispatch>();
-
     const { user } = useSelector((state: RootState) => state.auth);
-    const { teachers, classRooms, loading: globalLoading } = useSelector((state: RootState) => state.admin);
+
+    const { data: adminData, isLoading: globalLoading } = useFetchData<{ teachers: Teacher[], classRooms: ClassRoom[] }>(
+        ['admin', 'teachers-and-classes'],
+        `
+        query GetAdminTeachersAndClasses {
+          teachers {
+            id
+            userName
+          }
+          classRooms {
+            id
+            name
+          }
+        }
+        `
+    );
+
+    const teachers = adminData?.teachers || [];
+    const classRooms = adminData?.classRooms || [];
 
     const {
         register,
@@ -41,9 +59,31 @@ export default function CreateSubjectPage() {
             router.push('/subjects');
             return;
         }
-        dispatch(fetchMyTeachers());
-        dispatch(fetchClassRooms());
-    }, [dispatch, user, router]);
+    }, [user, router]);
+
+    const { mutateAsync: createSubject } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateSubject($name: String!, $classId: Int!, $teacherId: Int!) {
+                        createSubject(name: $name, classId: $classId, teacherId: $teacherId) {
+                            id
+                            name
+                        }
+                    }
+                `,
+                variables: payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data;
+        },
+        [['admin', 'classes-and-subjects'], ['subjects'], ['dashboard']]
+    );
 
     const onSubmit = async (data: CreateSubjectFormValues) => {
         // Dynamic import
@@ -57,30 +97,23 @@ export default function CreateSubjectPage() {
         });
 
         try {
-            const resultAction = await dispatch(createNewSubject({
+            await createSubject({
                 name: data.name,
                 classId: Number(data.classId),
                 teacherId: Number(data.teacherId)
-            }));
+            });
 
-            if (createNewSubject.fulfilled.match(resultAction)) {
-                Toast.fire({
-                    icon: "success",
-                    title: "Subject created successfully"
-                });
-                setTimeout(() => {
-                    router.push('/subjects');
-                }, 1500);
-            } else {
-                Toast.fire({
-                    icon: "error",
-                    title: resultAction.payload as string || "Failed to create subject"
-                });
-            }
-        } catch {
+            Toast.fire({
+                icon: "success",
+                title: "Subject created successfully"
+            });
+            setTimeout(() => {
+                router.push('/subjects');
+            }, 1500);
+        } catch (err: any) {
             Toast.fire({
                 icon: "error",
-                title: "An unexpected error occurred"
+                title: err.message || "Failed to create subject"
             });
         }
     };

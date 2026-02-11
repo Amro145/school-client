@@ -3,23 +3,32 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchMyStudents, setPage } from '@/lib/redux/slices/adminSlice';
-import { fetchTeacher } from '@/lib/redux/slices/teacherSlice';
+import { setPage } from '@/lib/redux/slices/adminSlice';
+import { useFetchData } from '@/hooks/useFetchData';
+import { Student, Teacher as TeacherProfile } from '@shared/types/models';
 import {
     Plus,
     Mail,
     Search,
-    Loader2,
-    AlertCircle,
     UserCircle,
     GraduationCap,
-    School
+    School,
+    LayoutDashboard,
+    Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { calculateSuccessRate } from '@/lib/data';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
+
+const getStatusStyles = (rate: string | number) => {
+    const numericRate = typeof rate === 'string' ? parseFloat(rate) : rate;
+    if (numericRate >= 80) return { bg: 'bg-emerald-50 dark:bg-emerald-900/10', border: 'border-emerald-100 dark:border-emerald-900/20', text: 'text-emerald-600 dark:text-emerald-400', glow: 'shadow-lg shadow-emerald-500/10' };
+    if (numericRate >= 60) return { bg: 'bg-amber-50 dark:bg-amber-900/10', border: 'border-amber-100 dark:border-amber-900/20', text: 'text-amber-600 dark:text-amber-400', glow: 'shadow-lg shadow-amber-500/10' };
+    return { bg: 'bg-rose-50 dark:bg-rose-900/10', border: 'border-rose-100 dark:border-rose-900/20', text: 'text-rose-600 dark:text-rose-400', glow: 'shadow-lg shadow-rose-500/10' };
+};
 
 export const runtime = 'edge';
 
@@ -28,43 +37,74 @@ const LIMIT = 10;
 export default function StudentsPage() {
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
+    const { currentPage } = useSelector((state: RootState) => state.admin);
 
-    // Admin State
-    const { students: adminStudents, loading: adminLoading, error: adminError, totalStudentsCount, currentPage } = useSelector((state: RootState) => state.admin);
-
-    // Teacher State
-    const { currentTeacher, loading: teacherLoading } = useSelector((state: RootState) => state.teacher);
-
-    const [searchTerm, setSearchTerm] = React.useState('');
-    const [debouncedSearch, setDebouncedSearch] = React.useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
 
     const isAdmin = user?.role === 'admin';
     const isTeacher = user?.role === 'teacher';
 
-    const getStatusStyles = (rate: string) => {
-        const value = parseFloat(rate);
-        if (value >= 75) return {
-            bg: 'bg-emerald-500/10',
-            border: 'border-emerald-500/20',
-            text: 'text-emerald-600',
-            glow: 'shadow-[0_0_20px_rgba(16,185,129,0.15)]',
-            progress: 'bg-emerald-500'
-        };
-        if (value >= 50) return {
-            bg: 'bg-amber-500/10',
-            border: 'border-amber-500/20',
-            text: 'text-amber-600',
-            glow: 'shadow-[0_0_20px_rgba(245,158,11,0.15)]',
-            progress: 'bg-amber-500'
-        };
-        return {
-            bg: 'bg-rose-500/10',
-            border: 'border-rose-500/20',
-            text: 'text-rose-600',
-            glow: 'shadow-[0_0_20px_rgba(244,63,94,0.15)]',
-            progress: 'bg-rose-500'
-        };
-    };
+    // Admin Data Hook
+    const { data: adminData, isLoading: adminLoading, error: adminError } = useFetchData<{
+        students: any[];
+        totalStudentsCount: number;
+    }>(
+        ['admin', 'students', currentPage.toString(), debouncedSearch],
+        `
+        query GetAdminStudents($page: Int, $limit: Int, $search: String) {
+          students(page: $page, limit: $limit, search: $search) {
+            id
+            userName
+            email
+            role
+            class {
+                id
+                name
+            }
+            averageScore
+            successRate
+            grades {
+                id
+                score
+            }
+          }
+          totalStudentsCount(search: $search)
+        }
+        `,
+        { page: currentPage, limit: LIMIT, search: debouncedSearch },
+        { enabled: isAdmin }
+    );
+
+    // Teacher Data Hook
+    const { data: teacherData, isLoading: teacherLoading } = useFetchData<{ me: TeacherProfile }>(
+        ['teacher', 'me'],
+        `
+        query GetMyStudents {
+          me {
+            subjectsTaught {
+              id
+              name
+              class {
+                id
+                name
+              }
+              grades {
+                id
+                score
+                student {
+                  id
+                  userName
+                  email
+                }
+              }
+            }
+          }
+        }
+        `,
+        { page: currentPage, limit: LIMIT, search: debouncedSearch },
+        { enabled: isAdmin }
+    );
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -76,64 +116,50 @@ export default function StudentsPage() {
         return () => clearTimeout(timer);
     }, [searchTerm, dispatch, debouncedSearch, isAdmin]);
 
-    useEffect(() => {
-        if (isAdmin) {
-            dispatch(fetchMyStudents({ page: currentPage, limit: LIMIT, search: debouncedSearch }));
-        } else if (isTeacher) {
-            dispatch(fetchTeacher());
-        }
-    }, [dispatch, currentPage, debouncedSearch, isAdmin, isTeacher]);
-
     const handlePageChange = (newPage: number) => {
         if (isAdmin && newPage >= 1) {
-            dispatch(fetchMyStudents({ page: newPage, limit: LIMIT, search: debouncedSearch }));
+            dispatch(setPage(newPage));
         }
     };
 
     // Calculate Teacher Students (from Subjects)
-    const teacherStudents = React.useMemo(() => {
-        if (!isTeacher || !currentTeacher?.subjectsTaught) return [];
+    const teacherStudents = useMemo(() => {
+        if (!isTeacher || !teacherData?.me?.subjectsTaught) return [];
         const uniqueStudents = new Map();
-        currentTeacher.subjectsTaught.forEach(sub => {
-            sub.grades.forEach(g => {
-                // Ensure we have a valid student object
+        teacherData.me.subjectsTaught.forEach(sub => {
+            sub.grades?.forEach(g => {
                 if (g.student && !uniqueStudents.has(g.student.id)) {
                     uniqueStudents.set(g.student.id, {
                         ...g.student,
-                        // Use the class from the subject as a proxy if student class is missing, 
-                        // but ideal would be student.class. However 'me' query might not return student.class deep structure
-                        // Check teacherSlice types. Grade.student is simple {id, userName, email}.
-                        // So 'class' might be missing for teacher view. We can handle that display.
-                        class: sub.class // Attach subject class context if needed
+                        class: sub.class
                     });
                 }
             });
         });
 
-        // Client-side Filter for Teacher
         let list = Array.from(uniqueStudents.values());
         if (debouncedSearch) {
             const lower = debouncedSearch.toLowerCase();
             list = list.filter((s: any) => s.userName.toLowerCase().includes(lower) || s.email.toLowerCase().includes(lower));
         }
         return list;
-    }, [currentTeacher, isTeacher, debouncedSearch]);
+    }, [teacherData, isTeacher, debouncedSearch]);
 
     // Unify Data
     let displayStudents: any[] = [];
     let loading = false;
     let error = null;
+    const totalStudentsCount = adminData?.totalStudentsCount || 0;
     let totalCount = 0;
 
     if (isAdmin) {
-        displayStudents = adminStudents;
+        displayStudents = adminData?.students || [];
         loading = adminLoading;
-        error = adminError;
-        totalCount = totalStudentsCount;
+        error = adminError?.message;
+        totalCount = adminData?.totalStudentsCount || 0;
     } else if (isTeacher) {
         displayStudents = teacherStudents;
         loading = teacherLoading;
-        error = null;
         totalCount = teacherStudents.length;
     }
 
@@ -141,9 +167,19 @@ export default function StudentsPage() {
 
     if (loading && displayStudents.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-                <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-                <p className="text-slate-500 dark:text-slate-400 font-medium italic">Synchronizing student records...</p>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <div className="w-20 h-20 border-4 border-blue-50 dark:border-blue-900 border-t-blue-600 rounded-full animate-spin"></div>
+                    <GraduationCap className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </motion.div>
+                <div className="text-center">
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Syncing Records...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Retrieving institutional candidate directory...</p>
+                </div>
             </div>
         );
     }

@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useParams } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTeacherById, resetTeacher } from '@/lib/redux/slices/teacherSlice';
-import { RootState, AppDispatch } from '@/lib/redux/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData } from '@/hooks/useFetchData';
 import Link from 'next/link';
 import { calculateSuccessRate } from '@/lib/data';
 import {
@@ -19,44 +19,61 @@ import {
 } from 'lucide-react';
 
 import { TableSkeleton } from '@/components/SkeletonLoader';
+import { Teacher } from '@shared/types/models';
 
 export const runtime = 'edge';
 
 export default function TeacherDetailPage() {
     const params = useParams();
     const id = params?.id as string;
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentTeacher, loading, error } = useSelector((state: RootState) => state.teacher);
+    const { data: teacherData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ teacher: Teacher }>(
+        ['teacher', id],
+        `
+        query GetTeacherDetails($id: ID!) {
+          teacher(id: $id) {
+            id
+            userName
+            email
+            role
+            subjectsTaught {
+              id
+              name
+              class {
+                id
+                name
+              }
+              grades {
+                id
+                score
+                student {
+                  id
+                  userName
+                }
+              }
+            }
+          }
+        }
+        `,
+        { id }
+    );
+
+    const currentTeacher = teacherData?.teacher;
+    const error = fetchError ? (fetchError as any).message : null;
     const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | null>(null);
 
-    useEffect(() => {
-        if (id) {
-            dispatch(fetchTeacherById(id));
-        }
-        return () => {
-            dispatch(resetTeacher());
-        };
-    }, [id, dispatch]);
-
-    if (loading) {
+    if (loading && !currentTeacher) {
         return (
             <div className="space-y-12 pb-20">
-                <div className="flex items-center space-x-2 px-4 py-2 w-32 bg-slate-100 animate-pulse rounded-xl h-8" />
-                <div className=" p-12 rounded-[40px] border border-slate-100 shadow-sm flex gap-10">
-                    <div className="w-32 h-32 bg-slate-200 animate-pulse rounded-[32px]" />
+                <div className="flex items-center space-x-2 px-4 py-2 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl h-8" />
+                <div className=" p-12 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm flex gap-10">
+                    <div className="w-32 h-32 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-[32px]" />
                     <div className="flex-1 space-y-4">
-                        <div className="h-4 w-32 bg-slate-100 animate-pulse rounded-lg" />
-                        <div className="h-12 w-96 bg-slate-200 animate-pulse rounded-2xl" />
+                        <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-lg" />
+                        <div className="h-12 w-96 bg-slate-200 dark:bg-slate-700 animate-pulse rounded-2xl" />
                         <div className="flex gap-4">
-                            <div className="h-10 w-48 bg-slate-100 animate-pulse rounded-xl" />
-                            <div className="h-10 w-32 bg-slate-100 animate-pulse rounded-xl" />
+                            <div className="h-10 w-48 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl" />
+                            <div className="h-10 w-32 bg-slate-100 dark:bg-slate-800 animate-pulse rounded-xl" />
                         </div>
-                    </div>
-                </div>
-                <div className="space-y-6">
-                    <div className="h-8 w-48 bg-slate-200 animate-pulse rounded-lg ml-2" />
-                    <div className=" rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
-                        <TableSkeleton rows={3} />
                     </div>
                 </div>
             </div>
@@ -65,24 +82,24 @@ export default function TeacherDetailPage() {
 
     if (error) {
         return (
-            <div className="max-w-2xl mx-auto mt-12  border border-rose-100 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
-                <div className="p-6 bg-rose-50 rounded-[32px]">
+            <div className="max-w-2xl mx-auto mt-12  border border-rose-100 dark:border-rose-900/30 p-12 rounded-[48px] shadow-2xl shadow-rose-500/5 flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
+                <div className="p-6 bg-rose-50 dark:bg-rose-900/20 rounded-[32px]">
                     <AlertCircle className="w-12 h-12 text-rose-500" />
                 </div>
                 <div className="space-y-3">
-                    <h3 className="text-3xl font-black text-slate-900 leading-tight">Faculty Sync Interrupted</h3>
-                    <p className="text-slate-500 font-medium text-lg leading-relaxed">{error}</p>
+                    <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-tight">Faculty Sync Interrupted</h3>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-lg leading-relaxed">{error}</p>
                 </div>
                 <div className="flex items-center space-x-4">
                     <button
-                        onClick={() => dispatch(fetchTeacherById(id))}
+                        onClick={() => refetch()}
                         className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black hover:bg-rose-700 transition-all active:scale-95 shadow-lg shadow-rose-200 uppercase tracking-widest text-xs"
                     >
                         Re-initialize Sync
                     </button>
                     <Link
                         href="/admin/teachers"
-                        className="px-10 py-4 bg-slate-100 text-slate-600 rounded-2xl font-black hover:bg-slate-200 transition-all active:scale-95 uppercase tracking-widest text-xs"
+                        className="px-10 py-4 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-2xl font-black hover:bg-slate-200 dark:hover:bg-slate-700 transition-all active:scale-95 uppercase tracking-widest text-xs"
                     >
                         Return to Faculty Index
                     </Link>
@@ -155,7 +172,7 @@ export default function TeacherDetailPage() {
                         const isExpanded = expandedSubjectId === subject.id;
 
                         return (
-                            <div key={subject.id} className=" rounded-[32px] border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
+                            <div key={subject.id} className=" rounded-4xl border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
                                 <div
                                     onClick={() => setExpandedSubjectId(isExpanded ? null : subject.id)}
                                     className={`p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-slate-50/50 transition-colors ${isExpanded ? 'bg-slate-50/50' : ''}`}
@@ -211,7 +228,7 @@ export default function TeacherDetailPage() {
                                                                     <span className={`text-lg font-black tabular-nums ${grade.score >= 50 ? 'text-slate-900' : 'text-rose-600'}`}>
                                                                         {grade.score}%
                                                                     </span>
-                                                                    <div className="hidden md:block flex-grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
+                                                                    <div className="hidden md:block grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
                                                                         <div
                                                                             className={`h-full rounded-full ${grade.score >= 85 ? 'bg-emerald-500' : grade.score >= 50 ? 'bg-blue-500' : 'bg-rose-500'}`}
                                                                             style={{ width: `${grade.score}%` }}

@@ -1,10 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, use } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchStudentById, updateGradesBulk } from '@/lib/redux/slices/adminSlice';
-import { fetchTeacher, updateSubjectGrades } from '@/lib/redux/slices/teacherSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
 import {
     UserCircle,
     Mail,
@@ -15,12 +14,12 @@ import {
     Loader2,
     AlertCircle,
     TrendingUp,
-    ArrowUpRight,
     Save,
     CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
+import axios from 'axios';
 
 export const runtime = 'edge';
 
@@ -30,79 +29,68 @@ interface PageProps {
 
 export default function StudentProfilePage({ params }: PageProps) {
     const { id } = use(params);
-    const dispatch = useDispatch<AppDispatch>();
     const { user: authUser } = useSelector((state: RootState) => state.auth);
 
-    // Admin Selector
-    const { currentStudent: adminStudent, loading: adminLoading, error: adminError } = useSelector((state: RootState) => state.admin);
-
-    // Teacher Selector
-    const { currentTeacher, loading: teacherLoading } = useSelector((state: RootState) => state.teacher);
-
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
-    const [isSaving, setIsSaving] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [selectedType, setSelectedType] = useState<string>('All');
 
     const isAdmin = authUser?.role === 'admin';
     const isTeacher = authUser?.role === 'teacher';
 
-    useEffect(() => {
-        if (id) {
-            if (isAdmin) {
-                dispatch(fetchStudentById(Number(id)));
-            } else if (isTeacher) {
-                dispatch(fetchTeacher());
+    // Hook for Profile Data
+    const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
+        ['student', id],
+        `
+        query GetStudentProfile($id: ID!) {
+          student(id: $id) {
+            id
+            userName
+            email
+            role
+            class {
+                id
+                name
             }
-        }
-
-    }, [dispatch, id, isAdmin, isTeacher]);
-
-    // Data Resolution
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let student: any = null;
-    let loading = false;
-    let error: string | null = null;
-
-    if (isAdmin) {
-        student = adminStudent;
-        loading = adminLoading;
-        error = adminError;
-    } else if (isTeacher) {
-        // Construct Student Profile from Teacher Data
-        // Teacher can only see the student if they are in one of the subjects
-        loading = teacherLoading;
-        if (currentTeacher && currentTeacher.subjectsTaught) {
-            const studentId = id.toString();
-            // Find all grades for this student across all subjects taught by this teacher
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const relevantGrades: any[] = [];
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let studentInfo: any = null;
-
-            currentTeacher.subjectsTaught.forEach(sub => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const grade = sub.grades.find((g: any) => g.student && g.student.id.toString() === studentId);
-                if (grade) {
-                    relevantGrades.push({
-                        ...grade,
-                        subject: { name: sub.name, id: sub.id } // Mock subject relation for display
-                    });
-                    if (!studentInfo) studentInfo = grade.student;
+            averageScore
+            grades {
+                id
+                score
+                type
+                subject {
+                    id
+                    name
                 }
-            });
-
-            if (studentInfo) {
-                student = {
-                    ...studentInfo,
-                    grades: relevantGrades,
-                    role: 'student'
-                };
-            } else if (!loading) {
-                error = "Student not found in your classes.";
             }
+          }
         }
-    }
+        `,
+        { id }
+    );
+
+    // Mutation Hook
+    const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
+        async (grades: { id: string | number, score: number }[]) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
+                        updateGradesBulk(grades: $grades) {
+                            id
+                            score
+                        }
+                    }
+                `,
+                variables: { grades }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            return response.data;
+        },
+        [['student', id]]
+    );
+
+    const student = profileData?.student;
 
     const handleScoreChange = (gradeId: string, newScore: string) => {
         const score = parseInt(newScore);
@@ -115,42 +103,32 @@ export default function StudentProfilePage({ params }: PageProps) {
     };
 
     const handleSaveAll = async () => {
-        const gradesToUpdate = Object.entries(modifiedGrades).map(([id, score]) => ({
-            id,
+        const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
+            id: gid,
             score
         }));
 
         if (gradesToUpdate.length === 0) return;
 
-        setIsSaving(true);
         try {
-            if (isTeacher) {
-                await dispatch(updateSubjectGrades(gradesToUpdate)).unwrap();
-            } else {
-                await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
-            }
+            await updateGrades(gradesToUpdate);
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
         } catch (err) {
             console.error('Failed to save grades:', err);
-        } finally {
-            setIsSaving(false);
         }
     };
 
-    // Auto-save Mechanism
     const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
 
     useEffect(() => {
         if (Object.keys(modifiedGrades).length === 0 || isSaving || !isAutoSaveEnabled) return;
-
         const debouncedSave = setTimeout(() => {
             handleSaveAll();
         }, 2000);
-
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving, isAutoSaveEnabled, handleSaveAll]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
 
 
     if (loading) {
@@ -166,12 +144,12 @@ export default function StudentProfilePage({ params }: PageProps) {
         );
     }
 
-    if (error) {
+    if (fetchError) {
         return (
             <div className="max-w-xl mx-auto mt-20 p-10  rounded-3xl border border-rose-100 shadow-xl text-center">
                 <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Access Denied</h3>
-                <p className="text-slate-500 dark:text-slate-400 mb-6">{error}</p>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">{(fetchError as any).message || 'An error occurred'}</p>
                 <Link href="/students" className="text-blue-600 font-bold hover:underline">Return to Directory</Link>
             </div>
         );
@@ -204,14 +182,14 @@ export default function StudentProfilePage({ params }: PageProps) {
 
             {/* Profile Overview Card */}
             <div className=" rounded-[3rem] border border-slate-50 dark:border-slate-800 shadow-2xl shadow-slate-200/40 dark:shadow-slate-900/20 overflow-hidden">
-                <div className="h-32 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
+                <div className="h-32 bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
                     <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
                 </div>
                 <div className="px-10 pb-10 relative">
                     <div className="flex flex-col md:flex-row md:items-end justify-between -mt-16 gap-6">
                         <div className="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-8">
                             <div className="w-40 h-40 rounded-[2.5rem]  p-2 shadow-2xl relative">
-                                <div className="w-full h-full rounded-[2rem] bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-200 dark:text-slate-600 overflow-hidden border border-slate-100 dark:border-slate-700">
+                                <div className="w-full h-full rounded-4xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-200 dark:text-slate-600 overflow-hidden border border-slate-100 dark:border-slate-700">
                                     <UserCircle className="w-24 h-24" />
                                 </div>
                                 <div className="absolute bottom-4 right-4 w-10 h-10 bg-emerald-500 border-4 border-white rounded-full flex items-center justify-center shadow-lg">

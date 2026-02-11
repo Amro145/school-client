@@ -3,27 +3,47 @@
 export const runtime = "edge";
 
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useFetchData } from "@/hooks/useFetchData";
+import { useSelector } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
-import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchExamDetails, clearExamState } from "@/lib/redux/slices/examSlice";
+import { RootState } from "@/lib/redux/store";
+import { Exam } from "@shared/types/models";
 import { ArrowLeft, Clock, AlertCircle, PlayCircle, BookOpen, User, CheckCircle2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 export default function ExamLobbyPage() {
     const params = useParams();
-    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const { currentExam, loading, error } = useSelector((state: RootState) => state.exam);
-    const { user } = useSelector((state: RootState) => state.auth);
     const id = params.id as string;
+    const { user } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        if (id) {
-            dispatch(clearExamState());
-            dispatch(fetchExamDetails(Number(id)));
+    const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ exam: Exam }>(
+        ['exam', id, 'lobby'],
+        `
+        query GetExamDetails($id: ID!) {
+          exam(id: $id) {
+            id
+            title
+            description
+            durationInMinutes
+            subject {
+                id
+                name
+            }
+            teacher {
+                id
+                userName
+            }
+          }
         }
-    }, [dispatch, id]);
+        `,
+        { id }
+    );
+
+    const currentExam = examData?.exam;
+    const error = fetchError ? (fetchError as any).message : null;
+
+    // No explicit initialization needed as useFetchData handles it
 
     if (loading) {
         return (

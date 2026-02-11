@@ -2,10 +2,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchSubjectById, resetSubject, updateGradesBulk } from '@/lib/redux/slices/subjectSlice';
-import { fetchTeacher, updateSubjectGrades } from '@/lib/redux/slices/teacherSlice';
-import { RootState, AppDispatch } from '@/lib/redux/store';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
 import Link from 'next/link';
 import {
     ArrowLeft,
@@ -22,6 +21,7 @@ import {
 } from 'lucide-react';
 
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
+import axios from 'axios';
 
 export const runtime = 'edge';
 
@@ -29,17 +29,10 @@ export default function SubjectDetailPage() {
     const params = useParams();
     const router = useRouter();
     const id = params?.id as string;
-    const dispatch = useDispatch<AppDispatch>();
 
     const { user } = useSelector((state: RootState) => state.auth);
 
-    // Admin Selector
-    const { currentSubject: adminSubject, loading: adminLoading, error: adminError } = useSelector((state: RootState) => state.subject);
-    // Teacher Selector
-    const { currentTeacher, loading: teacherLoading, error: teacherError } = useSelector((state: RootState) => state.teacher);
-
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
-    const [isSaving, setIsSaving] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showExitModal, setShowExitModal] = useState(false);
     const [pendingDestination, setPendingDestination] = useState<string | null>(null);
@@ -49,6 +42,63 @@ export default function SubjectDetailPage() {
     const isTeacher = user?.role === 'teacher';
 
     const isDirty = Object.keys(modifiedGrades).length > 0;
+
+    // Admin/Teacher Sync Hook
+    const { data: subjectData, isLoading: loading, error: fetchError } = useFetchData<{ subject: any }>(
+        ['subject', id],
+        `
+        query GetSubjectDetails($id: ID!) {
+          subject(id: $id) {
+            id
+            name
+            teacher {
+              id
+              userName
+            }
+            class {
+              id
+              name
+            }
+            grades {
+              id
+              score
+              type
+              student {
+                id
+                userName
+              }
+            }
+          }
+        }
+        `,
+        { id }
+    );
+
+    // Mutation Hook
+    const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
+        async (grades: { id: string | number, score: number }[]) => {
+            // Mutation logic using axios or raw fetch
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const query = `
+                mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
+                    updateGradesBulk(grades: $grades) {
+                        id
+                        score
+                    }
+                }
+            `;
+            const response = await axios.post(apiBase, {
+                query,
+                variables: { grades }
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+            return response.data;
+        },
+        [['subject', id], ['teacher', 'me']]
+    );
 
     useEffect(() => {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -76,46 +126,12 @@ export default function SubjectDetailPage() {
         }
     };
 
-    useEffect(() => {
-        if (id) {
-            if (isAdmin) {
-                dispatch(fetchSubjectById(id));
-            } else if (isTeacher) {
-                dispatch(fetchTeacher());
-            }
-        }
-        return () => {
-            if (isAdmin) dispatch(resetSubject());
-        };
-    }, [id, dispatch, isAdmin, isTeacher]);
-
-    // Derived Subject Data
-    let subject: any = null;
-    let loading = false;
-    let error: string | null = null;
-
-    if (isAdmin) {
-        subject = adminSubject;
-        loading = adminLoading;
-        error = adminError;
-    } else if (isTeacher) {
-        // Find subject in subjectsTaught
-        subject = currentTeacher?.subjectsTaught.find(s => s.id.toString() === id) || null;
-        loading = teacherLoading;
-        if (!loading && currentTeacher && !subject) {
-            // Security: Teacher trying to access unauthorized subject
-            router.push('/subjects');
-        }
-    }
+    const subject = subjectData?.subject;
 
     const handleScoreChange = (gradeId: string, newScore: string) => {
-        // Allow Teachers and Admins to edit
         if (!isTeacher && !isAdmin) return;
-
         const score = parseInt(newScore);
         if (isNaN(score) && newScore !== '') return;
-
-        // Strictly prevent entering any value greater than 100
         const validatedScore = newScore === '' ? 0 : Math.min(100, Math.max(0, score));
         setModifiedGrades(prev => ({
             ...prev,
@@ -124,22 +140,15 @@ export default function SubjectDetailPage() {
     };
 
     const handleSaveAll = async () => {
-        const gradesToUpdate = Object.entries(modifiedGrades).map(([id, score]) => ({
-            id,
+        const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
+            id: gid,
             score
         }));
 
         if (gradesToUpdate.length === 0) return;
 
-        setIsSaving(true);
         try {
-            if (isTeacher) {
-                await dispatch(updateSubjectGrades(gradesToUpdate)).unwrap();
-            } else if (isAdmin) {
-                // Ideally Admins can also update if requested, using the bulk action
-                await dispatch(updateGradesBulk(gradesToUpdate)).unwrap();
-            }
-
+            await updateGrades(gradesToUpdate);
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
@@ -156,42 +165,32 @@ export default function SubjectDetailPage() {
                 icon: 'success',
                 title: 'Grades synchronized successfully'
             });
-
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to save grades:', err);
             const Swal = (await import('sweetalert2')).default;
             Swal.fire({
                 title: 'Sync Failed',
-                text: err as string,
+                text: err.message || 'Unknown error occurred',
                 icon: 'error',
                 customClass: {
                     popup: 'rounded-[32px] border-none shadow-2xl',
                     confirmButton: 'rounded-xl font-bold px-8 py-3 bg-rose-600'
                 }
             });
-        } finally {
-            setIsSaving(false);
         }
     };
 
-    // Auto-save Mechanism: Automatically saves changes after 2 seconds of inactivity
     const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
 
     useEffect(() => {
-        // Only trigger if there are changes and not currently saving, and auto-save is enabled
         if (Object.keys(modifiedGrades).length === 0 || isSaving || !isAutoSaveEnabled) return;
-
         const debouncedSave = setTimeout(() => {
             handleSaveAll();
         }, 2000);
-
-        // Cleanup function to cancel the timeout if the user types again, manually saves, or component unmounts
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving, isAutoSaveEnabled, handleSaveAll]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
 
-
-
-    if (loading) {
+    if (loading && !subject) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
                 <Spinner className="w-12 h-12 text-blue-600 animate-spin" />

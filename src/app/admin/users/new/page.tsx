@@ -1,9 +1,10 @@
 'use client';
 
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { ClassRoom } from '@shared/types/models';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchClassRooms, createNewUser } from '@/lib/redux/slices/adminSlice';
+import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     UserPlus,
@@ -25,12 +26,22 @@ import FormInput from '@/components/FormInput';
 export const runtime = 'edge';
 
 export default function CreateUserPage() {
-    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const searchParams = useSearchParams();
     const initialRole = (searchParams.get('role') as 'student' | 'teacher' | 'admin') || 'student';
 
-    const { classRooms, loading: adminLoading } = useSelector((state: RootState) => state.admin);
+    const { data: adminData, isLoading: adminLoading } = useFetchData<{ classRooms: ClassRoom[] }>(
+        ['admin', 'classrooms'],
+        `
+        query GetAdminClassrooms {
+          classRooms {
+            id
+            name
+          }
+        }
+        `
+    );
+    const classRooms = adminData?.classRooms || [];
 
     const {
         register,
@@ -53,14 +64,34 @@ export default function CreateUserPage() {
     const selectedRole = watch('role');
 
     useEffect(() => {
-        dispatch(fetchClassRooms());
-    }, [dispatch]);
-
-    useEffect(() => {
         if (initialRole) {
             setValue('role', initialRole);
         }
     }, [initialRole, setValue]);
+
+    const { mutateAsync: createUser } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
+                        createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
+                            id
+                            userName
+                        }
+                    }
+                `,
+                variables: payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data.data.createUser;
+        },
+        [['admin', 'teachers'], ['admin', 'students'], ['admin', 'dashboard']]
+    );
 
     const onSubmit = async (data: CreateUserFormValues) => {
         const payload = {
@@ -78,8 +109,8 @@ export default function CreateUserPage() {
             timerProgressBar: true,
         });
 
-        const resultAction = await dispatch(createNewUser(payload));
-        if (createNewUser.fulfilled.match(resultAction)) {
+        try {
+            await createUser(payload);
             Toast.fire({
                 icon: "success",
                 title: "User created successfully"
@@ -87,10 +118,10 @@ export default function CreateUserPage() {
             setTimeout(() => {
                 router.push(data.role === 'teacher' ? '/admin/teachers' : '/students');
             }, 1000);
-        } else {
+        } catch (err: any) {
             Toast.fire({
                 icon: "error",
-                title: resultAction.payload as string || "Failed to create user"
+                title: err.message || "Failed to create user"
             });
         }
     };
@@ -165,8 +196,8 @@ export default function CreateUserPage() {
                                 <select
                                     {...register('role')}
                                     className={`w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border rounded-[28px] focus: ring-4 transition-all appearance-none cursor-pointer font-bold text-slate-900 dark:text-white outline-none ${errors.role
-                                            ? 'border-red-500 focus:ring-red-50 dark:focus:ring-red-900/20'
-                                            : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50 dark:focus:ring-blue-900/20 dark:focus:bg-slate-800'
+                                        ? 'border-red-500 focus:ring-red-50 dark:focus:ring-red-900/20'
+                                        : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50 dark:focus:ring-blue-900/20 dark:focus:bg-slate-800'
                                         }`}
                                 >
                                     <option value="student">STUDENT NODE</option>
@@ -195,8 +226,8 @@ export default function CreateUserPage() {
                                     <select
                                         {...register('classId')}
                                         className={`w-full pl-16 pr-8 py-5 bg-slate-50 dark:bg-slate-900 border rounded-[28px] focus: ring-4 transition-all appearance-none cursor-pointer font-bold text-slate-900 dark:text-white outline-none ${errors.classId
-                                                ? 'border-red-500 focus:ring-red-50 dark:focus:ring-red-900/20'
-                                                : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50 dark:focus:ring-blue-900/20 dark:focus:bg-slate-800'
+                                            ? 'border-red-500 focus:ring-red-50 dark:focus:ring-red-900/20'
+                                            : 'border-slate-100 dark:border-slate-800 focus:border-blue-500 focus:ring-blue-50 dark:focus:ring-blue-900/20 dark:focus:bg-slate-800'
                                             }`}
                                         disabled={(adminLoading && classRooms.length === 0) || isSubmitting}
                                     >

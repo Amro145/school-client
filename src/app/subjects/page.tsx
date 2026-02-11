@@ -1,10 +1,11 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchSubjects, handleDeleteSubject } from '@/lib/redux/slices/adminSlice';
-import { fetchTeacher } from '@/lib/redux/slices/teacherSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import axios from 'axios';
+import { Teacher as TeacherProfile } from '@shared/types/models';
 import {
     Plus,
     BookOpen,
@@ -15,7 +16,8 @@ import {
     AlertCircle,
     Filter,
     ArrowRight,
-    GraduationCap
+    GraduationCap,
+    LayoutDashboard
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
@@ -25,27 +27,88 @@ import { TableSkeleton } from '@/components/SkeletonLoader';
 export const runtime = 'edge';
 
 export default function SubjectsPage() {
-    const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-
-    // Admin State
-    const { subjects: adminSubjects, loading: adminLoading, error: adminError } = useSelector((state: RootState) => state.admin);
-
-    // Teacher State
-    const { currentTeacher, loading: teacherLoading } = useSelector((state: RootState) => state.teacher);
 
     const [searchTerm, setSearchTerm] = useState('');
 
     const isAdmin = user?.role === 'admin';
     const isTeacher = user?.role === 'teacher';
 
-    useEffect(() => {
-        if (isAdmin) {
-            dispatch(fetchSubjects());
-        } else if (isTeacher) {
-            dispatch(fetchTeacher());
+    // Admin Hook
+    // Admin Hook
+    const { data: adminData, isLoading: adminLoading, error: adminError, refetch: adminRefetch } = useFetchData<{ subjects: any[] }>(
+        ['admin', 'subjects'],
+        `
+        query GetAdminSubjects {
+          subjects {
+            id
+            name
+            teacher {
+              id
+              userName
+            }
+            class {
+              id
+              name
+            }
+            grades {
+              id
+              score
+            }
+          }
         }
-    }, [dispatch, isAdmin, isTeacher]);
+        `,
+        {},
+        { enabled: isAdmin }
+    );
+
+    // Teacher Hook
+    const { data: teacherData, isLoading: teacherLoading } = useFetchData<{ me: TeacherProfile }>(
+        ['teacher', 'me'],
+        `
+        query GetTeacherSubjects {
+          me {
+            subjectsTaught {
+              id
+              name
+              class {
+                id
+                name
+              }
+              grades {
+                id
+                score
+              }
+            }
+          }
+        }
+        `,
+        {},
+        { enabled: isTeacher }
+    );
+
+    const { mutateAsync: performDeleteSubject } = useMutateData(
+        async (id: string | number) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation DeleteSubject($id: ID!) {
+                        deleteSubject(id: $id)
+                    }
+                `,
+                variables: { id }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            return response.data;
+        },
+        [['admin', 'subjects'], ['teacher', 'me'], ['subjects'], ['dashboard']]
+    );
+
+    const handleDeleteSubject = async (id: string | number) => {
+        await performDeleteSubject(id);
+        if (isAdmin) adminRefetch();
+    };
 
     // Data Unification
     let displaySubjects = [];
@@ -53,16 +116,26 @@ export default function SubjectsPage() {
     let error = null;
 
     if (isAdmin) {
-        displaySubjects = adminSubjects;
+        displaySubjects = adminData?.subjects || [];
         isLoading = adminLoading;
-        error = adminError;
+        error = adminError?.message;
     } else if (isTeacher) {
-        displaySubjects = currentTeacher?.subjectsTaught || [];
+        displaySubjects = teacherData?.me?.subjectsTaught || [];
         isLoading = teacherLoading;
-        error = null;
     }
 
-    if (error) return <div className="text-red-500 text-center p-10">{error}</div>;
+    if (error) return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+            <AlertCircle className="w-12 h-12 text-red-500" />
+            <div className="text-red-500 text-center font-black uppercase tracking-widest">{error}</div>
+            <button
+                onClick={() => isAdmin ? adminRefetch() : window.location.reload()}
+                className="px-6 py-2 bg-slate-900 text-white rounded-xl font-bold hover:bg-black transition-all"
+            >
+                Retry Request
+            </button>
+        </div>
+    );
 
     // Filter
     const filteredSubjects = displaySubjects.filter(subject =>
@@ -73,9 +146,19 @@ export default function SubjectsPage() {
 
     if (isLoading && displaySubjects.length === 0) {
         return (
-            <div className="space-y-12 pb-20 p-8">
-                <div className="h-10 w-64 bg-slate-200 animate-pulse rounded-xl mb-4" />
-                <TableSkeleton rows={6} />
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="relative"
+                >
+                    <div className="w-20 h-20 border-4 border-indigo-50 dark:border-indigo-900 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <BookOpen className="w-8 h-8 text-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                </motion.div>
+                <div className="text-center">
+                    <p className="text-slate-900 dark:text-white font-black text-xl tracking-tight">Accessing Curriculum...</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-sm mt-1 italic">Fetching syllabic architecture...</p>
+                </div>
             </div>
         );
     }

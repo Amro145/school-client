@@ -1,10 +1,11 @@
 "use client";
 
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { createNewClassRoom } from '@/lib/redux/slices/adminSlice';
+import { RootState } from '@/lib/redux/store';
+import { useMutateData } from '@/hooks/useFetchData';
+import axios from 'axios';
 import Link from 'next/link';
 import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -16,13 +17,35 @@ export const runtime = 'edge';
 
 export default function CreateClassPage() {
     const router = useRouter();
-    const dispatch = useDispatch<AppDispatch>();
-    const { loading: adminLoading } = useSelector((state: RootState) => state.admin);
+    const { user } = useSelector((state: RootState) => state.auth);
+    const { mutateAsync: createClassRoom, isPending: isSubmitting } = useMutateData(
+        async (name: string) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation CreateClassRoom($name: String!, $schoolId: Int) {
+                        createClassRoom(name: $name, schoolId: $schoolId) {
+                            id
+                            name
+                        }
+                    }
+                `,
+                variables: { name, schoolId: user?.schoolId ? Number(user.schoolId) : undefined }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data;
+        },
+        [['admin', 'classes-and-subjects'], ['admin', 'dashboard']]
+    );
 
     const {
         register,
         handleSubmit,
-        formState: { errors, isValid, isSubmitting },
+        formState: { errors, isValid, isSubmitting: formSubmitting },
     } = useForm<CreateClassFormValues>({
         resolver: zodResolver(createClassSchema),
         mode: 'onChange',
@@ -42,22 +65,22 @@ export default function CreateClassPage() {
             timerProgressBar: true,
         });
 
-        const resultAction = await dispatch(createNewClassRoom(data.name));
-        if (createNewClassRoom.fulfilled.match(resultAction)) {
+        try {
+            await createClassRoom(data.name);
             Toast.fire({
                 icon: "success",
                 title: "Classroom created successfully"
             });
             router.push('/admin/classes');
-        } else {
+        } catch (err: any) {
             Toast.fire({
                 icon: "error",
-                title: resultAction.payload as string || "Failed to create class"
+                title: err.message || "Failed to create class"
             });
         }
     };
 
-    const loading = adminLoading || isSubmitting;
+    const loading = isSubmitting || formSubmitting;
 
     return (
         <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">

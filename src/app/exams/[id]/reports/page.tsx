@@ -3,27 +3,41 @@
 export const runtime = "edge";
 
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useParams } from "next/navigation";
-import { RootState, AppDispatch } from "@/lib/redux/store";
-import { fetchTeacherExamReports } from "@/lib/redux/slices/examSlice";
+import { RootState } from "@/lib/redux/store";
+import { useFetchData } from "@/hooks/useFetchData";
+import { ExamSubmission } from "@shared/types/models";
 import { ArrowLeft, Search } from "lucide-react";
 import Link from "next/link";
 
 export default function ExamReportsPage() {
     const params = useParams();
-    const dispatch = useDispatch<AppDispatch>();
-    const { reports, loading, error } = useSelector((state: RootState) => state.exam);
-    const { user } = useSelector((state: RootState) => state.auth);
     const id = params.id as string;
+    const { user } = useSelector((state: RootState) => state.auth);
+
+    const { data: reportData, isLoading: loading, error: fetchError } = useFetchData<{ getTeacherExamReports: ExamSubmission[] }>(
+        ['exam', id, 'reports'],
+        `
+        query GetTeacherExamReports($examId: Int!) {
+          getTeacherExamReports(examId: $examId) {
+            id
+            student {
+              userName
+              email
+            }
+            totalScore
+            submittedAt
+          }
+        }
+        `,
+        { examId: Number(id) }
+    );
+
+    const reports = reportData?.getTeacherExamReports || [];
+    const error = fetchError ? (fetchError as any).message : null;
 
     const [searchTerm, setSearchTerm] = useState("");
-
-    useEffect(() => {
-        if (id) {
-            dispatch(fetchTeacherExamReports(Number(id)));
-        }
-    }, [dispatch, id]);
 
     if (loading) {
         return (

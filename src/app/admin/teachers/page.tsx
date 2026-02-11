@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchMyTeachers } from '@/lib/redux/slices/adminSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData } from '@/hooks/useFetchData';
+import { Teacher } from '@shared/types/models';
 import {
     Plus,
     Mail,
@@ -21,13 +21,30 @@ import DeleteActionButton from '@/components/DeleteActionButton';
 export const runtime = 'edge';
 
 export default function TeachersListPage() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { teachers, loading, error } = useSelector((state: RootState) => state.admin);
     const { user } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        dispatch(fetchMyTeachers());
-    }, [dispatch]);
+    const { data: teachersData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ teachers: Teacher[] }>(
+        ['admin', 'teachers'],
+        `
+        query GetAdminTeachers {
+          teachers {
+            id
+            userName
+            email
+            subjectsTaught {
+              id
+              name
+              grades {
+                score
+              }
+            }
+          }
+        }
+        `
+    );
+
+    const teachers = teachersData?.teachers || [];
+    const error = fetchError ? (fetchError as any).message : null;
 
     if (loading && teachers.length === 0) {
         return (
@@ -40,15 +57,15 @@ export default function TeachersListPage() {
 
     if (error) {
         return (
-            <div className="bg-red-50 border border-red-100 p-8 rounded-3xl flex items-start space-x-4">
-                <div className="p-3 bg-red-100 rounded-2xl">
-                    <AlertCircle className="w-6 h-6 text-red-600" />
+            <div className="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 p-8 rounded-3xl flex items-start space-x-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-2xl">
+                    <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
                 <div>
-                    <h3 className="text-lg font-bold text-red-900">Sync Error</h3>
-                    <p className="text-red-700 mt-1">{error}</p>
+                    <h3 className="text-lg font-bold text-red-900 dark:text-red-400">Sync Error</h3>
+                    <p className="text-red-700 dark:text-red-300 mt-1">{error}</p>
                     <button
-                        onClick={() => dispatch(fetchMyTeachers())}
+                        onClick={() => refetch()}
                         className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition"
                     >
                         Retry Sync
@@ -117,7 +134,7 @@ export default function TeachersListPage() {
                                     <div className="w-8 h-8 rounded-xl  border border-slate-100 dark:border-slate-800 flex items-center justify-center mr-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
                                         <GraduationCap className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
                                     </div>
-                                    <span className="text-slate-900 dark:text-white mr-2">{teacher.subjectsTaught.length}</span> Specializations
+                                    <span className="text-slate-900 dark:text-white mr-2">{teacher.subjectsTaught?.length || 0}</span> Specializations
                                 </div>
                             </div>
 
@@ -127,9 +144,9 @@ export default function TeachersListPage() {
                                     <div className="h-0.5 grow mx-4 bg-slate-100 dark:bg-slate-800 rounded-full" />
                                 </div>
                                 <div className="flex flex-wrap gap-2.5">
-                                    {teacher.subjectsTaught.length > 0 ? (
+                                    {teacher.subjectsTaught && teacher.subjectsTaught.length > 0 ? (
                                         teacher.subjectsTaught.map((subject) => {
-                                            const avgGrade = subject.grades.length > 0
+                                            const avgGrade = subject.grades && subject.grades.length > 0
                                                 ? Math.round(subject.grades.reduce((acc, g) => acc + g.score, 0) / subject.grades.length)
                                                 : null;
 
@@ -159,20 +176,20 @@ export default function TeachersListPage() {
 
                         <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between glass">
                             {
-                                teacher.subjectsTaught.length !== 0 ? (
+                                teacher.subjectsTaught?.length !== 0 ? (
                                     <>
-                                    <button className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 px-6 py-3  rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
-                                    <div className="flex items-center space-x-2">
-                                        <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                    </div>
+                                        <button className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 px-6 py-3  rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
+                                        <div className="flex items-center space-x-2">
+                                            <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
+                                        </div>
                                     </>
                                 ) : (
                                     <div className="flex items-center space-x-2">
                                         <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
                                         {user?.role === 'admin' && <DeleteActionButton userId={teacher.id} userName={teacher.userName} />}
-                            </div>
-                            )
-                        }
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                 ))}

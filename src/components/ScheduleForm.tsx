@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { createNewSchedule, updateScheduleThunk, fetchSubjects, fetchClassRooms } from '@/lib/redux/slices/adminSlice';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import axios from 'axios';
 import { Loader2, Calendar, Clock, BookOpen, Users, AlertCircle, X } from 'lucide-react';
 import { Schedule } from '@shared/types/models';
 
@@ -16,8 +15,27 @@ interface ScheduleFormProps {
 }
 
 export default function ScheduleForm({ initialData, preselectedClassId, prefilledSlot, onClose, onSuccess }: ScheduleFormProps) {
-    const dispatch = useDispatch<AppDispatch>();
-    const { subjects, classRooms, loading, error } = useSelector((state: RootState) => state.admin);
+    const { data: adminData } = useFetchData<{ subjects: any[], classRooms: any[] }>(
+        ['admin', 'subjects-and-classes'],
+        `
+        query GetAdminSubjectsAndClasses {
+          subjects {
+            id
+            name
+            teacher {
+              userName
+            }
+          }
+          classRooms {
+            id
+            name
+          }
+        }
+        `
+    );
+
+    const subjects = adminData?.subjects || [];
+    const classRooms = adminData?.classRooms || [];
 
     // Form State
     const [classId, setClassId] = useState<number | string>(preselectedClassId || initialData?.classRoom?.id || '');
@@ -41,10 +59,6 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
 
     const DAYS_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']; // Match grid requirement
 
-    useEffect(() => {
-        if (subjects.length === 0) dispatch(fetchSubjects());
-        if (classRooms.length === 0) dispatch(fetchClassRooms());
-    }, [dispatch, subjects.length, classRooms.length]);
 
     // Update state when initialData changes or prefilledSlot changes
     useEffect(() => {
@@ -69,6 +83,39 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         return `${endHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     };
 
+    const { mutateAsync: performMutation, isPending: loading } = useMutateData(
+        async (payload: any) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const query = initialData
+                ? `
+                    mutation UpdateSchedule($id: ID!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                        updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
+                            id
+                        }
+                    }
+                `
+                : `
+                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                        createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
+                            id
+                        }
+                    }
+                `;
+
+            const response = await axios.post(apiBase, {
+                query,
+                variables: initialData ? { id: initialData.id, ...payload } : payload
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+            return response.data;
+        },
+        [['admin', 'schedules-and-classes'], ['class']]
+    );
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setFormError(null);
@@ -89,15 +136,11 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         };
 
         try {
-            if (initialData) {
-                await dispatch(updateScheduleThunk({ id: initialData.id, data: payload })).unwrap();
-            } else {
-                await dispatch(createNewSchedule(payload)).unwrap();
-            }
+            await performMutation(payload);
             if (onSuccess) onSuccess();
             onClose();
         } catch (err: any) {
-            setFormError(err || "Failed to save schedule.");
+            setFormError(err.message || "Failed to save schedule.");
         }
     };
 

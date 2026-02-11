@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchClassRooms, handleDeleteClassRoom, fetchSubjects } from '@/lib/redux/slices/adminSlice';
+import { RootState } from '@/lib/redux/store';
+import { useSelector } from 'react-redux';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { ClassRoom, Subject } from '@shared/types/models';
+import axios from 'axios';
 import { Plus, ChevronRight, BookOpen, Users, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
@@ -13,17 +14,51 @@ import { motion, AnimatePresence } from 'framer-motion';
 export const runtime = "edge";
 
 export default function ClassesListPage() {
-    const dispatch = useDispatch<AppDispatch>();
-    const { classRooms, subjects, loading, error } = useSelector((state: RootState) => state.admin);
     const { user } = useSelector((state: RootState) => state.auth);
 
-    useEffect(() => {
-        dispatch(fetchClassRooms());
-        // For teacher filtering, we need subjects data
-        if (user?.role === 'teacher' && subjects.length === 0) {
-            dispatch(fetchSubjects());
+    const { data: adminData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ classRooms: ClassRoom[], subjects: Subject[] }>(
+        ['admin', 'classes-and-subjects'],
+        `
+        query GetAdminClassesAndSubjects {
+          classRooms {
+            id
+            name
+          }
+          subjects {
+            id
+            name
+            class {
+                id
+            }
+            teacher {
+                id
+            }
+          }
         }
-    }, [dispatch, user, subjects.length]);
+        `
+    );
+
+    const { mutateAsync: performDeleteClass } = useMutateData(
+        async (classId: string | number) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation DeleteClass($id: ID!) {
+                        deleteClassRoom(id: $id)
+                    }
+                `,
+                variables: { id: classId }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            return response.data;
+        },
+        [['admin', 'classes-and-subjects']]
+    );
+
+    const classRooms = adminData?.classRooms || [];
+    const subjects = adminData?.subjects || [];
+    const error = fetchError ? (fetchError as any).message : null;
 
     // Filter classes for teachers: only show classes where teacher has subjects
     const filteredClassRooms = user?.role === 'teacher'
@@ -58,7 +93,7 @@ export default function ClassesListPage() {
                     <h3 className="text-lg font-bold text-red-900">Sync Failure</h3>
                     <p className="text-red-700 mt-1">{error}</p>
                     <button
-                        onClick={() => dispatch(fetchClassRooms())}
+                        onClick={() => refetch()}
                         className="mt-4 px-4 py-2 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition"
                     >
                         Retry Connection
@@ -144,7 +179,10 @@ export default function ClassesListPage() {
                                                         userId={cls.id}
                                                         userName={cls.name}
                                                         warning="Deleting a classroom might affect assigned students and subjects. Are you sure?"
-                                                        action={handleDeleteClassRoom}
+                                                        action={async (id) => {
+                                                            await performDeleteClass(id);
+                                                            refetch();
+                                                        }}
                                                     />
                                                 )}
                                             </div>

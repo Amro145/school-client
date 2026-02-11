@@ -2,9 +2,8 @@
 
 import React, { useEffect } from 'react';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchClassById } from '@/lib/redux/slices/adminSlice';
+import { RootState } from '@/lib/redux/store';
+import { useFetchData, useMutateData } from '@/hooks/useFetchData';
 import { calculateSuccessRate } from '@/lib/data';
 import {
     ArrowLeft,
@@ -20,26 +19,79 @@ import {
     Trash2
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { Schedule } from '@shared/types/models';
+import { Schedule, ClassRoom } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
-import { deleteSchedule } from '@/lib/redux/slices/adminSlice';
+import axios from 'axios';
 
 export const runtime = 'edge';
 
 export default function ClassDetailPage() {
-    const { id } = useParams();
-    const dispatch = useDispatch<AppDispatch>();
-    const { currentClass, loading, error } = useSelector((state: RootState) => state.admin);
+    const params = useParams();
+    const id = params.id as string;
+    const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ class: ClassRoom }>(
+        ['class', id],
+        `
+        query GetClassDetails($id: ID!) {
+          class(id: $id) {
+            id
+            name
+            subjects {
+              id
+              name
+              teacher {
+                userName
+              }
+              grades {
+                score
+              }
+            }
+            students {
+              id
+              userName
+              averageScore
+            }
+            schedules {
+              id
+              day
+              startTime
+              endTime
+              subject {
+                name
+                teacher {
+                  userName
+                }
+              }
+            }
+          }
+        }
+        `,
+        { id }
+    );
+
+    const { mutateAsync: performDelete } = useMutateData(
+        async (scheduleId: number | string) => {
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const response = await axios.post(apiBase, {
+                query: `
+                    mutation DeleteSchedule($id: ID!) {
+                        deleteSchedule(id: $id)
+                    }
+                `,
+                variables: { id: scheduleId }
+            }, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+            });
+            return response.data;
+        },
+        [['class', id]]
+    );
+
+    const currentClass = classData?.class;
+    const error = fetchError ? (fetchError as any).message : null;
 
     const [isFormOpen, setIsFormOpen] = React.useState(false);
     const [editingSchedule, setEditingSchedule] = React.useState<Schedule | null>(null);
     const [prefilledSlot, setPrefilledSlot] = React.useState<{ day: string, startTime: string } | null>(null);
-
-    useEffect(() => {
-        if (id) {
-            dispatch(fetchClassById(Number(id)));
-        }
-    }, [dispatch, id]);
 
     const handleCellClick = (day: string, startTime: string) => {
         setEditingSchedule(null);
@@ -55,8 +107,7 @@ export default function ClassDetailPage() {
 
     const handleDelete = async (scheduleId: number) => {
         if (confirm('Are you sure you want to delete this schedule slot?')) {
-            await dispatch(deleteSchedule(scheduleId));
-            dispatch(fetchClassById(Number(id))); // Refresh class data
+            await performDelete(scheduleId);
         }
     };
 
@@ -64,7 +115,6 @@ export default function ClassDetailPage() {
         setIsFormOpen(false);
         setEditingSchedule(null);
         setPrefilledSlot(null);
-        dispatch(fetchClassById(Number(id))); // Refresh after add/edit
     };
 
     if (loading) {
