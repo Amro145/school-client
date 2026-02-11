@@ -18,8 +18,9 @@ export default function LandingNavbar() {
 
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center space-x-8">
-                <Link href="#features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</Link>
-                <Link href="#about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
+                <Link href="/features" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Features</Link>
+                <Link href="/about" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">About</Link>
+                <Link href="/guest" className="text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Demo</Link>
                 <Link href="/login" className="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-sm font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-all shadow-lg hover:shadow-slate-200 dark:hover:shadow-slate-800">Get Started</Link>
             </div>
 
@@ -35,8 +36,9 @@ export default function LandingNavbar() {
             {/* Mobile Nav Overlay */}
             {isMenuOpen && (
                 <div className="fixed inset-0 bg-white dark:bg-slate-950 z-40 md:hidden flex flex-col items-center justify-center space-y-8 animate-in fade-in zoom-in duration-300">
-                    <Link href="#features" onClick={() => setIsMenuOpen(false)} className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Features</Link>
-                    <Link href="#about" onClick={() => setIsMenuOpen(false)} className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">About</Link>
+                    <Link href="/features" onClick={() => setIsMenuOpen(false)} className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Features</Link>
+                    <Link href="/about" onClick={() => setIsMenuOpen(false)} className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">About</Link>
+                    <Link href="/guest" onClick={() => setIsMenuOpen(false)} className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Demo</Link>
                     <Link href="/login" onClick={() => setIsMenuOpen(false)} className="px-12 py-4 bg-blue-600 text-white rounded-2xl text-lg font-black uppercase tracking-widest shadow-xl shadow-blue-500/25">Get Started</Link>
                     <button
                         onClick={() => setIsMenuOpen(false)}

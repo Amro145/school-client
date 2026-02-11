@@ -124,8 +124,12 @@ export default function LoginPage() {
                             </button>
                         </form>
 
-                        <div className="mt-12 pt-8 border-t border-slate-100 text-center">
-                            <p className="text-slate-400 font-bold text-sm tracking-tight">
+                        <div className="mt-12 pt-8 border-t border-slate-100 text-center space-y-4">
+                            <p className="text-slate-500 font-bold text-sm tracking-tight">
+                                Don&apos;t have an account?
+                                <Link href="/guest" className="text-blue-600 ml-2 hover:underline underline-offset-4">Try Demo Access</Link>
+                            </p>
+                            <p className="text-slate-400 font-bold text-xs tracking-tight">
                                 Unauthorized access is strictly monitored.
                                 <Link href="/" className="text-blue-600 ml-2 hover:underline">Return to Terminal</Link>
                             </p>
