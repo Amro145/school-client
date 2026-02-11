@@ -2,39 +2,56 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { GraduationCap, Copy, Check, ArrowLeft, ShieldCheck, Users, GraduationCap as StudentIcon } from 'lucide-react';
+import { GraduationCap, Copy, Check, ArrowLeft, ShieldCheck, Users, GraduationCap as StudentIcon, LogIn, Loader2 } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/lib/redux/store';
+import { loginUser } from '@/lib/redux/slices/authSlice';
 
 const GUEST_ACCOUNTS = [
     {
+        
         role: "Admin",
         email: "admin@edudash.com",
-        password: "amroamro",
+        password: "EduDash@2024",
         icon: <ShieldCheck className="w-6 h-6 text-green-500" />,
         color: "border-green-100 dark:border-green-900/50 bg-green-50/10 dark:bg-green-900/10"
     },
     {
         role: "Teacher",
         email: "teacher1@edudash.com",
-        password: "amroamro",
+        password: "EduDash@2024",
         icon: <Users className="w-6 h-6 text-purple-500" />,
         color: "border-purple-100 dark:border-purple-900/50 bg-purple-50/10 dark:bg-purple-900/10"
     },
     {
         role: "Student",
         email: "student_1_6@edudash.com",
-        password: "amroamro",
+        password: "EduDash@2024",
         icon: <StudentIcon className="w-6 h-6 text-blue-500" />,
         color: "border-blue-100 dark:border-blue-900/50 bg-blue-50/10 dark:bg-blue-900/10"
     }
 ];
 
 export default function GuestPage() {
+    const dispatch = useDispatch<AppDispatch>();
     const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [loadingAccount, setLoadingAccount] = useState<string | null>(null);
 
     const handleCopy = (text: string, fieldId: string) => {
         navigator.clipboard.writeText(text);
         setCopiedField(fieldId);
         setTimeout(() => setCopiedField(null), 2000);
+    };
+
+    const handleLogin = async (account: typeof GUEST_ACCOUNTS[0]) => {
+        setLoadingAccount(account.role);
+        try {
+            await dispatch(loginUser({ email: account.email, password: account.password })).unwrap();
+            window.location.href = '/admin';
+        } catch (err) {
+            console.error('Authorization Failed:', err);
+            setLoadingAccount(null);
+        }
     };
 
     return (
@@ -69,11 +86,26 @@ export default function GuestPage() {
                                 key={account.role}
                                 className={`p-6 rounded-3xl border ${account.color} transition-all duration-300 hover:shadow-lg`}
                             >
-                                <div className="flex items-center space-x-4 mb-6">
-                                    <div className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm">
-                                        {account.icon}
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-sm">
+                                            {account.icon}
+                                        </div>
+                                        <h3 className="text-xl font-black text-slate-800 dark:text-white">{account.role} Portal</h3>
                                     </div>
-                                    <h3 className="text-xl font-black text-slate-800 dark:text-white">{account.role} Portal</h3>
+                                    <button
+                                        onClick={() => handleLogin(account)}
+                                        disabled={!!loadingAccount}
+                                        className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white rounded-2xl font-black transition-all shadow-lg shadow-blue-500/25 active:scale-95"
+                                    >
+                                        {loadingAccount === account.role ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <>
+                                                LOG IN <LogIn className="w-5 h-5" />
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -81,20 +113,18 @@ export default function GuestPage() {
                                     <div className="space-y-2">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</p>
                                         <div className="relative group">
-                                            <div className="w-full pl-5 pr-12 py-4 bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-700 dark:text-slate-300 font-bold truncate">
+                                            <div className="w-full pl-5 pr-12 py-4 bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-700 dark:text-slate-300 font-bold truncate text-sm">
                                                 {account.email}
                                             </div>
                                             <button
                                                 onClick={() => handleCopy(account.email, `${account.role}-email`)}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-blue-600 transition-all flex items-center justify-center min-w-[40px]"
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-blue-600 transition-all flex items-center justify-center"
                                                 title="Copy Email"
                                             >
                                                 {copiedField === `${account.role}-email` ? (
-                                                    <span className="flex items-center text-green-600 text-xs font-bold animate-in fade-in zoom-in duration-300">
-                                                        <Check className="w-4 h-4 mr-1" /> Copied!
-                                                    </span>
+                                                    <Check className="w-4 h-4 text-green-600" />
                                                 ) : (
-                                                    <Copy className="w-5 h-5" />
+                                                    <Copy className="w-4 h-4" />
                                                 )}
                                             </button>
                                         </div>
@@ -104,20 +134,18 @@ export default function GuestPage() {
                                     <div className="space-y-2">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Secret Key</p>
                                         <div className="relative group">
-                                            <div className="w-full pl-5 pr-12 py-4 bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-700 dark:text-slate-300 font-bold">
+                                            <div className="w-full pl-5 pr-12 py-4 bg-white/50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-700 dark:text-slate-300 font-bold text-sm">
                                                 {account.password}
                                             </div>
                                             <button
                                                 onClick={() => handleCopy(account.password, `${account.role}-password`)}
-                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-blue-600 transition-all flex items-center justify-center min-w-[40px]"
+                                                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-blue-600 transition-all flex items-center justify-center"
                                                 title="Copy Password"
                                             >
                                                 {copiedField === `${account.role}-password` ? (
-                                                    <span className="flex items-center text-green-600 text-xs font-bold animate-in fade-in zoom-in duration-300">
-                                                        <Check className="w-4 h-4 mr-1" /> Copied!
-                                                    </span>
+                                                    <Check className="w-4 h-4 text-green-600" />
                                                 ) : (
-                                                    <Copy className="w-5 h-5" />
+                                                    <Copy className="w-4 h-4" />
                                                 )}
                                             </button>
                                         </div>
@@ -128,7 +156,7 @@ export default function GuestPage() {
                     </div>
 
                     <div className="mt-12 text-center text-slate-400 text-sm font-medium">
-                        <p>Ready to try? <Link href="/login" className="text-blue-600 font-black hover:underline underline-offset-4">Log in now</Link></p>
+                        <p>Ready to try? <Link href="/login" className="text-blue-600 font-black hover:underline underline-offset-4">Log in manually</Link></p>
                     </div>
                 </div>
             </div>

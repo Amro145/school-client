@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
 
 export function useFetchData<T>(
     queryKey: string[],
@@ -47,14 +47,16 @@ export function useMutateData<TData = any, TVariables = any>(
 ) {
     const queryClient = useQueryClient();
 
-    return useMutation<TData, Error, TVariables>({
+    return useMutation<TData, Error, TVariables, any>({
+        ...options,
         mutationFn,
-        onSuccess: (data, variables, context) => {
+        onSuccess: (...args) => {
             if (invalidateKeys) {
                 invalidateKeys.forEach(key => queryClient.invalidateQueries({ queryKey: key }));
             }
-            if (options?.onSuccess) options.onSuccess(data, variables, context);
+            if (options?.onSuccess) {
+                (options.onSuccess as any)(...args);
+            }
         },
-        ...options
     });
 }
