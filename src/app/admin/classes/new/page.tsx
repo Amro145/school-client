@@ -1,38 +1,48 @@
 "use client";
 
-import { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { createNewClassRoom } from '@/lib/redux/slices/adminSlice';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BookOpen } from 'lucide-react';
-import Swal from 'sweetalert2';
+import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createClassSchema, CreateClassFormValues } from '@/lib/validations/admin';
+import FormInput from '@/components/FormInput';
 
 export const runtime = 'edge';
-
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
 
 export default function CreateClassPage() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
-    const { loading } = useSelector((state: RootState) => state.admin);
-    const [name, setName] = useState('');
+    const { loading: adminLoading } = useSelector((state: RootState) => state.admin);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid, isSubmitting },
+    } = useForm<CreateClassFormValues>({
+        resolver: zodResolver(createClassSchema),
+        mode: 'onChange',
+        defaultValues: {
+            name: '',
+        }
+    });
 
-        const resultAction = await dispatch(createNewClassRoom(name));
+    const onSubmit = async (data: CreateClassFormValues) => {
+        // Dynamic import
+        const Swal = (await import('sweetalert2')).default;
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+
+        const resultAction = await dispatch(createNewClassRoom(data.name));
         if (createNewClassRoom.fulfilled.match(resultAction)) {
             Toast.fire({
                 icon: "success",
@@ -47,65 +57,71 @@ export default function CreateClassPage() {
         }
     };
 
+    const loading = adminLoading || isSubmitting;
+
     return (
-        <div className="max-w-2xl mx-auto space-y-8">
+        <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
             <Link
                 href="/admin/classes"
-                className="inline-flex items-center text-slate-500 hover:text-slate-900 font-medium transition-colors"
+                className="inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl text-slate-500 hover:text-blue-600 font-bold text-xs uppercase tracking-widest transition-all"
             >
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Classes
+                <ArrowLeft className="w-4 h-4" /> <span>Back to Classes</span>
             </Link>
 
-            <div className=" rounded-3xl border border-slate-100 shadow-xl p-8 md:p-12">
-                <div className="flex items-center space-x-4 mb-10">
-                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                        <BookOpen className="text-blue-600 w-6 h-6" />
-                    </div>
-                    <div>
-                        <h1 className="text-3xl font-bold text-slate-900 text-left">Create New Class</h1>
-                        <p className="text-slate-500 text-left">Set up a new classroom group for your school.</p>
+            <div className="bg-white dark:bg-slate-950 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-2xl shadow-slate-200/50 dark:shadow-none overflow-hidden">
+                <div className="bg-slate-900 p-10 md:p-12 text-white relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] -mr-20 -mt-20" />
+                    <div className="relative z-10 flex items-center space-x-6">
+                        <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
+                            <BookOpen className="text-white w-8 h-8" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-black tracking-tight leading-none uppercase">Architect Class</h1>
+                            <p className="text-slate-400 mt-2 font-medium tracking-wide">Defining new group nodes for the ecosystem</p>
+                        </div>
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-8">
-                    <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-3 ml-1">Class Name</label>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                <div className="p-10 md:p-12">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+                        <FormInput
+                            label="Class Name"
+                            icon={BookOpen}
                             placeholder="e.g. Grade 12-C, Science Lab A"
-                            className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500 transition-all text-lg"
-                            required
-                        />
-                    </div>
-
-                    <div className="pt-4 flex space-x-4">
-                        <button
-                            type="button"
-                            onClick={() => router.back()}
-                            className="flex-1 px-6 py-4 rounded-2xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
+                            register={register('name')}
+                            error={errors.name}
                             disabled={loading}
-                            className="flex-2 bg-blue-600 text-white font-bold py-4 rounded-2xl hover:bg-blue-700 transition-shadow hover:shadow-lg shadow-blue-200 flex items-center justify-center disabled:opacity-70"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="mr-2 h-5 w-5" /> Save Class
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </form>
+                        />
+
+                        <div className="pt-4 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                            <button
+                                type="button"
+                                onClick={() => router.back()}
+                                className="flex-1 px-8 py-5 rounded-[24px] border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-black text-sm uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 transition-all active:scale-[0.98]"
+                                disabled={loading}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={loading || !isValid}
+                                className={`flex-2 bg-slate-900 dark:bg-blue-600 text-white font-black py-5 rounded-2xl shadow-2xl transition-all flex items-center justify-center text-sm uppercase tracking-widest active:scale-[0.98] ${!isValid || loading ? 'opacity-70 grayscale-[0.5] cursor-not-allowed' : 'hover:bg-black dark:hover:bg-blue-700 hover:shadow-blue-500/25'
+                                    }`}
+                            >
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                                        Synchronizing Hub...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="mr-3 h-5 w-5" /> Finalize Classroom
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

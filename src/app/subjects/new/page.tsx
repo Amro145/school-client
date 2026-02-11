@@ -1,27 +1,19 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
-import { ArrowLeft, Save, Loader2, BarChart3 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, BarChart3, User, Layers } from 'lucide-react';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { fetchMyTeachers, fetchClassRooms, createNewSubject } from '@/lib/redux/slices/adminSlice';
-import Swal from 'sweetalert2';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createSubjectSchema, CreateSubjectFormValues } from '@/lib/validations/admin';
+import FormInput from '@/components/FormInput';
+import FormSelect from '@/components/FormSelect';
 
 export const runtime = 'edge';
-
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
 
 export default function CreateSubjectPage() {
     const router = useRouter();
@@ -30,12 +22,18 @@ export default function CreateSubjectPage() {
     const { user } = useSelector((state: RootState) => state.auth);
     const { teachers, classRooms, loading: globalLoading } = useSelector((state: RootState) => state.admin);
 
-    const [submitting, setSubmitting] = useState(false);
-
-    const [formData, setFormData] = useState({
-        name: '',
-        classId: '',
-        teacherId: ''
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isValid, isSubmitting },
+    } = useForm<CreateSubjectFormValues>({
+        resolver: zodResolver(createSubjectSchema),
+        mode: 'onChange',
+        defaultValues: {
+            name: '',
+            classId: '',
+            teacherId: ''
+        }
     });
 
     useEffect(() => {
@@ -47,15 +45,22 @@ export default function CreateSubjectPage() {
         dispatch(fetchClassRooms());
     }, [dispatch, user, router]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setSubmitting(true);
+    const onSubmit = async (data: CreateSubjectFormValues) => {
+        // Dynamic import
+        const Swal = (await import('sweetalert2')).default;
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
 
         try {
             const resultAction = await dispatch(createNewSubject({
-                name: formData.name,
-                classId: Number(formData.classId),
-                teacherId: Number(formData.teacherId)
+                name: data.name,
+                classId: Number(data.classId),
+                teacherId: Number(data.teacherId)
             }));
 
             if (createNewSubject.fulfilled.match(resultAction)) {
@@ -77,120 +82,98 @@ export default function CreateSubjectPage() {
                 icon: "error",
                 title: "An unexpected error occurred"
             });
-        } finally {
-            setSubmitting(false);
         }
     };
 
     const isLoadingData = globalLoading && teachers.length === 0 && classRooms.length === 0;
+    const loading = isLoadingData || isSubmitting;
 
     if (user?.role !== 'admin') {
-        return <div className="p-8 text-center text-slate-500">Checking permissions...</div>;
+        return <div className="p-8 text-center text-slate-500 dark:text-slate-400 font-bold tracking-widest animate-pulse uppercase">Authenticating Authority...</div>;
     }
 
     return (
-        <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in duration-500">
+        <div className="max-w-4xl mx-auto space-y-10 pb-20 animate-in fade-in slide-in-from-bottom-8 duration-1000">
             <Link
                 href="/subjects"
-                className="inline-flex items-center text-slate-500 hover:text-slate-900 font-medium transition-colors"
+                className="inline-flex items-center space-x-3 px-6 py-3 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-black text-xs uppercase tracking-widest transition-all shadow-sm active:scale-95 group"
             >
-                <ArrowLeft className="w-4 h-4 mr-2" /> Back to Subjects
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                <span>Curricular Hub</span>
             </Link>
 
-            <div className=" rounded-3xl border border-slate-100 shadow-xl overflow-hidden">
-                <div className="bg-linear-to-r from-purple-600 to-indigo-600 px-8 py-10 md:px-12 text-white">
-                    <div className="flex items-center space-x-4">
-                        <div className="w-14 h-14 /20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
-                            <BarChart3 className="text-white w-7 h-7" />
+            <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] overflow-hidden rounded-[40px]">
+                <div className="relative h-48 bg-slate-900 flex items-center px-12 overflow-hidden">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-[80px] -ml-20 -mb-20" />
+
+                    <div className="relative z-10 flex items-center space-x-6">
+                        <div className="w-20 h-20 bg-white/10 backdrop-blur-xl rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl">
+                            <BarChart3 className="w-10 h-10 text-white" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-bold">Create Subject</h1>
-                            <p className="text-purple-100 mt-1">Populate the academic curriculum for your school.</p>
+                            <h1 className="text-4xl font-black text-white tracking-tight leading-none uppercase">Architect Subject</h1>
+                            <p className="text-purple-200 mt-2 font-medium tracking-wide">Mapping educational modules to institutional targets</p>
                         </div>
                     </div>
                 </div>
 
-                <div className="p-8 md:p-12">
-                    <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="space-y-2">
-                            <label className="text-sm font-bold text-slate-700 ml-1">Subject Name</label>
-                            <input
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                placeholder="e.g. Advanced Physics"
-                                className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all text-lg placeholder:text-slate-400"
-                                required
-                                disabled={submitting}
+                <div className="p-12">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
+                        <FormInput
+                            label="Subject Module Name"
+                            icon={BarChart3}
+                            placeholder="e.g. Quantum Mechanics, Digital Arts IV"
+                            register={register('name')}
+                            error={errors.name}
+                            disabled={loading}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                            <FormSelect
+                                label="Target Curricular Group"
+                                icon={Layers}
+                                register={register('classId')}
+                                error={errors.classId}
+                                disabled={loading}
+                                placeholder={isLoadingData ? 'SYNCHRONIZING GROUPS...' : 'SELECT CLASS TARGET'}
+                                options={classRooms.map(c => ({ value: c.id, label: c.name.toUpperCase() }))}
+                            />
+
+                            <FormSelect
+                                label="Instructional Personnel"
+                                icon={User}
+                                register={register('teacherId')}
+                                error={errors.teacherId}
+                                disabled={loading}
+                                placeholder={isLoadingData ? 'SYNCHRONIZING PERSONNEL...' : 'ASSIGN INSTRUCTOR'}
+                                options={teachers.map(t => ({ value: t.id, label: t.userName.toUpperCase() }))}
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Target Class</label>
-                                <div className="relative">
-                                    <select
-                                        value={formData.classId}
-                                        onChange={(e) => setFormData({ ...formData, classId: e.target.value })}
-                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all  appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
-                                        required
-                                        disabled={submitting || isLoadingData}
-                                    >
-                                        <option value="">{isLoadingData ? 'Loading classes...' : 'Select Class'}</option>
-                                        {classRooms.map(c => (
-                                            <option key={c.id} value={c.id}>{c.name}</option>
-                                        ))}
-                                    </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-slate-700 ml-1">Assigned Teacher</label>
-                                <div className="relative">
-                                    <select
-                                        value={formData.teacherId}
-                                        onChange={(e) => setFormData({ ...formData, teacherId: e.target.value })}
-                                        className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-4 focus:ring-purple-100 focus:border-purple-500 transition-all  appearance-none cursor-pointer disabled:bg-slate-50 disabled:cursor-not-allowed"
-                                        required
-                                        disabled={submitting || isLoadingData}
-                                    >
-                                        <option value="">{isLoadingData ? 'Loading teachers...' : 'Select Teacher'}</option>
-                                        {teachers.map(t => (
-                                            <option key={t.id} value={t.id}>{t.userName}</option>
-                                        ))}
-                                    </select>
-                                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-6 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <div className="pt-10 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 border-t border-slate-50 dark:border-slate-800/50">
                             <button
                                 type="button"
                                 onClick={() => router.back()}
-                                className="flex-1 px-6 py-4 rounded-2xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-colors"
-                                disabled={submitting}
+                                className="flex-1 px-8 py-6 rounded-[32px] border border-slate-100 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-black text-xs uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 transition-all active:scale-[0.98]"
+                                disabled={loading}
                             >
-                                Cancel
+                                Abort Operation
                             </button>
                             <button
                                 type="submit"
-                                disabled={submitting || isLoadingData}
-                                className="flex-2 bg-purple-600 text-white font-bold py-4 rounded-2xl hover:bg-purple-700 transition-all hover:shadow-xl hover:shadow-purple-200 active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:hover:shadow-none"
+                                disabled={loading || !isValid}
+                                className={`flex-2 bg-slate-900 dark:bg-blue-600 text-white font-black py-6 rounded-[32px] shadow-2xl transition-all flex items-center justify-center text-xs uppercase tracking-[0.2em] active:scale-[0.98] ${!isValid || loading ? 'opacity-70 grayscale-[0.5] cursor-not-allowed' : 'hover:bg-purple-700 dark:hover:bg-blue-700 hover:shadow-purple-500/25 dark:hover:shadow-blue-500/25'
+                                    }`}
                             >
-                                {submitting ? (
+                                {isSubmitting ? (
                                     <>
                                         <Loader2 className="mr-3 h-5 w-5 animate-spin" />
-                                        Creating Subject...
+                                        Integrating Module...
                                     </>
                                 ) : (
                                     <>
-                                        <Save className="mr-3 h-5 w-5" /> Save Subject
+                                        <Save className="mr-3 h-5 w-5" /> Deploy Subject
                                     </>
                                 )}
                             </button>

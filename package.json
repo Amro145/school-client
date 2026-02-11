@@ -13,6 +13,7 @@
     "clean:port": "fuser -k 8787/tcp || true"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.2",
     "drizzle-orm": "^0.45.1",
@@ -24,9 +25,11 @@
     "react": "19.0.0",
     "react-confetti": "^6.4.0",
     "react-dom": "19.0.0",
+    "react-hook-form": "^7.71.1",
     "react-redux": "^9.2.0",
     "sweetalert2": "^11.26.17",
-    "sweetalert2-react-content": "^5.1.1"
+    "sweetalert2-react-content": "^5.1.1",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.16",
