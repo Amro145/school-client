@@ -113,7 +113,6 @@ export const loginUser = createAsyncThunk(
             const { token, user } = response.data.data.login;
 
             // 4. Verify correct admin in Ubuntu console
-            console.log("Logged in user:", user.email);
 
             // 2. Save new token immediately
             Cookies.set('auth_token', token, { expires: 7, secure: true, sameSite: 'strict' });

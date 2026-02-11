@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    
     "target": "ES2017",
     "lib": [
       "dom",
@@ -26,6 +25,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@shared/*": [
+        "../shared/*"
       ]
     }
   },

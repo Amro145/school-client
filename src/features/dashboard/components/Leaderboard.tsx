@@ -9,7 +9,7 @@ import {
     GraduationCap,
     ArrowRight
 } from 'lucide-react';
-import { Student } from '@/types/admin';
+import { Student } from '@shared/types/models';
 
 interface LeaderboardProps {
     topStudents: Student[];

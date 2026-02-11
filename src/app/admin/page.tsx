@@ -1,11 +1,6 @@
-'use client';
-
-export const runtime = 'edge';
-
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/lib/redux/store';
-import { fetchAdminDashboardData } from '@/lib/redux/slices/adminSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
 import {
     ShieldCheck,
     AlertCircle
@@ -13,28 +8,53 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useFetchData } from '@/hooks/useFetchData';
+import { AdminDashboardStats, Student } from '@shared/types/models';
 import StatsCards from '@/features/dashboard/components/StatsCards';
 import Leaderboard from '@/features/dashboard/components/Leaderboard';
 import QuickActions from '@/features/dashboard/components/QuickActions';
 
 export default function AdminDashboard() {
-    const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const { stats, topStudents, loading, error } = useSelector((state: RootState) => state.admin);
     const { user } = useSelector((state: RootState) => state.auth);
+
+    const { data, isLoading, error, refetch } = useFetchData<{
+        adminDashboardStats: AdminDashboardStats;
+        topStudents: Student[];
+    }>(
+        ['admin', 'dashboard'],
+        `
+        query GetAdminDashboardData {
+            adminDashboardStats {
+                totalStudents
+                totalTeachers
+                totalClassRooms
+            }
+            topStudents {
+                id
+                userName
+                email
+                averageScore
+                successRate
+                class {
+                    name
+                }
+            }
+        }
+        `,
+        {},
+        {
+            enabled: user?.role === 'admin'
+        }
+    );
 
     useEffect(() => {
         if (user?.role === 'teacher') {
             router.push('/admin/teacher');
-        } else if (user?.role === 'student') {
-            // Student restriction logic will be handled in ProtectedRoute but adding here for safety
-            // router.push('/dashboard');
-        } else {
-            dispatch(fetchAdminDashboardData());
         }
-    }, [dispatch, user, router]);
+    }, [user, router]);
 
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
                 <motion.div
@@ -65,10 +85,10 @@ export default function AdminDashboard() {
                 </div>
                 <div className="space-y-3">
                     <h3 className="text-3xl font-black text-slate-900 dark:text-white leading-tight">Sync Protocol Failure</h3>
-                    <p className="text-slate-500 dark:text-slate-400 font-medium text-lg leading-relaxed">{error}</p>
+                    <p className="text-slate-500 dark:text-slate-400 font-medium text-lg leading-relaxed">{error.message}</p>
                 </div>
                 <button
-                    onClick={() => dispatch(fetchAdminDashboardData())}
+                    onClick={() => refetch()}
                     className="px-10 py-4 bg-rose-600 text-white rounded-2xl font-black hover:bg-rose-700 transition-all active:scale-95 shadow-lg shadow-rose-200 dark:shadow-rose-900/20 uppercase tracking-widest text-xs"
                 >
                     Attempt Re-Link
@@ -114,11 +134,11 @@ export default function AdminDashboard() {
             </div>
 
             {/* Bento Grid Layout - Extracted to StatsCards */}
-            <StatsCards stats={stats} />
+            <StatsCards stats={data?.adminDashboardStats || null} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Leaderboard Section - Extracted to Leaderboard */}
-                <Leaderboard topStudents={topStudents} />
+                <Leaderboard topStudents={data?.topStudents || []} />
 
                 {/* Sidebar Rapid Actions - Extracted to QuickActions */}
                 <QuickActions />

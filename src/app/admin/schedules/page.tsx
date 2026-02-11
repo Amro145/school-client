@@ -14,7 +14,7 @@ import {
     Users,
     BookOpen
 } from 'lucide-react';
-import { Schedule } from '@/types/admin';
+import { Schedule } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
 import { useSearchParams } from 'next/navigation';
 

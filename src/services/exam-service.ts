@@ -1,5 +1,5 @@
 import api from '@/lib/axios';
-import { Exam, ExamSubmission } from '@/types/admin';
+import { Exam, ExamSubmission } from '@shared/types/models';
 
 export const examService = {
   async createExam(data: {

@@ -14,7 +14,7 @@ import {
     Teacher,
     ClassRoom,
     Schedule
-} from '@/types/admin';
+} from '@shared/types/models';
 
 interface AdminState {
     stats: AdminDashboardStats | null;
@@ -654,7 +654,7 @@ const adminSlice = createSlice({
             })
             .addCase(updateGradesBulk.fulfilled, (state, action) => {
                 state.loading = false;
-                if (state.currentStudent) {
+                if (state.currentStudent && state.currentStudent.grades) {
                     const updatedGrades = action.payload as { id: string, score: number }[];
                     state.currentStudent.grades = state.currentStudent.grades.map(grade => {
                         const updated = updatedGrades.find(u => u.id.toString() === grade.id.toString());
@@ -751,11 +751,11 @@ const adminSlice = createSlice({
             })
             .addCase(deleteSchedule.fulfilled, (state, action) => {
                 state.loading = false;
-                const deletedId = Number(action.payload);
-                state.schedules = state.schedules.filter(s => s.id !== deletedId);
+                const deletedId = action.payload as string;
+                state.schedules = state.schedules.filter(s => s.id.toString() !== deletedId.toString());
                 // Also update currentClass schedules if applicable
                 if (state.currentClass && state.currentClass.schedules) {
-                    state.currentClass.schedules = state.currentClass.schedules.filter(s => s.id !== deletedId);
+                    state.currentClass.schedules = state.currentClass.schedules.filter(s => s.id.toString() !== deletedId.toString());
                 }
             })
             .addCase(deleteSchedule.rejected, (state, action) => {

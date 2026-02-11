@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { examService } from '@/services/exam-service';
-import { Exam, ExamSubmission } from '@/types/admin';
+import { Exam, ExamSubmission } from '@shared/types/models';
 
 interface ExamState {
     availableExams: Exam[];

@@ -20,7 +20,7 @@ import {
     Trash2
 } from 'lucide-react';
 import { useParams } from 'next/navigation';
-import { Schedule } from '@/types/admin';
+import { Schedule } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
 import { deleteSchedule } from '@/lib/redux/slices/adminSlice';
 

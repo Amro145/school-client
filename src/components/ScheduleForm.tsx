@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
 import { createNewSchedule, updateScheduleThunk, fetchSubjects, fetchClassRooms } from '@/lib/redux/slices/adminSlice';
 import { Loader2, Calendar, Clock, BookOpen, Users, AlertCircle, X } from 'lucide-react';
-import { Schedule } from '@/types/admin';
+import { Schedule } from '@shared/types/models';
 
 interface ScheduleFormProps {
     initialData?: Schedule | null;

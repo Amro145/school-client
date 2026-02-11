@@ -9,7 +9,7 @@ import {
     ArrowUpRight,
     ShieldCheck
 } from 'lucide-react';
-import { AdminDashboardStats } from '@/types/admin';
+import { AdminDashboardStats } from '@shared/types/models';
 
 interface StatsCardsProps {
     stats: AdminDashboardStats | null;

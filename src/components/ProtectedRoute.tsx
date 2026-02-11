@@ -6,13 +6,61 @@ import { useRouter, usePathname } from 'next/navigation';
 import { RootState, AppDispatch } from '@/lib/redux/store';
 import { fetchMe } from '@/lib/redux/slices/authSlice';
 import { Loader2 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import axios from 'axios';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const dispatch = useDispatch<AppDispatch>();
+    const queryClient = useQueryClient();
     const { isAuthenticated, loading, user, token } = useSelector((state: RootState) => state.auth);
     const role = user?.role;
+
+    // Prefetching logic for critical routes
+    useEffect(() => {
+        if (isAuthenticated && role === 'admin' && token) {
+            queryClient.prefetchQuery({
+                queryKey: ['admin', 'dashboard', {}],
+                queryFn: async () => {
+                    const response = await axios.post(
+                        API_BASE_URL,
+                        {
+                            query: `
+                                query GetAdminDashboardData {
+                                    adminDashboardStats {
+                                        totalStudents
+                                        totalTeachers
+                                        totalClassRooms
+                                    }
+                                    topStudents {
+                                        id
+                                        userName
+                                        email
+                                        averageScore
+                                        successRate
+                                        class {
+                                            name
+                                        }
+                                    }
+                                }
+                            `,
+                            variables: {},
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                            },
+                        }
+                    );
+                    return response.data.data;
+                },
+                staleTime: 5 * 60 * 1000,
+            });
+        }
+    }, [isAuthenticated, role, token, queryClient]);
 
     useEffect(() => {
         if (token && !user && !loading) {
