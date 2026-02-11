@@ -1,6 +1,7 @@
 "use client";
 
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { usePathname } from 'next/navigation';
@@ -19,7 +20,6 @@ import {
     Calendar,
     User
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
@@ -51,6 +51,34 @@ const studentItems = [
     { name: "Exams", href: '/exams', icon: BookOpen },
 ];
 
+interface SidebarItemProps {
+    name: string;
+    href: string;
+    icon: any;
+}
+
+const SidebarItem = React.memo(({ item, pathname, isSidebarExpanded }: { item: SidebarItemProps, pathname: string, isSidebarExpanded: boolean }) => {
+    const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
+    return (
+        <Link
+            href={item.href}
+            className={`flex items-center px-4 py-4 rounded-2xl font-bold transition-all duration-300 group ${isActive
+                ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/25'
+                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
+                }`}
+        >
+            <div className="min-w-[20px] flex items-center justify-center">
+                <item.icon className={`w-6 h-6 transition-colors ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white'}`} />
+            </div>
+            <span className={`ml-4 tracking-tight transition-all duration-300 whitespace-nowrap ${isSidebarExpanded ? 'opacity-100' : 'opacity-0'}`}>
+                {item.name}
+            </span>
+        </Link>
+    );
+});
+
+SidebarItem.displayName = 'SidebarItem';
+
 export default function AdminLayout({
     children,
 }: {
@@ -58,6 +86,7 @@ export default function AdminLayout({
 }) {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
     const dispatch = useDispatch();
     const router = useRouter();
     const { user, needsSchoolSetup } = useSelector((state: RootState) => state.auth);
@@ -88,14 +117,18 @@ export default function AdminLayout({
         <ProtectedRoute>
             <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex group/sidebar transition-colors duration-300">
                 {/* Sidebar - Desktop */}
-                <aside className="hidden md:flex flex-col fixed h-full z-30">
-                    <div className="flex-1 flex flex-col min-h-0  dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
-                        <div className="flex flex-col items-center group-hover/sidebar:items-start px-0 group-hover/sidebar:px-6 py-10 transition-all duration-300">
+                <aside
+                    className="hidden md:flex flex-col fixed h-full z-30"
+                    onMouseEnter={() => setIsSidebarExpanded(true)}
+                    onMouseLeave={() => setIsSidebarExpanded(false)}
+                >
+                    <div className={`flex-1 flex flex-col min-h-0  dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out ${isSidebarExpanded ? 'w-64' : 'w-20'} overflow-hidden`}>
+                        <div className={`flex flex-col ${isSidebarExpanded ? 'items-start px-6' : 'items-center px-0'} py-10 transition-all duration-300`}>
                             <Link href="/admin" className="flex items-center group/logo overflow-hidden">
                                 <div className="min-w-[50px] w-[50px] h-[50px] bg-blue-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover/logo:scale-105 transition-transform duration-300">
                                     <ShieldCheck className="text-white w-7 h-7" />
                                 </div>
-                                <div className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">
+                                <div className={`ml-4 transition-all duration-300 whitespace-nowrap ${isSidebarExpanded ? 'opacity-100' : 'opacity-0'}`}>
                                     <span className="block text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">EDUDASH</span>
                                     <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">
                                         {user?.role === 'teacher' ? 'Teacher' : 'Admin'}
@@ -104,28 +137,18 @@ export default function AdminLayout({
                             </Link>
                         </div>
 
-                        <nav className="flex-1 px-3 group-hover/sidebar:px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
-                            {sidebarItems.map((item) => {
-                                const isActive = pathname === item.href || (item.href !== '/admin' && pathname.startsWith(item.href));
-                                return (
-                                    <Link
-                                        key={item.name}
-                                        href={item.href}
-                                        className={`flex items-center px-4 py-4 rounded-2xl font-bold transition-all duration-300 group ${isActive
-                                            ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/25'
-                                            : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white'
-                                            }`}
-                                    >
-                                        <div className="min-w-[20px] flex items-center justify-center">
-                                            <item.icon className={`w-6 h-6 transition-colors ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white'}`} />
-                                        </div>
-                                        <span className="ml-4 tracking-tight opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">{item.name}</span>
-                                    </Link>
-                                );
-                            })}
+                        <nav className={`flex-1 ${isSidebarExpanded ? 'px-4' : 'px-3'} space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden`}>
+                            {sidebarItems.map((item) => (
+                                <SidebarItem
+                                    key={item.name}
+                                    item={item}
+                                    pathname={pathname}
+                                    isSidebarExpanded={isSidebarExpanded}
+                                />
+                            ))}
                         </nav>
 
-                        <div className="px-3 group-hover/sidebar:px-4 py-6 border-t border-slate-100 dark:border-slate-800">
+                        <div className={`${isSidebarExpanded ? 'px-4' : 'px-3'} py-6 border-t border-slate-100 dark:border-slate-800`}>
                             <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center px-4 py-4 text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 group font-bold"
@@ -133,7 +156,7 @@ export default function AdminLayout({
                                 <div className="min-w-[24px] flex items-center justify-center">
                                     <LogOut className="w-5 h-5" />
                                 </div>
-                                <span className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">Logout</span>
+                                <span className={`ml-4 transition-all duration-300 whitespace-nowrap ${isSidebarExpanded ? 'opacity-100' : 'opacity-0'}`}>Logout</span>
                             </button>
                         </div>
                     </div>
@@ -210,7 +233,7 @@ export default function AdminLayout({
                                     <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 bg-slate-50 dark:bg-slate-900 rounded-xl flex items-center justify-center active:scale-90 transition-transform"><X className="w-5 h-5 text-slate-500" /></button>
                                 </div>
                                 <nav className="flex-1 px-4 space-y-2 pt-8">
-                                    {sidebarItems.map((item) => {
+                                    {sidebarItems.map((item: SidebarItemProps) => {
                                         const isActive = pathname === item.href;
                                         return (
                                             <Link
