@@ -8,21 +8,21 @@ const GUEST_ACCOUNTS = [
     {
         role: "Admin",
         email: "admin@edudash.com",
-        password: "admin123",
+        password: "amroamro",
         icon: <ShieldCheck className="w-6 h-6 text-green-500" />,
         color: "border-green-100 dark:border-green-900/50 bg-green-50/10 dark:bg-green-900/10"
     },
     {
         role: "Teacher",
-        email: "teacher@edudash.com",
-        password: "teacher123",
+        email: "teacher1@edudash.com",
+        password: "amroamro",
         icon: <Users className="w-6 h-6 text-purple-500" />,
         color: "border-purple-100 dark:border-purple-900/50 bg-purple-50/10 dark:bg-purple-900/10"
     },
     {
         role: "Student",
-        email: "student@edudash.com",
-        password: "student123",
+        email: "student_1_6@edudash.com",
+        password: "amroamro",
         icon: <StudentIcon className="w-6 h-6 text-blue-500" />,
         color: "border-blue-100 dark:border-blue-900/50 bg-blue-50/10 dark:bg-blue-900/10"
     }
