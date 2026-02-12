@@ -60,14 +60,14 @@ export default function TeacherLayout({
         <ProtectedRoute>
             <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 flex group/sidebar transition-colors duration-300">
                 {/* Sidebar - Desktop */}
-                <aside className="hidden md:flex flex-col fixed h-full z-30">
-                    <div className="flex-1 flex flex-col min-h-0  dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-20 group-hover/sidebar:w-64 overflow-hidden">
-                        <div className="flex flex-col items-center group-hover/sidebar:items-start px-0 group-hover/sidebar:px-6 py-10 transition-all duration-300">
+                <aside className="hidden md:flex flex-col fixed h-full z-30 w-64">
+                    <div className="flex-1 flex flex-col min-h-0 dark:bg-slate-950 border-r border-slate-200/60 dark:border-slate-800 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.05)] transition-all duration-300 ease-in-out w-full overflow-hidden">
+                        <div className="flex flex-col items-start px-6 py-10 transition-all duration-300">
                             <Link href="/dashboard" className="flex items-center group/logo overflow-hidden">
                                 <div className="min-w-[50px] w-[50px] h-[50px] bg-purple-600 rounded-[18px] flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover/logo:scale-105 transition-transform duration-300">
                                     <Trophy className="text-white w-7 h-7" />
                                 </div>
-                                <div className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">
+                                <div className="ml-4 opacity-100 transition-all duration-300 whitespace-nowrap">
                                     <span className="block text-xl font-black text-slate-900 dark:text-white tracking-tighter leading-none">EDUDASH</span>
                                     <span className="text-[9px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mt-1 block">
                                         Faculty Portal
@@ -76,7 +76,7 @@ export default function TeacherLayout({
                             </Link>
                         </div>
 
-                        <nav className="flex-1 px-3 group-hover/sidebar:px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
+                        <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar overflow-x-hidden">
                             {sidebarItems.map((item) => {
                                 const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
                                 return (
@@ -91,13 +91,13 @@ export default function TeacherLayout({
                                         <div className="min-w-[20px] flex items-center justify-center">
                                             <item.icon className={`w-6 h-6 transition-colors ${isActive ? 'text-white' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-white'}`} />
                                         </div>
-                                        <span className="ml-4 tracking-tight opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">{item.name}</span>
+                                        <span className="ml-4 tracking-tight opacity-100 transition-all duration-300 whitespace-nowrap">{item.name}</span>
                                     </Link>
                                 );
                             })}
                         </nav>
 
-                        <div className="px-3 group-hover/sidebar:px-4 py-6 border-t border-slate-100 dark:border-slate-800">
+                        <div className="px-4 py-6 border-t border-slate-100 dark:border-slate-800">
                             <button
                                 onClick={handleLogout}
                                 className="w-full flex items-center px-4 py-4 text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-2xl transition-all duration-300 group font-bold"
@@ -105,14 +105,14 @@ export default function TeacherLayout({
                                 <div className="min-w-[24px] flex items-center justify-center">
                                     <LogOut className="w-5 h-5" />
                                 </div>
-                                <span className="ml-4 opacity-0 group-hover/sidebar:opacity-100 transition-all duration-300 whitespace-nowrap">Logout</span>
+                                <span className="ml-4 opacity-100 transition-all duration-300 whitespace-nowrap">Logout</span>
                             </button>
                         </div>
                     </div>
                 </aside>
 
                 {/* Main Content */}
-                <main className="grow md:ml-20 group-hover/sidebar:md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
+                <main className="grow md:ml-64 transition-all duration-300 ease-in-out min-h-screen">
                     <header className="sticky top-0 z-40 /80 dark:bg-slate-950/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800 px-6 py-5 md:px-10 flex items-center justify-between transition-colors duration-300">
                         <div>
                             <h2 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">

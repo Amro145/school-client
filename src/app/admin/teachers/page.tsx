@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
-
+import { motion } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query'; // Add this import
 
 export const runtime = 'edge';
@@ -99,112 +99,72 @@ export default function TeachersListPage() {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {teachers?.map((teacher, idx) => (
-                    <div
+                    <motion.div
                         key={teacher.id}
-                        className=" rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] transition-all duration-700 group overflow-hidden flex flex-col"
-                        style={{ animationDelay: `${idx * 150}ms` }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="glass group rounded-[40px] border-slate-100 dark:border-slate-800 hover:border-purple-200 dark:hover:border-purple-800 transition-all duration-500 shadow-xl shadow-slate-100/50 dark:shadow-none overflow-hidden"
                     >
-                        <div className="p-10 flex-1">
-                            <div className="flex items-start justify-between mb-10">
-                                <div className="flex items-center space-x-5">
-                                    <div className="relative">
-                                        <div className="w-20 h-20 bg-linear-to-br from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 rounded-[28px] flex items-center justify-center text-purple-600 dark:text-purple-400 shadow-inner group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
-                                            <UserCircle className="w-12 h-12" />
-                                        </div>
-                                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full shadow-lg shadow-green-500/20" />
+                        <div className="p-8">
+                            <div className="flex items-center justify-between mb-8">
+                                <div className="flex items-center space-x-4">
+                                    <div className="w-16 h-16 bg-linear-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-purple-500/20 group-hover:rotate-6 transition-transform">
+                                        <UserCircle className="w-10 h-10" />
                                     </div>
                                     <div>
                                         <Link href={`/admin/teachers/${teacher.id}`}>
-                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white leading-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 hover:underline transition-all cursor-pointer">{teacher.userName}</h3>
+                                            <h3 className="text-xl font-black text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors uppercase tracking-tight">
+                                                {teacher.userName}
+                                            </h3>
                                         </Link>
-                                        <div className="flex items-center space-x-2 mt-1.5">
-                                            <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">ID: {teacher.id}</span>
-                                            <span className="text-[10px] bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 px-2.5 py-1 rounded-lg font-black uppercase tracking-widest">FACULTY</span>
-                                        </div>
+                                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">Faculty ID: {teacher.id}</p>
                                     </div>
+                                </div>
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 mb-8">
+                                <div className="bg-slate-50/50 dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-100/50 dark:border-slate-800/50">
+                                    <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">Subjects</span>
+                                    <span className="text-lg font-black text-slate-900 dark:text-white">{teacher.subjectsTaught?.length || 0}</span>
+                                </div>
+                                <div className="bg-slate-50/50 dark:bg-slate-900/50 p-4 rounded-3xl border border-slate-100/50 dark:border-slate-800/50">
+                                    <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block mb-1">Expertise</span>
+                                    <span className="text-lg font-black text-slate-900 dark:text-white">Active</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-4 mb-10 bg-slate-50/50 dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-100/50 dark:border-slate-800/50">
-                                <div className="flex items-center text-slate-600 dark:text-slate-400 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 dark:border-slate-800 flex items-center justify-center mr-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
-                                        <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
-                                    </div>
+                            <div className="space-y-3">
+                                <div className="flex items-center text-slate-500 dark:text-slate-400 font-bold text-xs bg-slate-50 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 group-hover:border-purple-100 dark:group-hover:border-purple-900/30 transition-colors">
+                                    <Mail className="w-4 h-4 mr-3 text-purple-600 dark:text-purple-400" />
                                     {teacher.email}
                                 </div>
-                                <div className="flex items-center text-slate-600 dark:text-slate-400 font-bold text-sm">
-                                    <div className="w-8 h-8 rounded-xl  border border-slate-100 dark:border-slate-800 flex items-center justify-center mr-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 group-hover:border-purple-200 dark:group-hover:border-purple-800 transition-colors">
-                                        <GraduationCap className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-purple-600 dark:group-hover:text-purple-400" />
-                                    </div>
-                                    <span className="text-slate-900 dark:text-white mr-2">{teacher.subjectsTaught?.length || 0}</span> Specializations
-                                </div>
-                            </div>
-
-                            <div className="space-y-5">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Academic Expertise</h4>
-                                    <div className="h-0.5 grow mx-4 bg-slate-100 dark:bg-slate-800 rounded-full" />
-                                </div>
-                                <div className="flex flex-wrap gap-2.5">
-                                    {teacher.subjectsTaught && teacher.subjectsTaught.length > 0 ? (
-                                        teacher.subjectsTaught.map((subject) => {
-                                            const avgGrade = subject.grades && subject.grades.length > 0
-                                                ? Math.round(subject.grades.reduce((acc, g) => acc + g.score, 0) / subject.grades.length)
-                                                : null;
-
-                                            return (
-                                                <Link
-                                                    key={subject.id}
-                                                    href={`/subjects/${subject.id}`}
-                                                    className=" border border-slate-100 dark:border-slate-800 px-4 py-2.5 rounded-2xl flex items-center group/tag hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg hover:shadow-blue-100 dark:hover:shadow-blue-900/20 transition-all duration-300 cursor-pointer"
-                                                >
-                                                    <span className="text-sm font-black text-slate-700 dark:text-slate-300 group-hover/tag:text-blue-600 dark:group-hover/tag:text-blue-400">{subject.name}</span>
-                                                    {avgGrade !== null && (
-                                                        <span className="ml-3 text-[10px] bg-green-50 text-green-600 px-2 py-0.5 rounded-lg font-black border border-green-100/50">
-                                                            {avgGrade}% AVG
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            );
-                                        })
-                                    ) : (
-                                        <div className="w-full py-4 text-center bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-dashed border-slate-100 dark:border-slate-800">
-                                            <p className="text-xs text-slate-400 dark:text-slate-500 font-black italic uppercase tracking-widest">Awaiting Assignment</p>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </div>
 
-                        <div className="px-8 py-6 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between glass">
-                            {
-                                teacher.subjectsTaught?.length !== 0 ? (
-                                    <>
-                                        <button className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 px-6 py-3  rounded-xl border border-slate-200/50 dark:border-slate-700/50 shadow-sm transition-all hover:shadow-lg active:scale-95">Detailed Profile</button>
-                                        <div className="flex items-center space-x-2">
-                                            <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <div className="flex items-center space-x-2">
-                                        <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                        {user?.role === 'admin' && (
-                                            <DeleteActionButton
-                                                userId={teacher.id}
-                                                userName={teacher.userName}
-                                                action={async (id) => {
-                                                    await userService.deleteUser(String(id));
-                                                    await queryClient.invalidateQueries({ queryKey: ['admin', 'teachers'] });
-                                                }}
-                                            />
-                                        )}
-                                    </div>
-                                )
-                            }
+                        <div className="px-8 py-5 bg-slate-50/50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <Link
+                                href={`/admin/teachers/${teacher.id}`}
+                                className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest hover:text-purple-600 dark:hover:text-purple-400 flex items-center group/btn transition-colors"
+                            >
+                                <Eye className="w-4 h-4 mr-2" />
+                                View Full Profile
+                            </Link>
+                            {user?.role === 'admin' && (
+                                <DeleteActionButton
+                                    userId={teacher.id}
+                                    userName={teacher.userName}
+                                    action={async (id) => {
+                                        await userService.deleteUser(String(id));
+                                        await queryClient.invalidateQueries({ queryKey: ['admin', 'teachers'] });
+                                    }}
+                                />
+                            )}
                         </div>
-                    </div>
+                    </motion.div>
                 ))}
             </div>
 

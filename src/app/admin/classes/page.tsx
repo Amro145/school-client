@@ -130,7 +130,6 @@ export default function ClassesListPage() {
                         <thead>
                             <tr className="bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] border-b border-slate-100 dark:border-slate-800">
                                 <th className="px-10 py-6">Cohort Identification</th>
-                                <th className="px-10 py-6 hidden sm:table-cell">Operational Status</th>
                                 <th className="px-10 py-6 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -155,16 +154,10 @@ export default function ClassesListPage() {
                                                         <h3 className="text-lg font-black text-slate-900 dark:text-white leading-none mb-1.5 hover:text-blue-600 transition-colors cursor-pointer">{cls.name}</h3>
                                                     </Link>
                                                     <div className="flex items-center space-x-2">
-                                                        <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ID: {cls.id}</span>
-                                                        <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">COHORT</span>
+                                                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">ID: {cls.id}</span>
+                                                        <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-md font-black uppercase tracking-widest whitespace-nowrap">COHORT</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-10 py-8 hidden sm:table-cell">
-                                            <div className="inline-flex items-center px-4 py-2 bg-emerald-50 dark:bg-emerald-900/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/20 rounded-2xl font-black text-[10px] uppercase tracking-widest">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 animate-pulse" />
-                                                Active System Node
                                             </div>
                                         </td>
                                         <td className="px-10 py-8 text-right">

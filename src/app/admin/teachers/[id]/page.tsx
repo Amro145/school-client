@@ -123,30 +123,30 @@ export default function TeacherDetailPage() {
             </Link>
 
             {/* Teacher Header Section */}
-            <div className=" p-8 md:p-12 rounded-[40px] border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center md:items-start gap-10">
+            <div className=" p-8 md:p-12 rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-[0_4px_24px_rgba(0,0,0,0.02)] flex flex-col md:flex-row items-center md:items-start gap-10">
                 <div className="w-32 h-32 bg-linear-to-br from-blue-600 to-indigo-700 rounded-[32px] flex items-center justify-center text-white shadow-xl shadow-blue-500/20 transform hover:scale-105 transition-transform duration-500">
                     <span className="text-4xl font-black italic">{currentTeacher.userName.substring(0, 2).toUpperCase()}</span>
                 </div>
                 <div className="flex-1 text-center md:text-left">
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-4">
-                        <span className="text-[10px] bg-blue-50 text-blue-600 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">Active Faculty</span>
-                        <span className="text-[10px] bg-slate-100 text-slate-500 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">UID: {currentTeacher.id}</span>
+                        <span className="text-[10px] bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">Active Faculty</span>
+                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-3 py-1 rounded-lg font-black uppercase tracking-[0.2em]">UID: {currentTeacher.id}</span>
                     </div>
-                    <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-6">{currentTeacher.userName}</h1>
+                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-6">{currentTeacher.userName}</h1>
                     <div className="flex flex-wrap items-center justify-center md:justify-start gap-6">
-                        <div className="flex items-center space-x-3 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
-                            <Mail className="w-4 h-4 text-slate-400" />
-                            <span className="text-slate-900 font-bold">{currentTeacher.email}</span>
+                        <div className="flex items-center space-x-3 bg-slate-50 dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                            <span className="text-slate-900 dark:text-white font-bold">{currentTeacher.email}</span>
                         </div>
-                        <div className="flex items-center space-x-3 bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100">
-                            <Shield className="w-4 h-4 text-slate-400" />
-                            <span className="text-slate-900 font-bold uppercase tracking-widest text-sm">{currentTeacher.role}</span>
+                        <div className="flex items-center space-x-3 bg-slate-50 dark:bg-slate-900 px-5 py-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+                            <Shield className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                            <span className="text-slate-900 dark:text-white font-bold uppercase tracking-widest text-sm">{currentTeacher.role}</span>
                         </div>
                     </div>
                 </div>
-                <div className="bg-slate-900 p-8 rounded-[32px] text-white min-w-[240px] shadow-xl">
+                <div className="bg-slate-900 dark:bg-slate-950 p-8 rounded-[32px] text-white min-w-[240px] shadow-xl border border-white/5">
                     <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Subjects Assigned</span>
-                    <div className="text-5xl font-black mt-2 tabular-nums">{currentTeacher.subjectsTaught?.length || 0}</div>
+                    <div className="text-5xl font-black mt-2 tabular-nums text-white">{currentTeacher.subjectsTaught?.length || 0}</div>
                     <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
                         <span className="text-slate-500">Status</span>
                         <span className="text-green-400">Verified</span>
@@ -175,25 +175,25 @@ export default function TeacherDetailPage() {
                             <div key={subject.id} className=" rounded-4xl border border-slate-100 shadow-sm overflow-hidden transition-all duration-300">
                                 <div
                                     onClick={() => setExpandedSubjectId(isExpanded ? null : subject.id)}
-                                    className={`p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-slate-50/50 transition-colors ${isExpanded ? 'bg-slate-50/50' : ''}`}
+                                    className={`p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors ${isExpanded ? 'bg-slate-50/50 dark:bg-slate-900/50' : ''}`}
                                 >
                                     <div className="flex items-center space-x-6">
-                                        <div className="w-14 h-14  border border-slate-100 rounded-2xl flex items-center justify-center text-slate-900 shadow-sm group-hover:scale-110 transition-transform">
+                                        <div className="w-14 h-14  border border-slate-100 dark:border-slate-800 rounded-2xl flex items-center justify-center text-slate-900 dark:text-white shadow-sm group-hover:scale-110 transition-transform">
                                             <Trophy className="w-6 h-6 text-amber-500" />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-black text-slate-900">{subject.name}</h3>
-                                            <p className="text-slate-500 font-bold text-sm">Classroom: {subject.class?.name || 'Unassigned'}</p>
+                                            <h3 className="text-xl font-black text-slate-900 dark:text-white">{subject.name}</h3>
+                                            <p className="text-slate-500 dark:text-slate-400 font-bold text-sm">Classroom: {subject.class?.name || 'Unassigned'}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-8">
                                         <div className="text-right">
-                                            <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Success Rate</div>
+                                            <div className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Success Rate</div>
                                             <div className={`text-2xl font-black tabular-nums ${parseFloat(successRate) >= 50 ? 'text-green-600' : 'text-blue-600'}`}>
                                                 {successRate}
                                             </div>
                                         </div>
-                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isExpanded ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-100 text-slate-400'}`}>
+                                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isExpanded ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}>
                                             <TrendingUp className="w-5 h-5" />
                                         </div>
                                     </div>
@@ -225,7 +225,7 @@ export default function TeacherDetailPage() {
                                                             </td>
                                                             <td className="px-6 py-5 hidden sm:table-cell">
                                                                 <div className="flex items-center justify-center space-x-3">
-                                                                    <span className={`text-lg font-black tabular-nums ${grade.score >= 50 ? 'text-slate-900' : 'text-rose-600'}`}>
+                                                                    <span className={`text-lg font-black tabular-nums ${grade.score >= 50 ? 'text-slate-900 dark:text-white' : 'text-rose-600'}`}>
                                                                         {grade.score}%
                                                                     </span>
                                                                     <div className="hidden md:block grow w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden max-w-[120px]">
