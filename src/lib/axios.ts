@@ -22,6 +22,9 @@ api.interceptors.request.use(
     }
 );
 
+import { store } from '@/lib/redux/store';
+import { logout } from '@/lib/redux/slices/authSlice';
+
 // Interceptor to handle unauthorized errors globally (optional but recommended)
 api.interceptors.response.use(
     (response) => response,
@@ -29,6 +32,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // Handle logout logic if needed
             Cookies.remove('auth_token');
+            store.dispatch(logout());
         }
         return Promise.reject(error);
     }

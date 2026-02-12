@@ -1,27 +1,14 @@
 import { useQuery, UseQueryOptions, useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/redux/store';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
+import api from '@/lib/axios';
 
 export const fetchData = async <T>(
     graphqlQuery: string,
-    variables?: Record<string, any>,
-    token?: string | null
+    variables?: Record<string, any>
 ): Promise<T> => {
-    const response = await axios.post(
-        API_BASE_URL,
-        {
-            query: graphqlQuery,
-            variables,
-        },
-        {
-            headers: {
-                Authorization: token ? `Bearer ${token}` : '',
-            },
-        }
-    );
+    const response = await api.post('', {
+        query: graphqlQuery,
+        variables,
+    });
 
     if (response.data.errors) {
         const message = response.data.errors.map((e: any) => e.message).join(', ');
@@ -37,11 +24,9 @@ export function useFetchData<T>(
     variables?: Record<string, any>,
     options?: Omit<UseQueryOptions<T, Error>, 'queryKey' | 'queryFn'>
 ) {
-    const { token } = useSelector((state: RootState) => state.auth);
-
     return useQuery<T, Error>({
         queryKey: [...queryKey, variables],
-        queryFn: () => fetchData<T>(graphqlQuery, variables, token),
+        queryFn: () => fetchData<T>(graphqlQuery, variables),
         ...options,
     });
 }
