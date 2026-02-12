@@ -82,7 +82,7 @@ export default function SubjectDetailPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = `
                 mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
-                    updateGradesBulk(grades: $grades) {
+                    updateBulkGrades(grades: $grades) {
                         id
                         score
                     }

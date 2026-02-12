@@ -106,7 +106,7 @@ export default function StudentsPage() {
         }
         `,
         { page: currentPage, limit: LIMIT, search: debouncedSearch },
-        { enabled: isAdmin }
+        { enabled: isTeacher }
     );
 
     useEffect(() => {

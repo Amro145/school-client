@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, use } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
 import { useFetchData, useMutateData } from '@/hooks/useFetchData';
@@ -19,26 +20,26 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import Cookies from 'js-cookie';
-import { motion, AnimatePresence } from "framer-motion";
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 import axios from 'axios';
 
 export const runtime = 'edge';
 
 interface PageProps {
-    params: Promise<{ id: string }>;
+    params: { id: string };
 }
 
-export default function StudentProfilePage({ params }: PageProps) {
-    const { id } = use(params);
+export default function StudentProfilePage() {
+    const params = useParams();
+    const id = params?.id as string;
     const { user: authUser } = useSelector((state: RootState) => state.auth);
 
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
     const [showSuccess, setShowSuccess] = useState(false);
     const [selectedType, setSelectedType] = useState<string>('All');
 
-    const isAdmin = authUser?.role === 'admin';
-    const isTeacher = authUser?.role === 'teacher';
+    const isAdmin = authUser?.role?.toLowerCase() === 'admin';
+    const isTeacher = authUser?.role?.toLowerCase() === 'teacher';
 
     // Hook for Profile Data
     const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
@@ -164,11 +165,11 @@ export default function StudentProfilePage({ params }: PageProps) {
         return g.type === selectedType;
     }) : [];
 
-    const computedAverage = React.useMemo(() => {
+    const computedAverage = useMemo(() => {
         if (!filteredGrades || filteredGrades.length === 0) return 0;
         const validGrades = filteredGrades.filter((g: any) => g.score !== null && g.score !== undefined);
         if (validGrades.length === 0) return 0;
-        const sum = validGrades.reduce((acc: number, curr: any) => acc + curr.score, 0);
+        const sum = validGrades.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0);
         return sum / validGrades.length;
     }, [filteredGrades]);
 

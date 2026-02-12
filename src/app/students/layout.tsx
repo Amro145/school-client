@@ -22,7 +22,7 @@ export default function StudentsLayout({
         );
     }
 
-    if (user?.role === 'teacher') {
+    if (user?.role?.toLowerCase() === 'teacher') {
         return <TeacherLayout>{children}</TeacherLayout>;
     }
 

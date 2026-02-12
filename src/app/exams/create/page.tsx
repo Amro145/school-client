@@ -82,7 +82,7 @@ export default function CreateExamPage() {
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: String!, $subjectId: String!, $questions: [QuestionInput!]!) {
-                        createExam(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
+                        createExamWithQuestions(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
                             id
                             title
                         }
