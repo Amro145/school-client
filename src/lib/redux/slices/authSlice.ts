@@ -99,7 +99,6 @@ export const loginUser = createAsyncThunk(
         try {
             // 1. Clear any existing token before executing login
             Cookies.remove('auth_token');
-            localStorage.removeItem('auth_token');
 
             const response = await api.post('', {
                 query,
@@ -112,11 +111,8 @@ export const loginUser = createAsyncThunk(
 
             const { token, user } = response.data.data.login;
 
-            // 4. Verify correct admin in Ubuntu console
-
-            // 2. Save new token immediately
+            // 2. Save new token to Cookies only (single source of truth)
             Cookies.set('auth_token', token, { expires: 7, secure: true, sameSite: 'strict' });
-            localStorage.setItem('auth_token', token);
 
             return { token, user };
         } catch (error: unknown) {
@@ -219,7 +215,6 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.needsSchoolSetup = false;
             Cookies.remove('auth_token');
-            localStorage.removeItem('auth_token');
         },
         setSchoolId: (state, action) => {
             if (state.user) {
