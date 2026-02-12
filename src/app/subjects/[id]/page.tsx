@@ -47,7 +47,7 @@ export default function SubjectDetailPage() {
     const { data: subjectData, isLoading: loading, error: fetchError } = useFetchData<{ subject: any }>(
         ['subject', id],
         `
-        query GetSubjectDetails($id: ID!) {
+        query GetSubjectDetails($id: Int!) {
           subject(id: $id) {
             id
             name
@@ -71,14 +71,14 @@ export default function SubjectDetailPage() {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
         async (grades: { id: string | number, score: number }[]) => {
             // Mutation logic using axios or raw fetch
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = `
                 mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
                     updateGradesBulk(grades: $grades) {
@@ -201,12 +201,12 @@ export default function SubjectDetailPage() {
         );
     }
 
-    if (error) {
+    if (fetchError) {
         return (
             <div className="max-w-xl mx-auto mt-20 p-10  dark:bg-slate-900 rounded-3xl border border-rose-100 dark:border-rose-900/30 shadow-xl text-center">
                 <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Error Loading Subject</h3>
-                <p className="text-slate-500 dark:text-slate-400 mb-6">{error}</p>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">{(fetchError as any)?.message || String(fetchError)}</p>
                 <Link href="/subjects" className="text-blue-600 dark:text-blue-400 font-bold hover:underline">Return to Subjects</Link>
             </div>
         )

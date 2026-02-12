@@ -28,11 +28,11 @@ export const runtime = 'edge';
 export default function ClassDetailPage() {
     const params = useParams();
     const id = params.id as string;
-    const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ class: ClassRoom }>(
+    const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: ID!) {
-          class(id: $id) {
+        query GetClassDetails($id: Int!) {
+          classRoom(id: $id) {
             id
             name
             subjects {
@@ -65,19 +65,19 @@ export default function ClassDetailPage() {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
     const { mutateAsync: performDelete } = useMutateData(
         async (scheduleId: number | string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSchedule($id: ID!) {
-                        deleteSchedule(id: $id)
+                    mutation DeleteSchedule($id: Int!) {
+                        deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id: scheduleId }
+                variables: { id: Number(scheduleId) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -86,7 +86,7 @@ export default function ClassDetailPage() {
         [['class', id]]
     );
 
-    const currentClass = classData?.class;
+    const currentClass = classData?.classRoom;
     const error = fetchError ? (fetchError as any).message : null;
 
     const [isFormOpen, setIsFormOpen] = React.useState(false);

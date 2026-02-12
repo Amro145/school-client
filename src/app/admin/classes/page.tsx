@@ -40,14 +40,14 @@ export default function ClassesListPage() {
 
     const { mutateAsync: performDeleteClass } = useMutateData(
         async (classId: string | number) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteClass($id: ID!) {
-                        deleteClassRoom(id: $id)
+                    mutation DeleteClass($id: Int!) {
+                        deleteClassRoom(id: $id) { id }
                     }
                 `,
-                variables: { id: classId }
+                variables: { id: Number(classId) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -63,7 +63,7 @@ export default function ClassesListPage() {
     // Filter classes for teachers: only show classes where teacher has subjects
     const filteredClassRooms = user?.role === 'teacher'
         ? classRooms.filter(cls =>
-            subjects.some(s => s.class?.id === cls.id && s.teacher?.id === user.id)
+            subjects.some(s => s.class?.id === cls.id && s.teacher?.id === user?.id)
         )
         : classRooms;
 

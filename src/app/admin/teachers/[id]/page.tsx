@@ -29,7 +29,7 @@ export default function TeacherDetailPage() {
     const { data: teacherData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ teacher: Teacher }>(
         ['teacher', id],
         `
-        query GetTeacherDetails($id: ID!) {
+        query GetTeacherDetails($id: Int!) {
           teacher(id: $id) {
             id
             userName
@@ -54,7 +54,7 @@ export default function TeacherDetailPage() {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
     const currentTeacher = teacherData?.teacher;

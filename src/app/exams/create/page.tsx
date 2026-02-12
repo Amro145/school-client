@@ -77,7 +77,7 @@ export default function CreateExamPage() {
 
     const { mutateAsync: createExam, isPending: examLoading } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: Int!, $subjectId: Int!, $questions: [QuestionInput!]!) {

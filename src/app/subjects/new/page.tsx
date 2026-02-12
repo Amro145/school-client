@@ -63,7 +63,7 @@ export default function CreateSubjectPage() {
 
     const { mutateAsync: createSubject } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateSubject($name: String!, $classId: Int!, $teacherId: Int!) {

@@ -23,11 +23,11 @@ export default function ExamResultPage() {
         return null;
     });
 
-    const { data: examData, isLoading: loading } = useFetchData<{ exam: Exam }>(
+    const { data: examData, isLoading: loading } = useFetchData<{ getExam: Exam }>(
         ['exam', id, 'result'],
         `
-        query GetExamResultBasics($id: ID!) {
-          exam(id: $id) {
+        query GetExamResultBasics($id: Int!) {
+          getExam(id: $id) {
             id
             questions {
               id
@@ -36,11 +36,11 @@ export default function ExamResultPage() {
           }
         }
         `,
-        { id },
+        { id: Number(id) },
         { enabled: !!id }
     );
 
-    const currentExam = examData?.exam;
+    const currentExam = examData?.getExam;
 
     useEffect(() => {
         if (!lastSubmission && !loading) {

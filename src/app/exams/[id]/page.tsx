@@ -17,11 +17,11 @@ export default function ExamLobbyPage() {
     const id = params.id as string;
     const { user } = useSelector((state: RootState) => state.auth);
 
-    const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ exam: Exam }>(
+    const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ getExam: Exam }>(
         ['exam', id, 'lobby'],
         `
-        query GetExamDetails($id: ID!) {
-          exam(id: $id) {
+        query GetExamDetails($id: Int!) {
+          getExam(id: $id) {
             id
             title
             description
@@ -37,10 +37,10 @@ export default function ExamLobbyPage() {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
-    const currentExam = examData?.exam;
+    const currentExam = examData?.getExam;
     const error = fetchError ? (fetchError as any).message : null;
 
     // No explicit initialization needed as useFetchData handles it

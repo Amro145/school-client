@@ -23,10 +23,10 @@ export type {
 
 export interface Teacher extends Omit<SharedTeacher, 'subjectsTaught'> {
     subjectsTaught: {
-        id: string;
+        id: number;
         name: string;
         grades: {
-            id: string;
+            id: number;
             score: number;
         }[];
     }[];

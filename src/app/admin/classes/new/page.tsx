@@ -20,7 +20,7 @@ export default function CreateClassPage() {
     const { user } = useSelector((state: RootState) => state.auth);
     const { mutateAsync: createClassRoom, isPending: isSubmitting } = useMutateData(
         async (name: string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateClassRoom($name: String!, $schoolId: Int) {

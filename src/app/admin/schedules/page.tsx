@@ -99,14 +99,14 @@ function SchedulesContent() {
 
     const { mutateAsync: performDeleteSchedule } = useMutateData(
         async (id: number | string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSchedule($id: ID!) {
-                        deleteSchedule(id: $id)
+                    mutation DeleteSchedule($id: Int!) {
+                        deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id }
+                variables: { id: Number(id) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

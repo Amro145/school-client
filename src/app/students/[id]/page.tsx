@@ -42,7 +42,7 @@ export default function StudentProfilePage({ params }: PageProps) {
     const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
         ['student', id],
         `
-        query GetStudentProfile($id: ID!) {
+        query GetStudentProfile($id: Int!) {
           student(id: $id) {
             id
             userName
@@ -65,17 +65,17 @@ export default function StudentProfilePage({ params }: PageProps) {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
         async (grades: { id: string | number, score: number }[]) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
-                        updateGradesBulk(grades: $grades) {
+                    mutation UpdateBulkGrades($grades: [GradeUpdateInput!]!) {
+                        updateBulkGrades(grades: $grades) {
                             id
                             score
                         }
@@ -104,7 +104,7 @@ export default function StudentProfilePage({ params }: PageProps) {
 
     const handleSaveAll = async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: gid,
+            id: Number(gid),
             score
         }));
 

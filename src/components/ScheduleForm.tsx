@@ -83,12 +83,12 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         return `${endHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
     };
 
-    const { mutateAsync: performMutation, isPending: loading } = useMutateData(
+    const { mutateAsync: performMutation, isPending: loading, error } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = initialData
                 ? `
-                    mutation UpdateSchedule($id: ID!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation UpdateSchedule($id: Int!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
                         updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
@@ -104,7 +104,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
 
             const response = await axios.post(apiBase, {
                 query,
-                variables: initialData ? { id: initialData.id, ...payload } : payload
+                variables: initialData ? { id: Number(initialData.id), ...payload } : payload
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -164,7 +164,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                     {(error || formError) && (
                         <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-2xl flex items-start space-x-3 text-red-600 dark:text-red-400 text-sm font-bold">
                             <AlertCircle className="w-5 h-5 shrink-0" />
-                            <p>{formError || error}</p>
+                            <p>{formError || (error as any)?.message || String(error)}</p>
                         </div>
                     )}
 

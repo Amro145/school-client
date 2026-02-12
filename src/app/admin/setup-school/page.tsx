@@ -34,7 +34,7 @@ export default function SetupSchoolPage() {
 
     const { mutateAsync: createSchool } = useMutateData(
         async (name: string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateSchool($name: String!) {

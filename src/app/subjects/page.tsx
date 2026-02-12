@@ -89,14 +89,14 @@ export default function SubjectsPage() {
 
     const { mutateAsync: performDeleteSubject } = useMutateData(
         async (id: string | number) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSubject($id: ID!) {
-                        deleteSubject(id: $id)
+                    mutation DeleteSubject($id: Int!) {
+                        deleteSubject(id: $id) { id }
                     }
                 `,
-                variables: { id }
+                variables: { id: Number(id) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

@@ -21,7 +21,7 @@ export default function StudentProfilePage() {
     const { data: studentData, isLoading: loading } = useFetchData<{ student: Student }>(
         ['student', user?.id],
         `
-        query GetStudentProfile($id: ID!) {
+        query GetStudentProfile($id: Int!) {
           student(id: $id) {
             id
             userName
@@ -42,7 +42,7 @@ export default function StudentProfilePage() {
           }
         }
         `,
-        { id: user?.id as string },
+        { id: Number(user?.id) },
         { enabled: !!user?.id }
     );
 

@@ -120,7 +120,7 @@ export const studentService = {
       query: mutation,
       variables: {
         grades: grades.map(g => ({
-          id: g.id.toString(),
+          id: Number(g.id),
           score: g.score
         }))
       }

@@ -48,11 +48,11 @@ export default function CreateSchedulePage() {
     const id = params.id as string;
     const router = useRouter();
 
-    const { data: classData, isLoading: adminLoading, error: fetchError } = useFetchData<{ class: ClassRoom }>(
+    const { data: classData, isLoading: adminLoading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: ID!) {
-          class(id: $id) {
+        query GetClassDetails($id: Int!) {
+          classRoom(id: $id) {
             id
             name
             subjects {
@@ -74,10 +74,10 @@ export default function CreateSchedulePage() {
           }
         }
         `,
-        { id }
+        { id: Number(id) }
     );
 
-    const currentClass = classData?.class;
+    const currentClass = classData?.classRoom;
     const serverError = fetchError ? (fetchError as any).message : null;
 
     const {
@@ -100,7 +100,7 @@ export default function CreateSchedulePage() {
 
     const { mutateAsync: createSchedule } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
                     mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {

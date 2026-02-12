@@ -9,7 +9,7 @@ import { Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/graphql';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const router = useRouter();
