@@ -298,15 +298,23 @@ export default function SubjectsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="px-10 py-8 text-right">
-                                                    <div className="flex items-center justify-end space-x-3 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                        <Link href={`/subjects/${subject.id}`} className="p-4 bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-2xl transition-all shadow-sm border border-slate-200/50 dark:border-slate-700/50 hover:border-blue-100 active:scale-95">
-                                                            <Eye className="w-5 h-5" />
+                                                    <div className="flex items-center justify-end space-x-3 transition-opacity duration-300">
+                                                        <Link
+                                                            href={`/subjects/${subject.id}`}
+                                                            className="flex items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all shadow-sm border border-blue-100 dark:border-blue-800/50 font-black text-[10px] uppercase tracking-widest active:scale-95"
+                                                        >
+                                                            <Eye className="w-4 h-4" />
+                                                            <span>Explore</span>
                                                         </Link>
-                                                        <DeleteActionButton
-                                                            userId={subject.id}
-                                                            userName={subject.name}
-                                                            action={handleDeleteSubject}
-                                                        />
+                                                        {isAdmin && (
+                                                            <div className="flex items-center space-x-2 px-4 py-1.5 bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all shadow-sm border border-rose-100 dark:border-rose-800/50 font-black text-[10px] uppercase tracking-widest active:scale-95">
+                                                                <DeleteActionButton
+                                                                    userId={subject.id}
+                                                                    userName={subject.name}
+                                                                    action={handleDeleteSubject}
+                                                                />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </motion.tr>

@@ -1,6 +1,8 @@
 'use client'; // Error components must be Client Components
 
 import React, { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/redux/store';
 import { AlertCircle, RefreshCw, Home, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -14,6 +16,7 @@ export default function Error({
     error: Error & { digest?: string };
     reset: () => void;
 }) {
+    const { user } = useSelector((state: RootState) => state.auth);
     useEffect(() => {
         // Log the error to an error reporting service
         console.error(error);
@@ -87,7 +90,7 @@ export default function Error({
                         </button>
 
                         <Link
-                            href="/"
+                            href={user?.role === 'admin' ? '/admin' : '/dashboard'}
                             className="flex items-center justify-center px-6 py-4 bg-(--muted) text-foreground rounded-xl font-bold hover:bg-(--accent) transition-all transform active:scale-95"
                         >
                             <Home className="w-5 h-5 mr-2" />

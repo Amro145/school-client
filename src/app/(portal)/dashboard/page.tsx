@@ -260,6 +260,11 @@ function StudentDashboard({ user }: { user: StudentUser }) {
 }
 
 function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
+    const [selectedDay, setSelectedDay] = React.useState<string>(() => {
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[new Date().getDay()];
+    });
+
     if (!currentTeacher) return null;
 
     const subjects = currentTeacher.subjectsTaught || [];
@@ -282,9 +287,12 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
 
     const teacherSuccessRate = totalGradesCount > 0 ? Number((totalScoreSum / totalGradesCount).toFixed(1)) : 0;
 
+    const filteredSchedules = currentTeacher.schedules?.filter(s => s.day === selectedDay) || [];
+    const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            {/* Welcome Header */}
+            {/* ... (Header logic remains same) ... */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
@@ -304,6 +312,7 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* ... (Metrics cards logic remains same) ... */}
                 <div className="glass p-8 rounded-[40px] border-slate-100 dark:border-slate-800 flex flex-col justify-between group hover:border-purple-200 dark:hover:border-purple-900/30 transition-all duration-500 shadow-xl shadow-slate-100/50 dark:shadow-none">
                     <div className="flex items-center justify-between mb-8">
                         <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/20 rounded-2xl flex items-center justify-center text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
@@ -348,8 +357,25 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2">
-                    <TodaysScheduleWidget schedules={currentTeacher.schedules || []} role="teacher" />
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Day Selector Tabs */}
+                    <div className="flex items-center justify-between bg-white dark:bg-slate-900/50 p-2 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-x-auto no-scrollbar">
+                        <div className="flex items-center space-x-1 min-w-max">
+                            {daysOfWeek.map((day) => (
+                                <button
+                                    key={day}
+                                    onClick={() => setSelectedDay(day)}
+                                    className={`px-4 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${selectedDay === day
+                                        ? 'bg-purple-600 text-white shadow-lg shadow-purple-500/20'
+                                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                        }`}
+                                >
+                                    {day.substring(0, 3)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <TodaysScheduleWidget schedules={filteredSchedules} role="teacher" />
                 </div>
                 <div className="glass p-8 rounded-[40px] border-slate-100 dark:border-slate-800 bg-slate-900 dark:bg-slate-950 text-white relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 transition-transform duration-1000">

@@ -386,25 +386,6 @@ export default function StudentProfilePage({ params }: PageProps) {
                     </div>
                 </div>
 
-                {/* Sidebar Stats / Info */}
-                <div className="space-y-8">
-                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight flex items-center">
-                        <Shield className="w-6 h-6 mr-3 text-indigo-600" />
-                        Details
-                    </h2>
-
-                    <div className=" rounded-[2.5rem] border border-slate-100 dark:border-slate-800 p-8 shadow-xl shadow-slate-200/20 dark:shadow-slate-900/20 space-y-6">
-                        <div className="space-y-4">
-                            <h4 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-1 text-center">Identity Verification</h4>
-                            <div className="p-5 bg-slate-50 dark:bg-slate-800 flex flex-col items-center justify-center rounded-2xl border border-slate-100/50 dark:border-slate-700/50">
-                                <div className="w-32 h-32  rounded-2xl flex items-center justify-center shadow-lg mb-4 text-[10px] font-black text-slate-300 dark:text-slate-600">
-                                    QR ID CODE
-                                </div>
-                                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Permanent ID: USR-{student.id}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     );
