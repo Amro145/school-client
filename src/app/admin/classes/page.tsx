@@ -52,6 +52,11 @@ export default function ClassesListPage() {
             }, {
                 headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
+
+            if (response.data.errors) {
+                throw new Error(response.data.errors[0].message);
+            }
+
             return response.data;
         },
         [['admin', 'classes-and-subjects']]

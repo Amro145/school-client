@@ -86,82 +86,83 @@ export default function MySchedulePage() {
             {/* Timetable Grid */}
             <div className="bg-white dark:bg-slate-950 rounded-[40px] border border-slate-200/60 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-none overflow-hidden transition-colors duration-300">
                 <div className="overflow-x-auto">
-                    <div className="min-w-[1000px] grid grid-cols-[140px_repeat(8,1fr)] bg-slate-200/30 dark:bg-slate-800/50 border-collapse gap-px">
-                        {/* Empty Top-Left Corner */}
-                        <div className="bg-slate-50 dark:bg-slate-900 p-6 flex items-center justify-center border-b border-r border-slate-200/60 dark:border-slate-800 sticky left-0 z-30 transition-colors duration-300">
-                            <Clock className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                    <div className="min-w-[1000px] grid grid-cols-[100px_repeat(5,1fr)] bg-slate-200/30 dark:bg-slate-800/50 border-collapse gap-px">
+                        {/* Top-Left Corner: Time Label */}
+                        <div className="bg-slate-50 dark:bg-slate-900 p-6 flex items-center justify-center border-b border-r border-slate-200/60 dark:border-slate-800 sticky left-0 z-30">
+                            <Clock className="w-5 h-5 text-slate-400" />
                         </div>
 
-                        {/* Period Headers */}
-                        {PERIODS.map((period, idx) => {
-                            const isCurrent = period.value === currentPeriod;
+                        {/* Day Headers (Columns) */}
+                        {DAYS.map((day) => {
+                            const isToday = day === currentDay;
                             return (
                                 <div
-                                    key={period.value}
+                                    key={day}
                                     className={`p-6 border-b border-slate-200/60 dark:border-slate-800 flex flex-col items-center justify-center transition-all duration-300
-                                        ${isCurrent ? 'bg-purple-600 text-white shadow-[0_0_30px_-5px_rgba(147,51,234,0.3)]' : 'bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100'}
+                                        ${isToday ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.2)]' : 'bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100'}
                                     `}
                                 >
-                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1.5 ${isCurrent ? 'text-purple-100' : 'text-slate-400 dark:text-slate-500'}`}>
-                                        Slot {idx + 1}
+                                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] mb-1 ${isToday ? 'text-purple-100' : 'text-slate-400 dark:text-slate-500'}`}>
+                                        Schedule
                                     </span>
-                                    <span className="text-base font-black tracking-tight">{period.label}</span>
+                                    <span className="text-base font-black tracking-tight uppercase">{day}</span>
                                 </div>
                             );
                         })}
 
-                        {/* Days Rows */}
-                        {DAYS.map((day) => (
-                            <React.Fragment key={day}>
-                                {/* Day Sidebar Header */}
-                                <div className={`p-6 border-r border-slate-200/60 dark:border-slate-800 flex items-center justify-center sticky left-0 z-20 transition-all duration-300
-                                    ${day === currentDay ? 'bg-purple-600 text-white' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400'}
+                        {/* Period Rows */}
+                        {PERIODS.map((period) => (
+                            <React.Fragment key={period.value}>
+                                {/* Period Sidebar Label (Row Header) */}
+                                <div className={`p-4 border-r border-slate-200/60 dark:border-slate-800 flex flex-col items-center justify-center sticky left-0 z-20 transition-all duration-300
+                                    ${period.value === currentPeriod ? 'bg-purple-600 text-white' : 'bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400'}
                                 `}>
-                                    <span className="text-xs font-black uppercase tracking-[0.2em] [writing-mode:vertical-lr] rotate-180">
-                                        {day}
+                                    <span className="text-[10px] font-black uppercase tracking-widest leading-none mb-1">Slot</span>
+                                    <span className="text-sm font-black tracking-tighter">
+                                        {period.label}
                                     </span>
                                 </div>
 
-                                {/* Subject Cells */}
-                                {PERIODS.map((period) => {
+                                {/* Subject Cells for each day in this period */}
+                                {DAYS.map((day) => {
                                     const schedule = schedules.find(s => s.day === day && s.startTime === period.value);
                                     const isCurrentCell = day === currentDay && period.value === currentPeriod;
 
                                     return (
                                         <div
                                             key={`${day}-${period.value}`}
-                                            className={`relative h-32 p-3 border-b border-r border-slate-200/60 dark:border-slate-800 last:border-r-0 transition-all duration-500 group
+                                            className={`relative min-h-[140px] p-3 border-b border-r border-slate-200/60 dark:border-slate-800 last:border-r-0 transition-all duration-500 group
                                                 ${isCurrentCell ? 'bg-purple-50/50 dark:bg-purple-500/10 ring-2 ring-purple-600 ring-inset z-10' : 'bg-white dark:bg-slate-950'}
                                                 ${!schedule && 'hover:bg-slate-50 dark:hover:bg-slate-900/40'}
                                             `}
                                         >
                                             {schedule ? (
-                                                <div className="w-full h-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-900/80 border border-slate-100 dark:border-slate-800/50 flex flex-col justify-between group-hover:scale-[1.02] group-hover:shadow-lg transition-all duration-300">
+                                                <div className="w-full h-full p-4 rounded-3xl bg-slate-50 dark:bg-slate-900/80 border border-slate-100 dark:border-slate-800/50 flex flex-col justify-between group-hover:scale-[1.03] group-hover:shadow-xl group-hover:border-purple-200 dark:group-hover:border-purple-900/50 transition-all duration-300">
                                                     <div>
-                                                        <div className="flex items-start justify-between mb-2">
-                                                            <div className="w-2 h-2 rounded-full bg-purple-500" />
-                                                            <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter">
+                                                        <div className="flex items-center justify-between mb-3">
+                                                            <div className={`w-2 h-2 rounded-full ${isCurrentCell ? 'bg-purple-500 animate-pulse' : 'bg-slate-300'}`} />
+                                                            <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest bg-white dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-100 dark:border-slate-700">
                                                                 {schedule.startTime} - {schedule.endTime}
                                                             </span>
                                                         </div>
-                                                        <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase leading-tight line-clamp-2 tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                                                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase leading-tight line-clamp-2 tracking-tight group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
                                                             {schedule.subject?.name}
                                                         </h3>
                                                     </div>
 
-                                                    <div className="flex items-center mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/50">
+                                                    <div className="flex items-center mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
                                                         {user?.role === 'student' ? (
                                                             <>
-                                                                <User className="w-3 h-3 mr-2 text-slate-400" />
-                                                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate">
+                                                                <User className="w-3.5 h-3.5 mr-2 text-purple-500" />
+                                                                <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 truncate uppercase tracking-tight">
                                                                     {schedule.subject?.teacher?.userName || 'TBA'}
                                                                 </span>
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <Home className="w-3 h-3 mr-2 text-slate-400" />
-                                                                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 truncate">
-                                                                    Room: {schedule.classRoom?.name || 'N/A'}
+                                                                <Home className="w-3.5 h-3.5 mr-2 text-purple-500" />
+                                                                <span className="text-[10px] font-black text-slate-600 dark:text-slate-400 truncate uppercase tracking-tight">
+                                                                    Room: {schedule.classRoom?.name || 'HUB - 1'}
                                                                 </span>
                                                             </>
                                                         )}
@@ -169,7 +170,7 @@ export default function MySchedulePage() {
                                                 </div>
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[10px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-widest">Free Slot</span>
+                                                    <span className="text-[10px] font-black text-slate-300 dark:text-slate-700 uppercase tracking-[0.3em]">Operational Gap</span>
                                                 </div>
                                             )}
                                         </div>

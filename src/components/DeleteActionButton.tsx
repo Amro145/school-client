@@ -55,14 +55,16 @@ export default function DeleteActionButton({ userId, userName, warning, action }
                         popup: 'rounded-[32px] border-none shadow-2xl',
                     }
                 });
-            } catch {
+            } catch (error: any) {
                 Swal.fire({
-                    title: 'Error!',
-                    text: 'Failed to delete the record.',
+                    title: 'Action Blocked',
+                    text: error.message || 'The system environment prevented this deletion request.',
                     icon: 'error',
                     background: '#ffffff',
+                    confirmButtonColor: '#3085d6',
                     customClass: {
                         popup: 'rounded-[32px] border-none shadow-2xl',
+                        confirmButton: 'rounded-xl font-black uppercase tracking-widest text-xs px-8 py-4',
                     }
                 });
             }
