@@ -25,7 +25,7 @@ export default function CreateSubjectPage() {
         ['admin', 'teachers-and-classes'],
         `
         query GetAdminTeachersAndClasses {
-          teachers {
+          teachers: myTeachers {
             id
             userName
           }

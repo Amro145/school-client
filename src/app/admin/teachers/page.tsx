@@ -27,7 +27,7 @@ export default function TeachersListPage() {
         ['admin', 'teachers'],
         `
         query GetAdminTeachers {
-          teachers {
+          teachers: myTeachers {
             id
             userName
             email

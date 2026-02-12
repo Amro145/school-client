@@ -52,8 +52,8 @@ export default function StudentsPage() {
     }>(
         ['admin', 'students', currentPage.toString(), debouncedSearch],
         `
-        query GetAdminStudents($page: Int, $limit: Int, $search: String) {
-          students(page: $page, limit: $limit, search: $search) {
+        query GetAdminStudents($offset: Int, $limit: Int, $search: String) {
+          students: myStudents(offset: $offset, limit: $limit, search: $search) {
             id
             userName
             email
@@ -69,10 +69,10 @@ export default function StudentsPage() {
                 score
             }
           }
-          totalStudentsCount(search: $search)
+          totalStudentsCount
         }
         `,
-        { page: currentPage, limit: LIMIT, search: debouncedSearch },
+        { offset: (currentPage - 1) * LIMIT, limit: LIMIT, search: debouncedSearch },
         { enabled: isAdmin }
     );
 

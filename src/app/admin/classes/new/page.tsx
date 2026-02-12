@@ -23,14 +23,14 @@ export default function CreateClassPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation CreateClassRoom($name: String!, $schoolId: Int) {
+                    mutation CreateClassRoom($name: String!, $schoolId: String) {
                         createClassRoom(name: $name, schoolId: $schoolId) {
                             id
                             name
                         }
                     }
                 `,
-                variables: { name, schoolId: user?.schoolId ? Number(user.schoolId) : undefined }
+                variables: { name, schoolId: user?.schoolId ? String(user.schoolId) : undefined }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

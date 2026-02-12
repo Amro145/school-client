@@ -39,7 +39,7 @@ export default function DeleteActionButton({ userId, userName, warning, action }
         if (result.isConfirmed) {
             try {
                 if (action) {
-                    await dispatch(action(userId)).unwrap();
+                    await action(userId);
                 } else {
                     await dispatch(handleDeleteUser(userId)).unwrap();
                 }
