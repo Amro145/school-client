@@ -1,17 +1,17 @@
 export interface Subject {
-    id: number;
+    id: string;
     name: string;
 }
 
 export interface Grade {
-    id: number;
+    id: string;
     score: number;
     subject: Subject;
     type: string;
 }
 
 export interface Class {
-    id: number;
+    id: string;
     name: string;
     subjects?: Subject[];
 }
@@ -19,14 +19,14 @@ export interface Class {
 export interface TeacherSubject extends Subject {
     class?: Class;
     grades: Array<{
-        student: { id: number };
+        student: { id: string };
         score: number;
         type?: string;
     }>;
 }
 
 export interface Teacher {
-    id: number;
+    id: string;
     userName: string;
     email: string;
     role: string;
@@ -35,7 +35,7 @@ export interface Teacher {
 }
 
 export interface StudentUser {
-    id: number;
+    id: string;
     userName: string;
     email: string;
     role: string;
@@ -50,20 +50,20 @@ export interface StudentUser {
 }
 
 export interface ScheduleEntry {
-    id: number;
+    id: string;
     day: string;
     startTime: string;
     endTime: string;
     subject: {
-        id: number;
+        id: string;
         name: string;
         teacher?: {
-            id: number;
+            id: string;
             userName: string;
         };
     };
     classRoom: {
-        id: number;
+        id: string;
         name: string;
     };
 }

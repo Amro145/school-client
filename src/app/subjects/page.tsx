@@ -92,11 +92,11 @@ export default function SubjectsPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSubject($id: Int!) {
+                    mutation DeleteSubject($id: String!) {
                         deleteSubject(id: $id) { id }
                     }
                 `,
-                variables: { id: Number(id) }
+                variables: { id: String(id) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });

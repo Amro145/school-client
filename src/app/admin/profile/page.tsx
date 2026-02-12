@@ -19,9 +19,9 @@ export default function StudentProfilePage() {
     const { user } = useSelector((state: RootState) => state.auth);
 
     const { data: studentData, isLoading: loading } = useFetchData<{ student: Student }>(
-        ['student', user?.id],
+        ['student', user?.id || ''],
         `
-        query GetStudentProfile($id: Int!) {
+        query GetStudentProfile($id: String!) {
           student(id: $id) {
             id
             userName
@@ -42,7 +42,7 @@ export default function StudentProfilePage() {
           }
         }
         `,
-        { id: Number(user?.id) },
+        { id: String(user?.id || '') },
         { enabled: !!user?.id }
     );
 

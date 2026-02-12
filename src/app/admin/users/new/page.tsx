@@ -74,7 +74,7 @@ export default function CreateUserPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
+                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: String) {
                         createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
                             id
                             userName
@@ -96,7 +96,7 @@ export default function CreateUserPage() {
     const onSubmit = async (data: CreateUserFormValues) => {
         const payload = {
             ...data,
-            classId: data.classId ? parseInt(data.classId) : undefined
+            classId: data.classId ? String(data.classId) : undefined
         };
 
         // Dynamic import for SweetAlert

@@ -42,7 +42,7 @@ export default function StudentProfilePage({ params }: PageProps) {
     const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
         ['student', id],
         `
-        query GetStudentProfile($id: Int!) {
+        query GetStudentProfile($id: String!) {
           student(id: $id) {
             id
             userName
@@ -65,7 +65,7 @@ export default function StudentProfilePage({ params }: PageProps) {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     // Mutation Hook
@@ -104,7 +104,7 @@ export default function StudentProfilePage({ params }: PageProps) {
 
     const handleSaveAll = async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: Number(gid),
+            id: String(gid),
             score
         }));
 

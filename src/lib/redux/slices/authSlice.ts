@@ -8,7 +8,7 @@ interface User {
     email: string;
     userName: string;
     role: string;
-    schoolId: number | null;
+    schoolId: string | null;
     averageScore?: number;
     finalAverageScore?: number;
     midtermAverageScore?: number;

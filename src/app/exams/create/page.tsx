@@ -80,7 +80,7 @@ export default function CreateExamPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: Int!, $subjectId: Int!, $questions: [QuestionInput!]!) {
+                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: String!, $subjectId: String!, $questions: [QuestionInput!]!) {
                         createExam(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
                             id
                             title
@@ -110,8 +110,8 @@ export default function CreateExamPage() {
         try {
             await createExam({
                 ...data,
-                classId: Number(data.classId),
-                subjectId: Number(data.subjectId),
+                classId: String(data.classId),
+                subjectId: String(data.subjectId),
             });
 
             Swal.fire({

@@ -47,7 +47,7 @@ export default function SubjectDetailPage() {
     const { data: subjectData, isLoading: loading, error: fetchError } = useFetchData<{ subject: any }>(
         ['subject', id],
         `
-        query GetSubjectDetails($id: Int!) {
+        query GetSubjectDetails($id: String!) {
           subject(id: $id) {
             id
             name
@@ -71,12 +71,12 @@ export default function SubjectDetailPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
-        async (grades: { id: string | number, score: number }[]) => {
+        async (grades: { id: string, score: number }[]) => {
             // Mutation logic using axios or raw fetch
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = `

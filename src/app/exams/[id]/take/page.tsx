@@ -18,7 +18,7 @@ export default function TakeExamPage() {
     const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ getExamForTaking: Exam }>(
         ['exam', id, 'taking'],
         `
-        query GetExamForTaking($id: Int!) {
+        query GetExamForTaking($id: String!) {
           getExamForTaking(id: $id) {
             id
             title
@@ -33,7 +33,7 @@ export default function TakeExamPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     const currentExam = examData?.getExamForTaking;
@@ -64,7 +64,7 @@ export default function TakeExamPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation SubmitExamResponse($examId: Int!, $answers: [StudentAnswerInput!]!) {
+                    mutation SubmitExamResponse($examId: String!, $answers: [StudentAnswerInput!]!) {
                         submitExamResponse(examId: $examId, answers: $answers) {
                             id
                             totalScore
@@ -88,13 +88,13 @@ export default function TakeExamPage() {
 
         setIsSubmitting(true);
         const formattedAnswers = Object.entries(answers).map(([qId, index]) => ({
-            questionId: Number(qId),
+            questionId: String(qId),
             selectedIndex: index
         }));
 
         try {
             const result = await submitExamMutation({
-                examId: Number(id),
+                examId: String(id),
                 answers: formattedAnswers
             });
             // Store result in local storage or session storage to be picked up by the result page

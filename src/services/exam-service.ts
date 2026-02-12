@@ -7,8 +7,8 @@ export const examService = {
     type: string;
     description?: string;
     durationInMinutes: number;
-    subjectId: number;
-    classId: number;
+    subjectId: string;
+    classId: string;
     questions: {
       questionText: string;
       options: string[];
@@ -22,8 +22,8 @@ export const examService = {
         $type: String!,
         $description: String, 
         $durationInMinutes: Int!, 
-        $subjectId: Int!, 
-        $classId: Int!, 
+        $subjectId: String!, 
+        $classId: String!, 
         $questions: [QuestionInput!]!
       ) {
         createExamWithQuestions(
@@ -70,9 +70,9 @@ export const examService = {
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return response.data.data.getAvailableExams;
   },
-  async getExamDetails(id: number) {
+  async getExamDetails(id: string) {
     const query = `
-      query GetExam($id: Int!) {
+      query GetExam($id: String!) {
         getExam(id: $id) {
           id
           title
@@ -92,9 +92,9 @@ export const examService = {
     return response.data.data.getExam;
   },
 
-  async getExamForTaking(id: number) {
+  async getExamForTaking(id: string) {
     const query = `
-      query GetExamForTaking($id: Int!) {
+      query GetExamForTaking($id: String!) {
         getExamForTaking(id: $id) {
           id
           title
@@ -118,9 +118,9 @@ export const examService = {
     return response.data.data.getExamForTaking;
   },
 
-  async submitExamResponse(examId: number, answers: { questionId: number, selectedIndex: number }[]) {
+  async submitExamResponse(examId: string, answers: { questionId: string, selectedIndex: number }[]) {
     const mutation = `
-      mutation SubmitExamResponse($examId: Int!, $answers: [StudentAnswerInput!]!) {
+      mutation SubmitExamResponse($examId: String!, $answers: [StudentAnswerInput!]!) {
         submitExamResponse(examId: $examId, answers: $answers) {
           id
           totalScore
@@ -136,9 +136,9 @@ export const examService = {
     return response.data.data.submitExamResponse;
   },
 
-  async getTeacherExamReports(examId: number) {
+  async getTeacherExamReports(examId: string) {
     const query = `
-      query GetTeacherExamReports($examId: Int!) {
+      query GetTeacherExamReports($examId: String!) {
         getTeacherExamReports(examId: $examId) {
           id
           student {

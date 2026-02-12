@@ -36,9 +36,9 @@ export const studentService = {
     };
   },
 
-  async getStudentById(id: number) {
+  async getStudentById(id: string) {
     const query = `
-      query GetStudentById($id: Int!) {
+      query GetStudentById($id: String!) {
         student(id: $id) {
           id
           userName
@@ -120,7 +120,7 @@ export const studentService = {
       query: mutation,
       variables: {
         grades: grades.map(g => ({
-          id: Number(g.id),
+          id: String(g.id),
           score: g.score
         }))
       }

@@ -17,7 +17,7 @@ export const classService = {
 
   async getClassById(id: number | string) {
     const query = `
-      query GetClass($id: Int!) {
+      query GetClass($id: String!) {
         classRoom(id: $id) {
           id
           name
@@ -57,16 +57,16 @@ export const classService = {
     `;
     const response = await api.post('', {
       query,
-      variables: { id: Number(id) }
+      variables: { id: String(id) }
     });
 
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return response.data.data.classRoom;
   },
 
-  async createClassRoom(name: string, schoolId?: number) {
+  async createClassRoom(name: string, schoolId?: string) {
     const mutation = `
-      mutation CreateClassRoom($name: String!, $schoolId: Int) {
+      mutation CreateClassRoom($name: String!, $schoolId: String) {
         createClassRoom(name: $name, schoolId: $schoolId) {
           id
           name
@@ -87,7 +87,7 @@ export const classService = {
 
   async deleteClassRoom(id: number | string) {
     const mutation = `
-      mutation DeleteClassRoom($id: Int!) {
+      mutation DeleteClassRoom($id: String!) {
         deleteClassRoom(id: $id) {
           id
         }
@@ -95,7 +95,7 @@ export const classService = {
     `;
     const response = await api.post('', {
       query: mutation,
-      variables: { id: typeof id === 'string' ? parseInt(id) : id }
+      variables: { id: String(id) }
     });
 
     if (response.data.errors) throw new Error(response.data.errors[0].message);
@@ -120,9 +120,9 @@ export const classService = {
     return response.data.data.createSchool;
   },
 
-  async createSchedule(scheduleData: { classId: number; subjectId: number; day: string; startTime: string; endTime: string }) {
+  async createSchedule(scheduleData: { classId: string; subjectId: string; day: string; startTime: string; endTime: string }) {
     const mutation = `
-        mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+        mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
             createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                 id
                 day
@@ -172,9 +172,9 @@ export const classService = {
     return response.data.data.schedules;
   },
 
-  async updateSchedule(id: number | string, data: { classId: number; subjectId: number; day: string; startTime: string; endTime: string }) {
+  async updateSchedule(id: string, data: { classId: string; subjectId: string; day: string; startTime: string; endTime: string }) {
     const mutation = `
-        mutation UpdateSchedule($id: Int!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+        mutation UpdateSchedule($id: String!, $classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
             updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                 id
                 day
@@ -189,7 +189,7 @@ export const classService = {
      `;
     const response = await api.post('', {
       query: mutation,
-      variables: { id: Number(id), ...data }
+      variables: { id: String(id), ...data }
     });
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return response.data.data.updateSchedule;
@@ -197,7 +197,7 @@ export const classService = {
 
   async deleteSchedule(id: number | string) {
     const mutation = `
-        mutation DeleteSchedule($id: Int!) {
+        mutation DeleteSchedule($id: String!) {
             deleteSchedule(id: $id) {
                 id
             }
@@ -205,7 +205,7 @@ export const classService = {
       `;
     const response = await api.post('', {
       query: mutation,
-      variables: { id: Number(id) }
+      variables: { id: String(id) }
     });
     if (response.data.errors) throw new Error(response.data.errors[0].message);
     return id;

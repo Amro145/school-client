@@ -102,11 +102,11 @@ function SchedulesContent() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSchedule($id: Int!) {
+                    mutation DeleteSchedule($id: String!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id: Number(id) }
+                variables: { id: String(id) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -134,7 +134,7 @@ function SchedulesContent() {
         setIsFormOpen(true);
     };
 
-    const handleDelete = async (id: number | string) => {
+    const handleDelete = async (id: string) => {
         if (confirm('Are you sure you want to delete this schedule slot?')) {
             await performDeleteSchedule(id);
             refetch();
@@ -254,7 +254,7 @@ function SchedulesContent() {
                                                                 <Edit className="w-4 h-4" />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDelete(Number(schedule.id))}
+                                                                onClick={() => handleDelete(String(schedule.id))}
                                                                 className="p-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full hover:scale-110 transition-transform"
                                                                 title="Delete"
                                                             >
@@ -286,7 +286,7 @@ function SchedulesContent() {
                     onClose={handleCloseForm}
                     onSuccess={() => refetch()}
                     initialData={editingSchedule}
-                    preselectedClassId={selectedClassId ? Number(selectedClassId) : undefined}
+                    preselectedClassId={selectedClassId ? String(selectedClassId) : undefined}
                     prefilledSlot={prefilledSlot}
                 />
             )}

@@ -66,7 +66,7 @@ export default function CreateSubjectPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation CreateSubject($name: String!, $classId: Int!, $teacherId: Int!) {
+                    mutation CreateSubject($name: String!, $classId: String!, $teacherId: String!) {
                         createSubject(name: $name, classId: $classId, teacherId: $teacherId) {
                             id
                             name
@@ -99,8 +99,8 @@ export default function CreateSubjectPage() {
         try {
             await createSubject({
                 name: data.name,
-                classId: Number(data.classId),
-                teacherId: Number(data.teacherId)
+                classId: String(data.classId),
+                teacherId: String(data.teacherId)
             });
 
             Toast.fire({

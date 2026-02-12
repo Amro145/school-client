@@ -8,7 +8,7 @@ import { Schedule } from '@shared/types/models';
 
 interface ScheduleFormProps {
     initialData?: Schedule | null;
-    preselectedClassId?: number;
+    preselectedClassId?: string;
     prefilledSlot?: { day: string; startTime: string } | null;
     onClose: () => void;
     onSuccess?: () => void;
@@ -88,14 +88,14 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = initialData
                 ? `
-                    mutation UpdateSchedule($id: Int!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation UpdateSchedule($id: String!, $classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
                         updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `
                 : `
-                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
                         createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
@@ -104,7 +104,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
 
             const response = await axios.post(apiBase, {
                 query,
-                variables: initialData ? { id: Number(initialData.id), ...payload } : payload
+                variables: initialData ? { id: String(initialData.id), ...payload } : payload
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -128,8 +128,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         const calculatedEndTime = calculateEndTime(startTime);
 
         const payload = {
-            classId: Number(classId),
-            subjectId: Number(subjectId),
+            classId: String(classId),
+            subjectId: String(subjectId),
             day,
             startTime,
             endTime: calculatedEndTime
@@ -176,7 +176,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                                 <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <select
                                     value={classId}
-                                    onChange={(e) => setClassId(Number(e.target.value))}
+                                    onChange={(e) => setClassId(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
                                 >
                                     <option value="">Select Class</option>
@@ -195,7 +195,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                             <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                             <select
                                 value={subjectId}
-                                onChange={(e) => setSubjectId(Number(e.target.value))}
+                                onChange={(e) => setSubjectId(e.target.value)}
                                 className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
                             >
                                 <option value="">Select Subject</option>

@@ -19,7 +19,7 @@ export default function ExamReportsPage() {
     const { data: reportData, isLoading: loading, error: fetchError } = useFetchData<{ getTeacherExamReports: ExamSubmission[] }>(
         ['exam', id, 'reports'],
         `
-        query GetTeacherExamReports($examId: Int!) {
+        query GetTeacherExamReports($examId: String!) {
           getTeacherExamReports(examId: $examId) {
             id
             student {
@@ -31,7 +31,7 @@ export default function ExamReportsPage() {
           }
         }
         `,
-        { examId: Number(id) }
+        { examId: String(id) }
     );
 
     const reports = reportData?.getTeacherExamReports || [];

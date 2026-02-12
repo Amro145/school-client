@@ -51,7 +51,7 @@ export default function CreateSchedulePage() {
     const { data: classData, isLoading: adminLoading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: Int!) {
+        query GetClassDetails($id: String!) {
           classRoom(id: $id) {
             id
             name
@@ -74,7 +74,7 @@ export default function CreateSchedulePage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     const currentClass = classData?.classRoom;
@@ -103,7 +103,7 @@ export default function CreateSchedulePage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
                         createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
@@ -151,8 +151,8 @@ export default function CreateSchedulePage() {
 
         try {
             await createSchedule({
-                classId: Number(id),
-                subjectId: Number(data.subjectId),
+                classId: String(id),
+                subjectId: String(data.subjectId),
                 day: data.day,
                 startTime: data.startTime,
                 endTime: endTime

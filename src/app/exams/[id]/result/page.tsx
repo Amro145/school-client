@@ -26,7 +26,7 @@ export default function ExamResultPage() {
     const { data: examData, isLoading: loading } = useFetchData<{ getExam: Exam }>(
         ['exam', id, 'result'],
         `
-        query GetExamResultBasics($id: Int!) {
+        query GetExamResultBasics($id: String!) {
           getExam(id: $id) {
             id
             questions {
@@ -36,7 +36,7 @@ export default function ExamResultPage() {
           }
         }
         `,
-        { id: Number(id) },
+        { id: String(id) },
         { enabled: !!id }
     );
 

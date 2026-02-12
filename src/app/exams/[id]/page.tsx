@@ -20,7 +20,7 @@ export default function ExamLobbyPage() {
     const { data: examData, isLoading: loading, error: fetchError } = useFetchData<{ getExam: Exam }>(
         ['exam', id, 'lobby'],
         `
-        query GetExamDetails($id: Int!) {
+        query GetExamDetails($id: String!) {
           getExam(id: $id) {
             id
             title
@@ -37,7 +37,7 @@ export default function ExamLobbyPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     const currentExam = examData?.getExam;

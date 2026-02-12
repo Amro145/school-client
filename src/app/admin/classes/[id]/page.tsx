@@ -31,7 +31,7 @@ export default function ClassDetailPage() {
     const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: Int!) {
+        query GetClassDetails($id: String!) {
           classRoom(id: $id) {
             id
             name
@@ -65,7 +65,7 @@ export default function ClassDetailPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     const { mutateAsync: performDelete } = useMutateData(
@@ -73,11 +73,11 @@ export default function ClassDetailPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteSchedule($id: Int!) {
+                    mutation DeleteSchedule($id: String!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id: Number(scheduleId) }
+                variables: { id: String(scheduleId) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
@@ -105,7 +105,7 @@ export default function ClassDetailPage() {
         setIsFormOpen(true);
     };
 
-    const handleDelete = async (scheduleId: number) => {
+    const handleDelete = async (scheduleId: string) => {
         if (confirm('Are you sure you want to delete this schedule slot?')) {
             await performDelete(scheduleId);
         }
@@ -283,7 +283,7 @@ export default function ClassDetailPage() {
                 <ScheduleForm
                     onClose={handleCloseForm}
                     initialData={editingSchedule}
-                    preselectedClassId={Number(id)}
+                    preselectedClassId={String(id)}
                     prefilledSlot={prefilledSlot}
                 />
             )}
@@ -304,7 +304,7 @@ function Timetable({
     schedules: any[],
     onCellClick: (day: string, startTime: string) => void,
     onEdit: (schedule: any) => void,
-    onDelete: (id: number) => void,
+    onDelete: (id: string) => void,
     prefilledSlot?: { day: string, startTime: string } | null,
     editingSchedule?: Schedule | null
 }) {
@@ -371,7 +371,7 @@ function Timetable({
                                                     <Edit className="w-3.5 h-3.5" />
                                                 </button>
                                                 <button
-                                                    onClick={() => onDelete(Number(schedule.id))}
+                                                    onClick={() => onDelete(String(schedule.id))}
                                                     className="p-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full hover:scale-110 transition-transform"
                                                 >
                                                     <Trash2 className="w-3.5 h-3.5" />

@@ -43,11 +43,11 @@ export default function ClassesListPage() {
             const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const response = await axios.post(apiBase, {
                 query: `
-                    mutation DeleteClass($id: Int!) {
+                    mutation DeleteClass($id: String!) {
                         deleteClassRoom(id: $id) { id }
                     }
                 `,
-                variables: { id: Number(classId) }
+                variables: { id: String(classId) }
             }, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
