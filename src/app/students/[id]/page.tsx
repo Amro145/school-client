@@ -164,6 +164,14 @@ export default function StudentProfilePage({ params }: PageProps) {
         return g.type === selectedType;
     }) : [];
 
+    const computedAverage = React.useMemo(() => {
+        if (!filteredGrades || filteredGrades.length === 0) return 0;
+        const validGrades = filteredGrades.filter((g: any) => g.score !== null && g.score !== undefined);
+        if (validGrades.length === 0) return 0;
+        const sum = validGrades.reduce((acc: number, curr: any) => acc + curr.score, 0);
+        return sum / validGrades.length;
+    }, [filteredGrades]);
+
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20 p-4 md:p-8 max-w-7xl mx-auto">
             {/* Header / Breadcrumb */}
@@ -287,22 +295,22 @@ export default function StudentProfilePage({ params }: PageProps) {
                         {selectedType === 'Final' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Final Grades</p>
-                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.finalAverageScore ? student.finalAverageScore.toFixed(1) : 'N/A'}%</span></p>
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{computedAverage.toFixed(1)}%</span></p>
                             </div>
                         ) : selectedType === 'Midterm' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Midterm Grades</p>
-                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.midtermAverageScore ? student.midtermAverageScore.toFixed(1) : 'N/A'}%</span></p>
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{computedAverage.toFixed(1)}%</span></p>
                             </div>
                         ) : selectedType === 'Quiz' ? (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">Quiz Grades</p>
-                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.quizAverageScore ? student.quizAverageScore.toFixed(1) : 'N/A'}%</span></p>
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{computedAverage.toFixed(1)}%</span></p>
                             </div>
                         ) : (
                             <div>
                                 <p className="text-lg font-black text-slate-900 dark:text-white tracking-tight">All Grades</p>
-                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{student.averageScore ? student.averageScore.toFixed(1) : 'N/A'}%</span></p>
+                                <p className="text-xs font-bold text-slate-400">Average: <span className="text-blue-600">{computedAverage.toFixed(1)}%</span></p>
                             </div>
                         )}
                     </div>

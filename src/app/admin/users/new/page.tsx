@@ -204,7 +204,6 @@ export default function CreateUserPage() {
                                 >
                                     <option value="student">STUDENT NODE</option>
                                     <option value="teacher">INSTRUCTOR NODE</option>
-                                    <option value="admin">SYSTEM ADMINISTRATOR</option>
                                 </select>
                             </div>
                             {errors.role && (

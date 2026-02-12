@@ -166,30 +166,30 @@ export default function ClassDetailPage() {
                 </div>
             </div>
 
+            {/* Timetable Section - Promoted to top and visible by default */}
+            <div className="rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950 animate-in fade-in slide-in-from-top-4 duration-700">
+                <div className="flex items-center justify-between mb-8">
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
+                        <Calendar className="w-6 h-6 mr-3 text-orange-500" />
+                        Weekly Timetable
+                    </h2>
+                    <Link href={`/admin/schedules?classId=${id}&action=new`} className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">
+                        + Add Slot
+                    </Link>
+                </div>
+                <Timetable
+                    schedules={classSchedules}
+                    onCellClick={handleCellClick}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    prefilledSlot={prefilledSlot}
+                    editingSchedule={editingSchedule}
+                />
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content Area */}
                 <div className="lg:col-span-2 space-y-10">
-
-                    {/* Timetable Section */}
-                    <div className="rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950">
-                        <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
-                                <Calendar className="w-6 h-6 mr-3 text-orange-500" />
-                                Weekly Timetable
-                            </h2>
-                            <Link href={`/admin/schedules?classId=${id}&action=new`} className="px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-opacity">
-                                + Add Slot
-                            </Link>
-                        </div>
-                        <Timetable
-                            schedules={classSchedules}
-                            onCellClick={handleCellClick}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            prefilledSlot={prefilledSlot}
-                            editingSchedule={editingSchedule}
-                        />
-                    </div>
 
                     {/* Subjects Section */}
                     <div className="rounded-[40px] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden p-8 bg-white dark:bg-slate-950">
@@ -258,14 +258,14 @@ export default function ClassDetailPage() {
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 transition-transform duration-1000">
                             <BookOpen className="w-24 h-24" />
                         </div>
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Class Terminal Overview</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-8">Class Terminal Overview</h3>
                         <div className="space-y-8 relative z-10">
                             <div className="flex items-center justify-between">
-                                <span className="text-slate-500 font-bold">Cohorts Count</span>
+                                <span className="text-slate-400 font-bold">Cohorts Count</span>
                                 <span className="text-2xl font-black tabular-nums">{classStudents.length}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-slate-500 font-bold">Active Modules</span>
+                                <span className="text-slate-400 font-bold">Active Modules</span>
                                 <span className="text-2xl font-black tabular-nums">{classSubjects.length}</span>
                             </div>
                             <div className="pt-8 border-t border-white/5">
