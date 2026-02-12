@@ -5,6 +5,32 @@ import { RootState } from '@/lib/redux/store';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
 
+export const fetchData = async <T>(
+    graphqlQuery: string,
+    variables?: Record<string, any>,
+    token?: string | null
+): Promise<T> => {
+    const response = await axios.post(
+        API_BASE_URL,
+        {
+            query: graphqlQuery,
+            variables,
+        },
+        {
+            headers: {
+                Authorization: token ? `Bearer ${token}` : '',
+            },
+        }
+    );
+
+    if (response.data.errors) {
+        const message = response.data.errors.map((e: any) => e.message).join(', ');
+        throw new Error(message || 'GraphQL Execution Error');
+    }
+
+    return response.data.data;
+};
+
 export function useFetchData<T>(
     queryKey: string[],
     graphqlQuery: string,
@@ -15,27 +41,7 @@ export function useFetchData<T>(
 
     return useQuery<T, Error>({
         queryKey: [...queryKey, variables],
-        queryFn: async () => {
-            const response = await axios.post(
-                API_BASE_URL,
-                {
-                    query: graphqlQuery,
-                    variables,
-                },
-                {
-                    headers: {
-                        Authorization: token ? `Bearer ${token}` : '',
-                    },
-                }
-            );
-
-            if (response.data.errors) {
-                const message = response.data.errors.map((e: any) => e.message).join(', ');
-                throw new Error(message || 'GraphQL Execution Error');
-            }
-
-            return response.data.data;
-        },
+        queryFn: () => fetchData<T>(graphqlQuery, variables, token),
         ...options,
     });
 }

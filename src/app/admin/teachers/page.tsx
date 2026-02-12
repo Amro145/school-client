@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
 import { useFetchData } from '@/hooks/useFetchData';
 import { Teacher } from '@shared/types/models';
+import { userService } from '@/services/user-service';
 import {
     Plus,
     Mail,
@@ -18,9 +19,12 @@ import {
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
 
+import { useQueryClient } from '@tanstack/react-query'; // Add this import
+
 export const runtime = 'edge';
 
 export default function TeachersListPage() {
+    const queryClient = useQueryClient(); // Initialize hook
     const { user } = useSelector((state: RootState) => state.auth);
 
     const { data: teachersData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ teachers: Teacher[] }>(
@@ -186,7 +190,16 @@ export default function TeachersListPage() {
                                 ) : (
                                     <div className="flex items-center space-x-2">
                                         <Link href={`/admin/teachers/${teacher.id}`} className="p-3 text-slate-400 hover:text-blue-500 hover: rounded-xl transition-all"><Eye className="w-5 h-5" /></Link>
-                                        {user?.role === 'admin' && <DeleteActionButton userId={teacher.id} userName={teacher.userName} />}
+                                        {user?.role === 'admin' && (
+                                            <DeleteActionButton
+                                                userId={teacher.id}
+                                                userName={teacher.userName}
+                                                action={async (id) => {
+                                                    await userService.deleteUser(String(id));
+                                                    await queryClient.invalidateQueries({ queryKey: ['admin', 'teachers'] });
+                                                }}
+                                            />
+                                        )}
                                     </div>
                                 )
                             }

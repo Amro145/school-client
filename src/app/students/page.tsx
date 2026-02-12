@@ -17,6 +17,7 @@ import {
     Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { userService } from '@/services/user-service';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { calculateSuccessRate } from '@/lib/data';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -34,11 +35,13 @@ export const runtime = 'edge';
 
 const LIMIT = 10;
 
+import { useQueryClient } from '@tanstack/react-query'; // Add this import
+
 export default function StudentsPage() {
+    const queryClient = useQueryClient(); // Initialize hook
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const { currentPage } = useSelector((state: RootState) => state.admin);
-
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
@@ -310,7 +313,14 @@ export default function StudentsPage() {
                                                             <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                                                         </Link>
                                                         <span className="text-red-700">
-                                                            <DeleteActionButton userId={student.id} userName={student.userName} />
+                                                            <DeleteActionButton
+                                                                userId={student.id}
+                                                                userName={student.userName}
+                                                                action={async (id) => {
+                                                                    await userService.deleteUser(String(id));
+                                                                    await queryClient.invalidateQueries({ queryKey: ['admin', 'students'] });
+                                                                }}
+                                                            />
                                                         </span>
                                                     </div>
                                                 </td>
