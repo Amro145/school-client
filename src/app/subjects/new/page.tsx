@@ -9,6 +9,7 @@ import { Teacher, ClassRoom } from '@shared/types/models';
 import axios from 'axios';
 import { Plus, Save, Loader2, ArrowLeft, BarChart3, Layers, User } from 'lucide-react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createSubjectSchema, CreateSubjectFormValues } from '@/lib/validations/admin';
@@ -75,7 +76,7 @@ export default function CreateSubjectPage() {
                 `,
                 variables: payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

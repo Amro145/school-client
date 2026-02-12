@@ -18,6 +18,8 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
+import { motion, AnimatePresence } from "framer-motion";
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 import axios from 'axios';
 
@@ -83,7 +85,7 @@ export default function StudentProfilePage({ params }: PageProps) {
                 `,
                 variables: { grades }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             return response.data;
         },

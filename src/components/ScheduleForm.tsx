@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useFetchData, useMutateData } from '@/hooks/useFetchData';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Added this import
 import { Loader2, Calendar, Clock, BookOpen, Users, AlertCircle, X } from 'lucide-react';
 import { Schedule } from '@shared/types/models';
 
@@ -106,7 +107,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                 query,
                 variables: initialData ? { id: String(initialData.id), ...payload } : payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

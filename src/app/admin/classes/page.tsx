@@ -7,6 +7,7 @@ import { ClassRoom, Subject } from '@shared/types/models';
 import axios from 'axios';
 import { Plus, ChevronRight, BookOpen, Users, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { TableSkeleton } from '@/components/SkeletonLoader';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,7 +50,7 @@ export default function ClassesListPage() {
                 `,
                 variables: { id: String(classId) }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             return response.data;
         },

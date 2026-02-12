@@ -18,6 +18,8 @@ import {
     AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
+import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createUserSchema, CreateUserFormValues } from '@/lib/validations/admin';
@@ -83,7 +85,7 @@ export default function CreateUserPage() {
                 `,
                 variables: payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

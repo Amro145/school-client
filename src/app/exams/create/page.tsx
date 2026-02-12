@@ -11,6 +11,7 @@ import axios from "axios";
 import { Subject, ClassRoom } from "@shared/types/models";
 import { ArrowLeft, Save, Plus, Trash2, HelpCircle, CheckCircle2, FileText, Clock, Layers, BookOpen, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
+import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -89,7 +90,7 @@ export default function CreateExamPage() {
                 `,
                 variables: payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

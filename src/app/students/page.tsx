@@ -45,8 +45,8 @@ export default function StudentsPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
-    const isAdmin = user?.role === 'admin';
-    const isTeacher = user?.role === 'teacher';
+    const isAdmin = user?.role?.toLowerCase() === 'admin';
+    const isTeacher = user?.role?.toLowerCase() === 'teacher';
 
     // Admin Data Hook
     const { data: adminData, isLoading: adminLoading, error: adminError } = useFetchData<{

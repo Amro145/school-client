@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
+import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TableSkeleton } from '@/components/SkeletonLoader';
 
@@ -98,7 +99,7 @@ export default function SubjectsPage() {
                 `,
                 variables: { id: String(id) }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             return response.data;
         },

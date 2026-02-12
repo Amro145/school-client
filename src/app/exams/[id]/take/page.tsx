@@ -8,6 +8,8 @@ import { useFetchData, useMutateData } from "@/hooks/useFetchData";
 import axios from "axios";
 import { Exam } from "@shared/types/models";
 import { Clock, ChevronRight, ChevronLeft, CheckCircle2, AlertTriangle, Save } from "lucide-react";
+import Link from "next/link";
+import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function TakeExamPage() {
@@ -73,7 +75,7 @@ export default function TakeExamPage() {
                 `,
                 variables: payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

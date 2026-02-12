@@ -112,7 +112,11 @@ export const loginUser = createAsyncThunk(
             const { token, user } = response.data.data.login;
 
             // 2. Save new token to Cookies only (single source of truth)
-            Cookies.set('auth_token', token, { expires: 7, secure: true, sameSite: 'strict' });
+            Cookies.set('auth_token', token, {
+                expires: 7,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
 
             return { token, user };
         } catch (error: unknown) {
