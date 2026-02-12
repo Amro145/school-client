@@ -22,17 +22,21 @@ api.interceptors.request.use(
     }
 );
 
-import { store } from '@/lib/redux/store';
-import { logout } from '@/lib/redux/slices/authSlice';
+// Interceptor to handle unauthorized errors globally
+let unauthorizedHandler: (() => void) | null = null;
 
-// Interceptor to handle unauthorized errors globally (optional but recommended)
+export const setUnauthorizedHandler = (handler: () => void) => {
+    unauthorizedHandler = handler;
+};
+
 api.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            // Handle logout logic if needed
             Cookies.remove('auth_token');
-            store.dispatch(logout());
+            if (unauthorizedHandler) {
+                unauthorizedHandler();
+            }
         }
         return Promise.reject(error);
     }

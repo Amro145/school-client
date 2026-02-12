@@ -6,6 +6,7 @@
     "/home/nasor/.npm/_npx/69f9afb961c37556/node_modules/.bin/vc",
     "build"
   ],
+  "cliVersion": "50.16.0",
   "builds": [
     {
       "require": "@vercel/next",

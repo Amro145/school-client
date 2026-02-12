@@ -7,6 +7,7 @@ import { RootState } from '@/lib/redux/store';
 import { useMutateData } from '@/hooks/useFetchData';
 import axios from 'axios';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,7 +33,7 @@ export default function CreateClassPage() {
                 `,
                 variables: { name, schoolId: user?.schoolId ? String(user.schoolId) : undefined }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

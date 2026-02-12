@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { scheduleSchema, ScheduleFormValues } from '@/lib/validations/exams';
@@ -111,7 +112,7 @@ export default function CreateSchedulePage() {
                 `,
                 variables: payload
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

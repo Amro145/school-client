@@ -16,6 +16,7 @@ import {
     BookOpen
 } from 'lucide-react';
 import ScheduleForm from '@/components/ScheduleForm';
+import Cookies from 'js-cookie';
 import { useSearchParams } from 'next/navigation';
 
 export const runtime = 'edge';
@@ -108,7 +109,7 @@ function SchedulesContent() {
                 `,
                 variables: { id: String(id) }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             return response.data;
         },

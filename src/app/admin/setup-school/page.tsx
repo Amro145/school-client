@@ -12,6 +12,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schoolSetupSchema, SchoolSetupFormValues } from '@/lib/validations/auth';
 import FormInput from '@/components/FormInput';
+import Cookies from 'js-cookie';
+
+export const runtime = 'edge';
 
 export default function SetupSchoolPage() {
     const router = useRouter();
@@ -46,7 +49,7 @@ export default function SetupSchoolPage() {
                 `,
                 variables: { name }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);

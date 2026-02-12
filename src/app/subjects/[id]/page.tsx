@@ -22,6 +22,7 @@ import {
 
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 export const runtime = 'edge';
 
@@ -92,7 +93,7 @@ export default function SubjectDetailPage() {
                 variables: { grades }
             }, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${Cookies.get('auth_token')}`
                 }
             });
             return response.data;

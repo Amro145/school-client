@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+export const runtime = 'edge';
+
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 const PERIODS = [
     { label: '08:00', value: '08:00' },

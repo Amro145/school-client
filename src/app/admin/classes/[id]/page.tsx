@@ -21,6 +21,7 @@ import {
 import { useParams } from 'next/navigation';
 import { Schedule, ClassRoom } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
+import Cookies from 'js-cookie';
 import axios from 'axios';
 
 export const runtime = 'edge';
@@ -79,7 +80,7 @@ export default function ClassDetailPage() {
                 `,
                 variables: { id: String(scheduleId) }
             }, {
-                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
             });
             return response.data;
         },
