@@ -137,14 +137,7 @@ export default function FeaturesPage() {
                 </div>
 
                 {/* Bottom CTA */}
-                <div className="mt-40 text-center animate-in fade-in zoom-in duration-1000">
-                    <Link
-                        href="/guest"
-                        className="inline-flex items-center px-12 py-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[32px] text-xl font-black transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-slate-900/20 dark:shadow-white/10"
-                    >
-                        Explore the Demo Portal <ArrowRight className="ml-3 w-7 h-7" />
-                    </Link>
-                </div>
+               
             </main>
 
             {/* Footer */}

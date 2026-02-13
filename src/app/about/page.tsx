@@ -108,12 +108,7 @@ export default function AboutPage() {
                             >
                                 Get Started Now <ArrowRight className="ml-2 w-6 h-6" />
                             </Link>
-                            <Link
-                                href="/guest"
-                                className="px-10 py-5 bg-white dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 rounded-[24px] font-black text-lg transition-all hover:bg-slate-50 dark:hover:bg-slate-700 shadow-lg hover:scale-105 active:scale-95"
-                            >
-                                Try Demo Access
-                            </Link>
+                         
                         </div>
                     </div>
                 </div>
