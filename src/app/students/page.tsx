@@ -99,6 +99,8 @@ export default function StudentsPage() {
                   id
                   userName
                   email
+                  averageScore
+                  successRate
                 }
               }
             }
@@ -316,7 +318,7 @@ export default function StudentsPage() {
                                                         <span>View Node</span>
                                                     </Link>
                                                     {isAdmin && (
-                                                        <div className="flex items-center space-x-2 px-4 py-1.5  dark:bg-rose-900/20 text-rose-600 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/40 transition-all shadow-sm border border-rose-100 dark:border-rose-800/50 font-black text-[10px] uppercase tracking-widest active:scale-95">
+                                                        <div className="flex items-center space-x-2 px-4 py-1.5   rounded-xl   transition-all shadow-sm border  font-black text-[10px] uppercase tracking-widest active:scale-95">
                                                             <DeleteActionButton
                                                                 userId={student.id}
                                                                 userName={student.userName}

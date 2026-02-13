@@ -54,6 +54,8 @@ export default function Dashboard() {
                   id
                   userName
                   email
+                  averageScore
+                  successRate
                 }
               }
             }

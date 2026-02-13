@@ -307,7 +307,7 @@ export default function SubjectsPage() {
                                                             <span>Explore</span>
                                                         </Link>
                                                         {isAdmin && (
-                                                            <div className="flex items-center space-x-2 px-4 py-1.5  text-rose-600 dark:text-rose-400 rounded-xl  dark:hover:bg-rose-900/40 transition-all shadow-sm border border-rose-100 dark:border-rose-800/50 font-black text-[10px] uppercase tracking-widest active:scale-95">
+                                                            <div className="flex items-center space-x-2 px-4 py-1.5  rounded-xl   transition-all shadow-sm border  font-black text-[10px] uppercase tracking-widest active:scale-95">
                                                                 <DeleteActionButton
                                                                     userId={subject.id}
                                                                     userName={subject.name}
