@@ -1,12 +1,12 @@
-import Link from 'next/link';
-import { GraduationCap, Users, ShieldCheck, ArrowRight } from 'lucide-react';
-import { Metadata } from 'next';
-import LandingNavbar from '@/components/LandingNavbar';
+'use client';
 
-export const metadata: Metadata = {
-  title: "School Management System | EduDash Education Platform",
-  description: "Welcome to EduDash, the ultimate education platform for modern schools. Access student, teacher, or admin portals to manage academics efficiently.",
-};
+import Link from 'next/link';
+import { GraduationCap, Users, ShieldCheck, ArrowRight, PlayCircle, Loader2 } from 'lucide-react';
+import LandingNavbar from '@/components/LandingNavbar';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/lib/redux/store';
+import { loginUser, logout } from '@/lib/redux/slices/authSlice';
+import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
   const roles = [
@@ -16,7 +16,11 @@ export default function LandingPage() {
       icon: <GraduationCap className="w-12 h-12 text-blue-500" />,
       href: "/login",
       color: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 hover:border-blue-300 dark:hover:border-blue-700",
-      buttonColor: "bg-blue-600 hover:bg-blue-700"
+      buttonColor: "bg-blue-600 hover:bg-blue-700",
+      guest: {
+        email: "student_1_6@edudash.com",
+        password: "EduDash@2024",
+      }
     },
     {
       title: "Login as Teacher",
@@ -24,7 +28,11 @@ export default function LandingPage() {
       icon: <Users className="w-12 h-12 text-purple-500" />,
       href: "/login",
       color: "bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-900/50 hover:border-purple-300 dark:hover:border-purple-700",
-      buttonColor: "bg-purple-600 hover:bg-purple-700"
+      buttonColor: "bg-purple-600 hover:bg-purple-700",
+      guest: {
+        email: "teacher1@edudash.com",
+        password: "EduDash@2024"
+      }
     },
     {
       title: "Login as Admin",
@@ -32,9 +40,32 @@ export default function LandingPage() {
       icon: <ShieldCheck className="w-12 h-12 text-green-500" />,
       href: "/login",
       color: "bg-green-50 dark:bg-green-900/20 border-green-100 dark:border-green-900/50 hover:border-green-300 dark:hover:border-green-700",
-      buttonColor: "bg-green-600 hover:bg-green-700"
+      buttonColor: "bg-green-600 hover:bg-green-700",
+      guest: {
+        email: "admin@edudash.com",
+        password: "EduDash@2024",
+      }
     }
   ];
+
+  const dispatch = useDispatch<AppDispatch>();
+  const [loadingRole, setLoadingRole] = useState<string | null>(null);
+
+  // Automatically logout user when they land on the home page
+  useEffect(() => {
+    dispatch(logout());
+  }, [dispatch]);
+
+  const handleGuestLogin = async (role: any) => {
+    setLoadingRole(role.title);
+    try {
+      await dispatch(loginUser({ email: role.guest.email, password: role.guest.password })).unwrap();
+      window.location.href = '/admin';
+    } catch (err) {
+      console.error('Guest Login Failed:', err);
+      setLoadingRole(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 selection:bg-blue-100 dark:selection:bg-blue-900 relative transition-colors duration-300">
@@ -61,6 +92,7 @@ export default function LandingPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12 px-2">
+            {/* todo add Guest button */}
             {roles.map((role) => (
               <div
                 key={role.title}
@@ -81,12 +113,28 @@ export default function LandingPage() {
                   <p className="text-slate-500 dark:text-slate-400 mb-10 grow font-medium leading-relaxed">
                     {role.description}
                   </p>
-                  <Link
-                    href={role.href}
-                    className={`inline-flex items-center justify-center px-8 py-4 rounded-2xl text-white font-bold transition-all duration-300 shadow-xl ${role.buttonColor} hover:scale-[1.02] active:scale-95`}
-                  >
-                    Enter Portal <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  <div className="flex flex-col space-y-3">
+                    <Link
+                      href={role.href}
+                      className={`inline-flex items-center justify-center px-8 py-4 rounded-2xl text-white font-bold transition-all duration-300 shadow-xl ${role.buttonColor} hover:scale-[1.02] active:scale-95`}
+                    >
+                      Enter Portal <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <button
+                      onClick={() => handleGuestLogin(role)}
+                      disabled={!!loadingRole}
+                      className="flex items-center justify-center space-x-2 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {loadingRole === role.title ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>
+                          <PlayCircle className="w-4 h-4" />
+                          <span>Quick Guest Access</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
