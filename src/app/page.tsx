@@ -19,7 +19,7 @@ export default function LandingPage() {
       color: "bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-900/50 hover:border-blue-300 dark:hover:border-blue-700",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       guest: {
-        email: "student_1_6@edudash.com",
+        email: "student_DbAfrkhadOoO_1@edudash.com",
         password: "EduDash@2024",
       }
     },
