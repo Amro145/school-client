@@ -148,6 +148,15 @@ function SchedulesContent() {
         ? schedules.filter(s => s.classRoom?.id.toString() === selectedClassId.toString())
         : [];
 
+    // Optimization: Create a Map for O(1) lookup during grid render
+    const schedulesMap = React.useMemo(() => {
+        const map = new Map<string, Schedule>();
+        classSchedules.forEach(s => {
+            map.set(`${s.day}-${s.startTime}`, s);
+        });
+        return map;
+    }, [classSchedules]);
+
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
@@ -216,7 +225,7 @@ function SchedulesContent() {
 
                                     {/* Time Slots */}
                                     {PERIODS.map(period => {
-                                        const schedule = classSchedules.find(s => s.day === day && s.startTime === period.value);
+                                        const schedule = schedulesMap.get(`${day}-${period.value}`);
                                         const isSelected = (prefilledSlot && prefilledSlot.day === day && prefilledSlot.startTime === period.value) ||
                                             (editingSchedule && editingSchedule.id === schedule?.id && schedule !== undefined);
 

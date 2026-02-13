@@ -1,7 +1,7 @@
 'use client';
 import toast from 'react-hot-toast';
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
@@ -20,6 +20,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
+import { Grade } from '@shared/types/models';
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
 
 export const runtime = 'edge';
@@ -94,29 +95,29 @@ export default function StudentProfilePage() {
     const student = profileData?.student;
 
     // 1. Define handlers and calculations early
-    const calculateAverage = (grades: any[]) => {
+    const calculateAverage = (grades: Grade[]) => {
         if (!grades || grades.length === 0) return 0;
-        const validGrades = grades.filter((g: any) => g.score !== null && typeof g.score === 'number');
+        const validGrades = grades.filter((g) => g.score !== null && typeof g.score === 'number');
         if (validGrades.length === 0) return 0;
-        const sum = validGrades.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0);
+        const sum = validGrades.reduce((acc, curr) => acc + (Number(curr.score) || 0), 0);
         return sum / validGrades.length;
     };
 
-    const handleScoreChange = (gradeId: string, newScore: string) => {
+    const handleScoreChange = (gradeId: string | number, newScore: string) => {
         const score = parseInt(newScore);
         if (isNaN(score) && newScore !== '') return;
         const validatedScore = newScore === '' ? 0 : Math.min(100, Math.max(0, score));
         setModifiedGrades(prev => {
-            // Only update if value actually changed to prevent render loops
-            if (prev[gradeId] === validatedScore) return prev;
+            const key = String(gradeId);
+            if (prev[key] === validatedScore) return prev;
             return {
                 ...prev,
-                [gradeId]: validatedScore
+                [key]: validatedScore
             };
         });
     };
 
-    const handleSaveAll = async () => {
+    const handleSaveAll = useCallback(async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
             id: Number(gid),
             score
@@ -126,19 +127,18 @@ export default function StudentProfilePage() {
 
         try {
             await updateGrades(gradesToUpdate);
-            // Reset modified grades ONLY after success
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
         } catch (err: any) {
             toast.error(err.message || 'Failed to save grades');
         }
-    };
+    }, [modifiedGrades, updateGrades]);
 
     // 2. Stable calculations
     const filteredGrades = useMemo(() => {
-        if (!student?.grades) return [];
-        return student.grades.filter((g: any) => {
+        if (!student?.grades) return [] as Grade[];
+        return (student.grades as Grade[]).filter((g) => {
             if (selectedType === 'All') return true;
             return g.type === selectedType;
         });
@@ -153,7 +153,7 @@ export default function StudentProfilePage() {
             handleSaveAll();
         }, 2000);
         return () => clearTimeout(debouncedSave);
-    }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
+    }, [modifiedGrades, isSaving, isAutoSaveEnabled, handleSaveAll]);
 
 
     // 4. Loading/Error States
@@ -324,8 +324,7 @@ export default function StudentProfilePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {filteredGrades && filteredGrades.length > 0 ? (
-                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                            filteredGrades.map((grade: any) => {
+                            filteredGrades.map((grade: Grade) => {
                                 const currentScore = modifiedGrades[grade.id] !== undefined ? modifiedGrades[grade.id] : grade.score;
                                 return (
                                     <div key={grade.id} className=" p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-xl shadow-slate-200/20 dark:shadow-slate-900/20 hover:border-blue-200 dark:hover:border-blue-900 transition-all group">
