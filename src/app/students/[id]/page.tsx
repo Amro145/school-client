@@ -31,7 +31,7 @@ interface PageProps {
 
 export default function StudentProfilePage() {
     const params = useParams();
-    const id = params?.id as string;
+    const id = params?.id ? String(params.id) : '';
     const { user: authUser } = useSelector((state: RootState) => state.auth);
 
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
@@ -68,7 +68,8 @@ export default function StudentProfilePage() {
           }
         }
         `,
-        { id: String(id) }
+        { id },
+        { enabled: !!id }
     );
 
     // Mutation Hook

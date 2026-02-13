@@ -76,8 +76,9 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                 router.push('/login');
             }
         } else {
+            const normalizedRole = role?.toLowerCase();
             // Student restrictions
-            if (role === 'student') {
+            if (normalizedRole === 'student') {
                 const isRestricted = pathname.includes('/admin'); // Completely block admin for student
 
                 // Allow /dashboard and /profile for student (which are now shared under (portal))
@@ -87,15 +88,15 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
             }
 
             // Teacher restrictions
-            if (role === 'teacher' && pathname.startsWith('/admin')) {
+            if (normalizedRole === 'teacher' && pathname.startsWith('/admin')) {
                 router.push('/dashboard');
             }
 
             // Redirect from login/home based on role
             if (pathname === '/login' || pathname === '/') {
-                if (role === 'admin') {
+                if (normalizedRole === 'admin') {
                     router.push('/admin');
-                } else if (role === 'teacher' || role === 'student') {
+                } else if (normalizedRole === 'teacher' || normalizedRole === 'student') {
                     router.push('/dashboard');
                 }
             }

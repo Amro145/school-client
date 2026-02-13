@@ -200,6 +200,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                                 className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
                             >
                                 <option value="">Select Subject</option>
+                                {/* avalibale subjects */}
+                                
                                 {subjects.map(subject => (
                                     <option key={subject.id} value={subject.id}>{subject.name} - {subject.teacher?.userName}</option>
                                 ))}

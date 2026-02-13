@@ -197,7 +197,7 @@ export default function AdminLayout({
                                 <span className="text-xs font-bold text-slate-600 dark:text-slate-300">Active</span>
                             </div>
                             <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-slate-800 to-slate-950 dark:from-slate-700 dark:to-slate-900 border border-white/10 flex items-center justify-center text-white font-black text-xs shadow-lg uppercase">
-                                {user?.userName.substring(0, 2) || 'AD'}
+                                {(user?.userName || 'AD').substring(0, 2)}
                             </div>
                         </div>
                     </header>
