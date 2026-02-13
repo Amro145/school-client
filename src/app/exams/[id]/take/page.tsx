@@ -80,7 +80,7 @@ export default function TakeExamPage() {
             if (response.data.errors) {
                 throw new Error(response.data.errors[0].message);
             }
-            return response.data.data.submitExam;
+            return response.data.data.submitExamResponse;
         },
         [['student-exams'], ['exam-attempts']]
     );
@@ -101,6 +101,9 @@ export default function TakeExamPage() {
             });
             // Store result in local storage or session storage to be picked up by the result page
             // Since we're moving away from Redux state for this.
+            if (!result) {
+                throw new Error("Failed to receive a valid response from the server.");
+            }
             sessionStorage.setItem(`last_submission_${id}`, JSON.stringify(result));
             router.push(`/exams/${id}/result`);
         } catch (err: any) {

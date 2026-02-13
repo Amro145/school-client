@@ -318,7 +318,7 @@ export default function StudentsPage() {
                                                         <span>View Node</span>
                                                     </Link>
                                                     {isAdmin && (
-                                                        <div className="flex items-center space-x-2 px-4 py-1.5   rounded-xl   transition-all shadow-sm border  font-black text-[10px] uppercase tracking-widest active:scale-95">
+                                                        <div className="flex items-center space-x-2 px-4 py-1.5   rounded-xl   transition-all shadow-sm border  font-black text-[10px] uppercase tracking-widest active:scale-95 border-transparent">
                                                             <DeleteActionButton
                                                                 userId={student.id}
                                                                 userName={student.userName}

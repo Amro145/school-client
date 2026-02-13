@@ -16,9 +16,14 @@ export default function ExamResultPage() {
     const id = params.id as string;
 
     const [lastSubmission] = useState(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window === 'undefined') return null;
+        try {
             const saved = sessionStorage.getItem(`last_submission_${id}`);
-            return saved ? JSON.parse(saved) : null;
+            if (saved && saved !== "undefined") {
+                return JSON.parse(saved);
+            }
+        } catch (error) {
+            console.error("ExamResult: Failed to parse last_submission:", error);
         }
         return null;
     });
