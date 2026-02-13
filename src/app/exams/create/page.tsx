@@ -6,12 +6,10 @@ import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { useRouter } from "next/navigation";
-import { useFetchData, useMutateData } from "@/hooks/useFetchData";
-import axios from "axios";
+import { useFetchData, useMutateData, fetchData } from "@/hooks/useFetchData";
 import { Subject, ClassRoom } from "@shared/types/models";
 import { ArrowLeft, Save, Plus, Trash2, HelpCircle, CheckCircle2, FileText, Clock, Layers, BookOpen, AlertCircle, Loader2 } from "lucide-react";
 import Link from "next/link";
-import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -78,24 +76,18 @@ export default function CreateExamPage() {
 
     const { mutateAsync: createExam, isPending: examLoading } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: String!, $subjectId: String!, $questions: [QuestionInput!]!) {
+            const data = await fetchData<{ createExamWithQuestions: { id: string, title: string } }>(
+                `
+                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: Int!, $subjectId: Int!, $questions: [QuestionInput!]!) {
                         createExamWithQuestions(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
                             id
                             title
                         }
                     }
                 `,
-                variables: payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data;
+                payload
+            );
+            return data.createExamWithQuestions;
         },
         [['exams'], ['dashboard']]
     );
@@ -111,8 +103,8 @@ export default function CreateExamPage() {
         try {
             await createExam({
                 ...data,
-                classId: String(data.classId),
-                subjectId: String(data.subjectId),
+                classId: Number(data.classId),
+                subjectId: Number(data.subjectId),
             });
 
             Swal.fire({
@@ -125,7 +117,7 @@ export default function CreateExamPage() {
 
             router.push("/exams");
         } catch (error) {
-            console.error("Failed to create exam:", error);
+            // console.error("Failed to create exam:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Deployment Failed',

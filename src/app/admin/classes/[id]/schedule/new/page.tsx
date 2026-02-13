@@ -1,9 +1,7 @@
 'use client';
 
-import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { ClassRoom } from '@shared/types/models';
-import axios from 'axios';
 import {
     ArrowLeft,
     Clock,
@@ -17,7 +15,6 @@ import {
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { scheduleSchema, ScheduleFormValues } from '@/lib/validations/exams';
@@ -52,7 +49,7 @@ export default function CreateSchedulePage() {
     const { data: classData, isLoading: adminLoading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: String!) {
+        query GetClassDetails($id: Int!) {
           classRoom(id: $id) {
             id
             name
@@ -75,7 +72,7 @@ export default function CreateSchedulePage() {
           }
         }
         `,
-        { id: String(id) }
+        { id: Number(id) }
     );
 
     const currentClass = classData?.classRoom;
@@ -101,23 +98,17 @@ export default function CreateSchedulePage() {
 
     const { mutateAsync: createSchedule } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
+            const data = await fetchData<{ createSchedule: { id: number } }>(
+                `
+                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
                         createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `,
-                variables: payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data;
+                payload
+            );
+            return data.createSchedule;
         },
         [['class', id]]
     );
@@ -152,8 +143,8 @@ export default function CreateSchedulePage() {
 
         try {
             await createSchedule({
-                classId: String(id),
-                subjectId: String(data.subjectId),
+                classId: Number(id),
+                subjectId: Number(data.subjectId),
                 day: data.day,
                 startTime: data.startTime,
                 endTime: endTime

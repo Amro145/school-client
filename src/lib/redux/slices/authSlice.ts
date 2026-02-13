@@ -1,60 +1,59 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/axios';
 import Cookies from 'js-cookie';
-import axios from 'axios';
 
 interface User {
-    id: string;
+    id: number | string;
     email: string;
     userName: string;
     role: string;
-    schoolId: string | null;
+    schoolId: number | string | null;
     averageScore?: number;
     finalAverageScore?: number;
     midtermAverageScore?: number;
     quizAverageScore?: number;
     successRate?: number;
     subjectsTaught?: {
-        id: string;
+        id: number | string;
         name: string;
         successRate: number;
         class: {
-            id: string;
+            id: number | string;
             name: string;
         } | null;
     }[];
     class?: {
-        id: string;
+        id: number | string;
         name: string;
         subjects: {
-            id: string;
+            id: number | string;
             name: string;
         }[];
     } | null;
     grades?: {
-        id: string;
+        id: number | string;
         score: number;
         subject: {
-            id: string;
+            id: number | string;
             name: string;
         };
         type: string;
     }[];
     schedules?: {
-        id: string;
+        id: number | string;
         day: string;
         startTime: string;
         endTime: string;
         subject: {
-            id: string;
+            id: number | string;
             name: string;
             teacher?: {
-                id: string;
+                id: number | string;
                 userName: string;
             };
         };
         classRoom: {
-            id: string;
+            id: number | string;
             name: string;
         };
     }[];
@@ -119,11 +118,11 @@ export const loginUser = createAsyncThunk(
             });
 
             return { token, user };
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                return rejectWithValue(error.response?.data?.message || error.message || 'Login failed');
+        } catch (error: any) {
+            if (error.response) {
+                return rejectWithValue(error.response.data?.errors?.[0]?.message || error.response.data?.message || 'Login failed');
             }
-            return rejectWithValue('Login failed');
+            return rejectWithValue(error.message || 'Login failed');
         }
     }
 );
@@ -200,11 +199,11 @@ export const fetchMe = createAsyncThunk(
             }
 
             return response.data.data.me;
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error)) {
-                return rejectWithValue(error.response?.data?.message || error.message || 'Failed to fetch user');
+        } catch (error: any) {
+            if (error.response) {
+                return rejectWithValue(error.response.data?.errors?.[0]?.message || error.response.data?.message || 'Failed to fetch user');
             }
-            return rejectWithValue('An unexpected error occurred');
+            return rejectWithValue(error.message || 'An unexpected error occurred');
         }
     }
 );

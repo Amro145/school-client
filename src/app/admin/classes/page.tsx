@@ -2,12 +2,10 @@
 
 import { RootState } from '@/lib/redux/store';
 import { useSelector } from 'react-redux';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { ClassRoom, Subject } from '@shared/types/models';
-import axios from 'axios';
 import { Plus, ChevronRight, BookOpen, Users, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import DeleteActionButton from '@/components/DeleteActionButton';
 import { TableSkeleton } from '@/components/SkeletonLoader';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -41,23 +39,16 @@ export default function ClassesListPage() {
 
     const { mutateAsync: performDeleteClass } = useMutateData(
         async (classId: string | number) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation DeleteClass($id: String!) {
+            const data = await fetchData<{ deleteClassRoom: { id: number } }>(
+                `
+                    mutation DeleteClass($id: Int!) {
                         deleteClassRoom(id: $id) { id }
                     }
                 `,
-                variables: { id: String(classId) }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
+                { id: Number(classId) }
+            );
 
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-
-            return response.data;
+            return data.deleteClassRoom;
         },
         [['admin', 'classes-and-subjects']]
     );

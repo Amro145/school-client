@@ -1,9 +1,9 @@
 import api from '@/lib/axios';
 
 export const userService = {
-    async createUser(userData: { userName: string, email: string, role: string, password: string, classId?: string }) {
+    async createUser(userData: { userName: string, email: string, role: string, password: string, classId?: string | number }) {
         const mutation = `
-      mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: String) {
+      mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
         createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
           id
           userName
@@ -19,7 +19,7 @@ export const userService = {
                 email: userData.email,
                 role: userData.role,
                 password: userData.password,
-                classId: userData.classId ? String(userData.classId) : undefined
+                classId: userData.classId ? Number(userData.classId) : undefined
             }
         });
 
@@ -38,9 +38,9 @@ export const userService = {
         return response.data.data.createUser;
     },
 
-    async deleteUser(id: string) {
+    async deleteUser(id: string | number) {
         const mutation = `
-      mutation DeleteUser($id: String!) {
+      mutation DeleteUser($id: Int!) {
         deleteUser(id: $id) {
           id
         }
@@ -48,7 +48,7 @@ export const userService = {
     `;
         const response = await api.post('', {
             query: mutation,
-            variables: { id: String(id) }
+            variables: { id: Number(id) }
         });
 
         if (response.data.errors) {

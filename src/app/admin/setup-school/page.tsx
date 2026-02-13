@@ -4,15 +4,13 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/lib/redux/store';
-import { useMutateData } from '@/hooks/useFetchData';
+import { useMutateData, fetchData } from '@/hooks/useFetchData';
 import { setSchoolId } from '@/lib/redux/slices/authSlice';
-import axios from 'axios';
 import { ShieldCheck, GraduationCap, Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schoolSetupSchema, SchoolSetupFormValues } from '@/lib/validations/auth';
 import FormInput from '@/components/FormInput';
-import Cookies from 'js-cookie';
 
 export const runtime = 'edge';
 
@@ -37,9 +35,8 @@ export default function SetupSchoolPage() {
 
     const { mutateAsync: createSchool } = useMutateData(
         async (name: string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
+            const data = await fetchData<{ createSchool: { id: number, name: string } }>(
+                `
                     mutation CreateSchool($name: String!) {
                         createSchool(name: $name) {
                             id
@@ -47,14 +44,9 @@ export default function SetupSchoolPage() {
                         }
                     }
                 `,
-                variables: { name }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data.data.createSchool;
+                { name }
+            );
+            return data.createSchool;
         },
         []
     );

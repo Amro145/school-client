@@ -7,9 +7,7 @@ import { RootState, AppDispatch } from '@/lib/redux/store';
 import { fetchMe } from '@/lib/redux/slices/authSlice';
 import { Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
+import { fetchData } from '@/hooks/useFetchData';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const router = useRouter();
@@ -25,10 +23,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
             queryClient.prefetchQuery({
                 queryKey: ['admin', 'dashboard', {}],
                 queryFn: async () => {
-                    const response = await axios.post(
-                        API_BASE_URL,
-                        {
-                            query: `
+                    const data = await fetchData<{ adminDashboardStats: any, topStudents: any[] }>(
+                        `
                                 query GetAdminDashboardData {
                                     adminDashboardStats {
                                         totalStudents
@@ -46,16 +42,9 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
                                         }
                                     }
                                 }
-                            `,
-                            variables: {},
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                            },
-                        }
+                            `
                     );
-                    return response.data.data;
+                    return data;
                 },
                 staleTime: 5 * 60 * 1000,
             });

@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { Schedule, ClassRoom } from '@shared/types/models';
-import axios from 'axios';
 import {
     Calendar,
     Plus,
@@ -16,7 +15,6 @@ import {
     BookOpen
 } from 'lucide-react';
 import ScheduleForm from '@/components/ScheduleForm';
-import Cookies from 'js-cookie';
 import { useSearchParams } from 'next/navigation';
 
 export const runtime = 'edge';
@@ -100,18 +98,15 @@ function SchedulesContent() {
 
     const { mutateAsync: performDeleteSchedule } = useMutateData(
         async (id: number | string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation DeleteSchedule($id: String!) {
+            const data = await fetchData<{ deleteSchedule: { id: number } }>(
+                `
+                    mutation DeleteSchedule($id: Int!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id: String(id) }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            return response.data;
+                { id: Number(id) }
+            );
+            return data.deleteSchedule;
         },
         [['admin', 'schedules-and-classes'], ['class']]
     );

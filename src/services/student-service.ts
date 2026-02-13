@@ -1,5 +1,4 @@
 import api from '@/lib/axios';
-import axios from 'axios';
 
 export const studentService = {
   async getMyStudents(params: { limit?: number; offset?: number; search?: string }, signal?: AbortSignal) {
@@ -36,9 +35,9 @@ export const studentService = {
     };
   },
 
-  async getStudentById(id: string) {
+  async getStudentById(id: number | string) {
     const query = `
-      query GetStudentById($id: String!) {
+      query GetStudentById($id: Int!) {
         student(id: $id) {
           id
           userName
@@ -94,7 +93,7 @@ export const studentService = {
     `;
     const response = await api.post('', {
       query,
-      variables: { id }
+      variables: { id: Number(id) }
     });
 
     if (response.data.errors) throw new Error(response.data.errors[0].message);
@@ -120,7 +119,7 @@ export const studentService = {
       query: mutation,
       variables: {
         grades: grades.map(g => ({
-          id: String(g.id),
+          id: Number(g.id),
           score: g.score
         }))
       }

@@ -272,22 +272,26 @@ function TeacherDashboardView({ currentTeacher }: { currentTeacher: Teacher }) {
     const subjects = currentTeacher.subjectsTaught || [];
     const totalSubjects = subjects.length;
 
-    const uniqueStudentIds = new Set<string>();
-    subjects.forEach(sub => {
-        sub.grades.forEach(g => uniqueStudentIds.add(g.student.id));
-    });
-    const totalStudents = uniqueStudentIds.size;
+    const { totalStudents, teacherSuccessRate } = React.useMemo(() => {
+        const uniqueStudentIds = new Set<string>();
+        let totalScoreSum = 0;
+        let totalGradesCount = 0;
 
-    let totalScoreSum = 0;
-    let totalGradesCount = 0;
-    subjects.forEach(sub => {
-        sub.grades.forEach(g => {
-            totalScoreSum += g.score;
-            totalGradesCount++;
+        subjects.forEach(sub => {
+            sub.grades.forEach(g => {
+                uniqueStudentIds.add(g.student.id);
+                totalScoreSum += g.score;
+                totalGradesCount++;
+            });
         });
-    });
 
-    const teacherSuccessRate = totalGradesCount > 0 ? Number((totalScoreSum / totalGradesCount).toFixed(1)) : 0;
+        const rate = totalGradesCount > 0 ? Number((totalScoreSum / totalGradesCount).toFixed(1)) : 0;
+
+        return {
+            totalStudents: uniqueStudentIds.size,
+            teacherSuccessRate: rate
+        };
+    }, [subjects]);
 
     const filteredSchedules = currentTeacher.schedules?.filter(s => s.day === selectedDay) || [];
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

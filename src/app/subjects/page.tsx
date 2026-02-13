@@ -3,8 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
-import axios from 'axios';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { Teacher as TeacherProfile } from '@shared/types/models';
 import {
     Plus,
@@ -21,7 +20,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import DeleteActionButton from '@/components/DeleteActionButton';
-import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TableSkeleton } from '@/components/SkeletonLoader';
 
@@ -90,18 +88,15 @@ export default function SubjectsPage() {
 
     const { mutateAsync: performDeleteSubject } = useMutateData(
         async (id: string | number) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation DeleteSubject($id: String!) {
+            const data = await fetchData<{ deleteSubject: { id: number } }>(
+                `
+                    mutation DeleteSubject($id: Int!) {
                         deleteSubject(id: $id) { id }
                     }
                 `,
-                variables: { id: String(id) }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            return response.data;
+                { id: Number(id) }
+            );
+            return data.deleteSubject;
         },
         [['admin', 'subjects'], ['teacher', 'me'], ['subjects'], ['dashboard']]
     );

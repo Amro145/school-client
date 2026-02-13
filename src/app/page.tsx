@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/lib/redux/store';
 import { loginUser, logout } from '@/lib/redux/slices/authSlice';
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 export default function LandingPage() {
   const roles = [
@@ -61,8 +62,8 @@ export default function LandingPage() {
     try {
       await dispatch(loginUser({ email: role.guest.email, password: role.guest.password })).unwrap();
       window.location.href = '/admin';
-    } catch (err) {
-      console.error('Guest Login Failed:', err);
+    } catch (err: any) {
+      toast.error(err.message || 'Guest Login Failed');
       setLoadingRole(null);
     }
   };

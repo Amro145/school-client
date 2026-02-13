@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { calculateSuccessRate } from '@/lib/data';
 import {
     ArrowLeft,
@@ -21,8 +21,6 @@ import {
 import { useParams } from 'next/navigation';
 import { Schedule, ClassRoom } from '@shared/types/models';
 import ScheduleForm from '@/components/ScheduleForm';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 
 export const runtime = 'edge';
 
@@ -32,7 +30,7 @@ export default function ClassDetailPage() {
     const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: String!) {
+        query GetClassDetails($id: Int!) {
           classRoom(id: $id) {
             id
             name
@@ -66,23 +64,20 @@ export default function ClassDetailPage() {
           }
         }
         `,
-        { id: String(id) }
+        { id: Number(id) }
     );
 
     const { mutateAsync: performDelete } = useMutateData(
         async (scheduleId: number | string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation DeleteSchedule($id: String!) {
+            const data = await fetchData<{ deleteSchedule: { id: number } }>(
+                `
+                    mutation DeleteSchedule($id: Int!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                variables: { id: String(scheduleId) }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            return response.data;
+                { id: Number(scheduleId) }
+            );
+            return data.deleteSchedule;
         },
         [['class', id]]
     );

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import Link from 'next/link';
 import {
     ArrowLeft,
@@ -21,8 +21,6 @@ import {
 } from 'lucide-react';
 
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 
 export const runtime = 'edge';
 
@@ -48,7 +46,7 @@ export default function SubjectDetailPage() {
     const { data: subjectData, isLoading: loading, error: fetchError } = useFetchData<{ subject: any }>(
         ['subject', id],
         `
-        query GetSubjectDetails($id: String!) {
+        query GetSubjectDetails($id: Int!) {
           subject(id: $id) {
             id
             name
@@ -72,31 +70,24 @@ export default function SubjectDetailPage() {
           }
         }
         `,
-        { id: String(id) }
+        { id: Number(id) }
     );
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
-        async (grades: { id: string, score: number }[]) => {
-            // Mutation logic using axios or raw fetch
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const query = `
+        async (grades: { id: number, score: number }[]) => {
+            const data = await fetchData<{ updateBulkGrades: any[] }>(
+                `
                 mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
                     updateBulkGrades(grades: $grades) {
                         id
                         score
                     }
                 }
-            `;
-            const response = await axios.post(apiBase, {
-                query,
-                variables: { grades }
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${Cookies.get('auth_token')}`
-                }
-            });
-            return response.data;
+                `,
+                { grades }
+            );
+            return data.updateBulkGrades;
         },
         [['subject', id], ['teacher', 'me']]
     );
@@ -142,7 +133,7 @@ export default function SubjectDetailPage() {
 
     const handleSaveAll = async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: gid,
+            id: Number(gid),
             score
         }));
 

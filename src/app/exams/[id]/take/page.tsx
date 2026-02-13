@@ -4,13 +4,12 @@ export const runtime = "edge";
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useFetchData, useMutateData } from "@/hooks/useFetchData";
-import axios from "axios";
+import { useFetchData, useMutateData, fetchData } from "@/hooks/useFetchData";
 import { Exam } from "@shared/types/models";
 import { Clock, ChevronRight, ChevronLeft, CheckCircle2, AlertTriangle, Save } from "lucide-react";
 import Link from "next/link";
-import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from "framer-motion";
+import toast from 'react-hot-toast';
 
 export default function TakeExamPage() {
     const params = useParams();
@@ -57,30 +56,24 @@ export default function TakeExamPage() {
         }
     }, [currentExam, timeLeft]);
 
-    const handleOptionSelect = (questionId: string, optionIndex: number) => {
-        setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
+    const handleOptionSelect = (questionId: string | number, optionIndex: number) => {
+        setAnswers(prev => ({ ...prev, [String(questionId)]: optionIndex }));
     };
 
     const { mutateAsync: submitExamMutation } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation SubmitExamResponse($examId: String!, $answers: [StudentAnswerInput!]!) {
-                        submitExamResponse(examId: $examId, answers: $answers) {
-                            id
-                            totalScore
-                        }
+            const data = await fetchData<{ submitExamResponse: { id: string, totalScore: number } }>(
+                `
+                mutation SubmitExamResponse($examId: String!, $answers: [StudentAnswerInput!]!) {
+                    submitExamResponse(examId: $examId, answers: $answers) {
+                        id
+                        totalScore
                     }
+                }
                 `,
-                variables: payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data.data.submitExamResponse;
+                payload
+            );
+            return data.submitExamResponse;
         },
         [['student-exams'], ['exam-attempts']]
     );
@@ -90,13 +83,13 @@ export default function TakeExamPage() {
 
         setIsSubmitting(true);
         const formattedAnswers = Object.entries(answers).map(([qId, index]) => ({
-            questionId: String(qId),
+            questionId: Number(qId),
             selectedIndex: index
         }));
 
         try {
             const result = await submitExamMutation({
-                examId: String(id),
+                examId: Number(id),
                 answers: formattedAnswers
             });
             // Store result in local storage or session storage to be picked up by the result page
@@ -107,9 +100,8 @@ export default function TakeExamPage() {
             sessionStorage.setItem(`last_submission_${id}`, JSON.stringify(result));
             router.push(`/exams/${id}/result`);
         } catch (err: any) {
-            console.error("Submission failed:", err);
             setIsSubmitting(false);
-            alert(err.message || "Failed to submit exam. Please try again.");
+            toast.error(err.message || "Failed to submit exam. Please try again.");
         }
     }, [currentExam, isSubmitting, answers, id, router, submitExamMutation]);
 

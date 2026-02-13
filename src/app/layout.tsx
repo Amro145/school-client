@@ -4,6 +4,8 @@ import "./globals.css";
 import { StoreProvider } from "@/lib/redux/StoreProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { QueryProvider } from "@/lib/QueryProvider";
+import { Toaster } from 'react-hot-toast';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +65,10 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
-              {children}
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+              <Toaster position="top-right" />
             </ThemeProvider>
           </QueryProvider>
         </StoreProvider>

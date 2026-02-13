@@ -29,7 +29,7 @@ export default function TeacherDetailPage() {
     const { data: teacherData, isLoading: loading, error: fetchError, refetch } = useFetchData<{ teacher: Teacher }>(
         ['teacher', id],
         `
-        query GetTeacherDetails($id: String!) {
+        query GetTeacherDetails($id: Int!) {
           teacher(id: $id) {
             id
             userName
@@ -54,12 +54,12 @@ export default function TeacherDetailPage() {
           }
         }
         `,
-        { id: String(id) }
+        { id: Number(id) }
     );
 
     const currentTeacher = teacherData?.teacher;
     const error = fetchError ? (fetchError as any).message : null;
-    const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | null>(null);
+    const [expandedSubjectId, setExpandedSubjectId] = React.useState<string | number | null>(null);
 
     if (loading && !currentTeacher) {
         return (

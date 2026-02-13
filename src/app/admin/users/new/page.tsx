@@ -1,10 +1,8 @@
 'use client';
 
-import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { ClassRoom } from '@shared/types/models';
 import React, { useEffect } from 'react';
-import axios from 'axios';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
     UserPlus,
@@ -18,7 +16,6 @@ import {
     AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { motion, AnimatePresence } from "framer-motion";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -73,24 +70,18 @@ export default function CreateUserPage() {
 
     const { mutateAsync: createUser } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: String) {
+            const data = await fetchData<{ createUser: { id: number, userName: string } }>(
+                `
+                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
                         createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
                             id
                             userName
                         }
                     }
                 `,
-                variables: payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data.data.createUser;
+                payload
+            );
+            return data.createUser;
         },
         [['admin', 'teachers'], ['admin', 'students'], ['admin', 'dashboard']]
     );
@@ -98,7 +89,7 @@ export default function CreateUserPage() {
     const onSubmit = async (data: CreateUserFormValues) => {
         const payload = {
             ...data,
-            classId: data.classId ? String(data.classId) : undefined
+            classId: data.classId ? Number(data.classId) : null
         };
 
         // Dynamic import for SweetAlert

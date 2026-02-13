@@ -4,12 +4,10 @@ import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { Teacher, ClassRoom } from '@shared/types/models';
-import axios from 'axios';
 import { Plus, Save, Loader2, ArrowLeft, BarChart3, Layers, User } from 'lucide-react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createSubjectSchema, CreateSubjectFormValues } from '@/lib/validations/admin';
@@ -64,24 +62,18 @@ export default function CreateSubjectPage() {
 
     const { mutateAsync: createSubject } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation CreateSubject($name: String!, $classId: String!, $teacherId: String!) {
+            const data = await fetchData<{ createSubject: { id: number, name: string } }>(
+                `
+                    mutation CreateSubject($name: String!, $classId: Int!, $teacherId: Int!) {
                         createSubject(name: $name, classId: $classId, teacherId: $teacherId) {
                             id
                             name
                         }
                     }
                 `,
-                variables: payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data;
+                payload
+            );
+            return data.createSubject;
         },
         [['admin', 'classes-and-subjects'], ['subjects'], ['dashboard']]
     );
@@ -100,8 +92,8 @@ export default function CreateSubjectPage() {
         try {
             await createSubject({
                 name: data.name,
-                classId: String(data.classId),
-                teacherId: String(data.teacherId)
+                classId: Number(data.classId),
+                teacherId: Number(data.teacherId)
             });
 
             Toast.fire({

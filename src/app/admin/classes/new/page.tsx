@@ -4,10 +4,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { RootState } from '@/lib/redux/store';
-import { useMutateData } from '@/hooks/useFetchData';
-import axios from 'axios';
+import { useMutateData, fetchData } from '@/hooks/useFetchData';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import { ArrowLeft, Save, Loader2, BookOpen, AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,24 +19,18 @@ export default function CreateClassPage() {
     const { user } = useSelector((state: RootState) => state.auth);
     const { mutateAsync: createClassRoom, isPending: isSubmitting } = useMutateData(
         async (name: string) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation CreateClassRoom($name: String!, $schoolId: String) {
+            const data = await fetchData<{ createClassRoom: { id: number, name: string } }>(
+                `
+                    mutation CreateClassRoom($name: String!, $schoolId: Int) {
                         createClassRoom(name: $name, schoolId: $schoolId) {
                             id
                             name
                         }
                     }
                 `,
-                variables: { name, schoolId: user?.schoolId ? String(user.schoolId) : undefined }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data;
+                { name, schoolId: user?.schoolId ? Number(user.schoolId) : undefined }
+            );
+            return data.createClassRoom;
         },
         [['admin', 'classes-and-subjects'], ['admin', 'dashboard']]
     );

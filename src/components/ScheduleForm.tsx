@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
-import axios from 'axios';
-import Cookies from 'js-cookie';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import { Loader2, Calendar, Clock, BookOpen, Users, AlertCircle, X } from 'lucide-react';
 import { Schedule } from '@shared/types/models';
 
@@ -40,7 +38,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
     const { data: subjectsData, isLoading: loadingSubjects } = useFetchData<{ classRoom: { subjects: any[] } }>(
         ['class-subjects', String(classId)],
         `
-        query GetClassSpecificSubjects($id: String!) {
+        query GetClassSpecificSubjects($id: Int!) {
           classRoom(id: $id) {
             id
             subjects {
@@ -53,7 +51,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
           }
         }
         `,
-        { id: String(classId) },
+        { id: Number(classId) },
         { enabled: !!classId }
     );
 
@@ -109,33 +107,28 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
 
     const { mutateAsync: performMutation, isPending: loading, error } = useMutateData(
         async (payload: any) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
             const query = initialData
                 ? `
-                    mutation UpdateSchedule($id: String!, $classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation UpdateSchedule($id: Int!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
                         updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `
                 : `
-                    mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
                         createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `;
 
-            const response = await axios.post(apiBase, {
+            const data = await fetchData<{ createSchedule: { id: number }, updateSchedule: { id: number } }>(
                 query,
-                variables: initialData ? { id: String(initialData.id), ...payload } : payload
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            if (response.data.errors) {
-                throw new Error(response.data.errors[0].message);
-            }
-            return response.data;
+                initialData ? { id: Number(initialData.id), ...payload } : payload
+            );
+
+            return data;
         },
         [['admin', 'schedules-and-classes'], ['class']]
     );
@@ -152,8 +145,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         const calculatedEndTime = calculateEndTime(startTime);
 
         const payload = {
-            classId: String(classId),
-            subjectId: String(subjectId),
+            classId: Number(classId),
+            subjectId: Number(subjectId),
             day,
             startTime,
             endTime: calculatedEndTime

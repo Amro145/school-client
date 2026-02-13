@@ -1,10 +1,11 @@
 'use client';
+import toast from 'react-hot-toast';
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/lib/redux/store';
-import { useFetchData, useMutateData } from '@/hooks/useFetchData';
+import { useFetchData, useMutateData, fetchData } from '@/hooks/useFetchData';
 import {
     UserCircle,
     Mail,
@@ -19,9 +20,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import Link from 'next/link';
-import Cookies from 'js-cookie';
 import AutoSaveToggle from '@/features/grades/components/AutoSaveToggle';
-import axios from 'axios';
 
 export const runtime = 'edge';
 
@@ -46,7 +45,7 @@ export default function StudentProfilePage() {
     const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
         ['student', id],
         `
-        query GetStudentProfile($id: String!) {
+        query GetStudentProfile($id: Int!) {
           student(id: $id) {
             id
             userName
@@ -75,22 +74,19 @@ export default function StudentProfilePage() {
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
-        async (grades: { id: string | number, score: number }[]) => {
-            const apiBase = process.env.NEXT_PUBLIC_API_URL || 'https://schoolapi.amroaltayeb14.workers.dev/graphql';
-            const response = await axios.post(apiBase, {
-                query: `
-                    mutation UpdateBulkGrades($grades: [GradeUpdateInput!]!) {
-                        updateBulkGrades(grades: $grades) {
-                            id
-                            score
-                        }
+        async (grades: { id: number, score: number }[]) => {
+            const data = await fetchData<{ updateBulkGrades: any[] }>(
+                `
+                mutation UpdateBulkGrades($grades: [GradeUpdateInput!]!) {
+                    updateBulkGrades(grades: $grades) {
+                        id
+                        score
                     }
+                }
                 `,
-                variables: { grades }
-            }, {
-                headers: { 'Authorization': `Bearer ${Cookies.get('auth_token')}` }
-            });
-            return response.data;
+                { grades }
+            );
+            return data.updateBulkGrades;
         },
         [['student', id]]
     );
@@ -122,7 +118,7 @@ export default function StudentProfilePage() {
 
     const handleSaveAll = async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: String(gid),
+            id: Number(gid),
             score
         }));
 
@@ -134,8 +130,8 @@ export default function StudentProfilePage() {
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
-        } catch (err) {
-            console.error('Failed to save grades:', err);
+        } catch (err: any) {
+            toast.error(err.message || 'Failed to save grades');
         }
     };
 

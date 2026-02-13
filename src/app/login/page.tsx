@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginFormValues } from '@/lib/validations/auth';
 import FormInput from '@/components/FormInput';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
     const dispatch = useDispatch<AppDispatch>();
@@ -42,8 +43,8 @@ export default function LoginPage() {
         try {
             await dispatch(loginUser({ email: data.email, password: data.password })).unwrap();
             window.location.href = '/admin';
-        } catch (err) {
-            console.error('Authorization Failed:', err);
+        } catch (err: any) {
+            toast.error(err.message || 'Authorization Failed');
         }
     };
 
@@ -122,7 +123,7 @@ export default function LoginPage() {
                         </form>
 
                         <div className="mt-12 pt-8 border-t border-slate-100 dark:border-slate-800 text-center space-y-4">
-                            
+
                             <p className="text-slate-400 dark:text-slate-500 font-bold text-xs tracking-tight">
                                 Unauthorized access is strictly monitored.
                                 <Link href="/" className="text-blue-600 ml-2 hover:underline font-black">Return to Terminal</Link>
