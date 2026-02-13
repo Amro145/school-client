@@ -35,7 +35,7 @@ export default function SetupSchoolPage() {
 
     const { mutateAsync: createSchool } = useMutateData(
         async (name: string) => {
-            const data = await fetchData<{ createSchool: { id: number, name: string } }>(
+            const data = await fetchData<{ createSchool: { id: string, name: string } }>(
                 `
                     mutation CreateSchool($name: String!) {
                         createSchool(name: $name) {

@@ -19,16 +19,16 @@ export default function CreateClassPage() {
     const { user } = useSelector((state: RootState) => state.auth);
     const { mutateAsync: createClassRoom, isPending: isSubmitting } = useMutateData(
         async (name: string) => {
-            const data = await fetchData<{ createClassRoom: { id: number, name: string } }>(
+            const data = await fetchData<{ createClassRoom: { id: string, name: string } }>(
                 `
-                    mutation CreateClassRoom($name: String!, $schoolId: Int) {
+                    mutation CreateClassRoom($name: String!, $schoolId: String) {
                         createClassRoom(name: $name, schoolId: $schoolId) {
                             id
                             name
                         }
                     }
                 `,
-                { name, schoolId: user?.schoolId ? Number(user.schoolId) : undefined }
+                { name, schoolId: user?.schoolId ? String(user.schoolId) : undefined }
             );
             return data.createClassRoom;
         },

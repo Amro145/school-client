@@ -30,7 +30,7 @@ export default function ClassDetailPage() {
     const { data: classData, isLoading: loading, error: fetchError } = useFetchData<{ classRoom: ClassRoom }>(
         ['class', id],
         `
-        query GetClassDetails($id: Int!) {
+        query GetClassDetails($id: String!) {
           classRoom(id: $id) {
             id
             name
@@ -64,18 +64,18 @@ export default function ClassDetailPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     const { mutateAsync: performDelete } = useMutateData(
-        async (scheduleId: number | string) => {
-            const data = await fetchData<{ deleteSchedule: { id: number } }>(
+        async (scheduleId: string) => {
+            const data = await fetchData<{ deleteSchedule: { id: string } }>(
                 `
-                    mutation DeleteSchedule($id: Int!) {
+                    mutation DeleteSchedule($id: String!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                { id: Number(scheduleId) }
+                { id: String(scheduleId) }
             );
             return data.deleteSchedule;
         },

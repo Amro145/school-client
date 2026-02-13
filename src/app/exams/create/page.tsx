@@ -78,7 +78,7 @@ export default function CreateExamPage() {
         async (payload: any) => {
             const data = await fetchData<{ createExamWithQuestions: { id: string, title: string } }>(
                 `
-                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: Int!, $subjectId: Int!, $questions: [QuestionInput!]!) {
+                    mutation CreateExam($title: String!, $description: String!, $type: String!, $durationInMinutes: Int!, $classId: String!, $subjectId: String!, $questions: [QuestionInput!]!) {
                         createExamWithQuestions(title: $title, description: $description, type: $type, durationInMinutes: $durationInMinutes, classId: $classId, subjectId: $subjectId, questions: $questions) {
                             id
                             title
@@ -103,8 +103,8 @@ export default function CreateExamPage() {
         try {
             await createExam({
                 ...data,
-                classId: Number(data.classId),
-                subjectId: Number(data.subjectId),
+                classId: String(data.classId),
+                subjectId: String(data.subjectId),
             });
 
             Swal.fire({

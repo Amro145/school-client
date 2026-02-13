@@ -35,9 +35,9 @@ export const studentService = {
     };
   },
 
-  async getStudentById(id: number | string) {
+  async getStudentById(id: string) {
     const query = `
-      query GetStudentById($id: Int!) {
+      query GetStudentById($id: String!) {
         student(id: $id) {
           id
           userName
@@ -93,7 +93,7 @@ export const studentService = {
     `;
     const response = await api.post('', {
       query,
-      variables: { id: Number(id) }
+      variables: { id }
     });
 
     if (response.data.errors) throw new Error(response.data.errors[0].message);
@@ -106,7 +106,7 @@ export const studentService = {
     // Intentionally left blank or defined if specific logic exists.
   },
 
-  async updateGradesBulk(grades: { id: string | number, score: number }[]) {
+  async updateGradesBulk(grades: { id: string, score: number }[]) {
     const mutation = `
       mutation updateBulkGrades($grades: [GradeUpdateInput!]!) {
         updateBulkGrades(grades: $grades) {
@@ -119,7 +119,7 @@ export const studentService = {
       query: mutation,
       variables: {
         grades: grades.map(g => ({
-          id: Number(g.id),
+          id: String(g.id),
           score: g.score
         }))
       }

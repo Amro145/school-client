@@ -7,11 +7,11 @@ import { handleDeleteUser } from '@/lib/redux/slices/adminSlice';
 
 
 interface DeleteActionButtonProps {
-    userId: string | number;
+    userId: string;
     userName: string;
     warning?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    action?: (id: string | number) => any;
+    action?: (id: string) => any;
 }
 
 export default function DeleteActionButton({ userId, userName, warning, action }: DeleteActionButtonProps) {

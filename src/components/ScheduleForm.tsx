@@ -15,8 +15,8 @@ interface ScheduleFormProps {
 
 export default function ScheduleForm({ initialData, preselectedClassId, prefilledSlot, onClose, onSuccess }: ScheduleFormProps) {
     // Form State
-    const [classId, setClassId] = useState<number | string>(preselectedClassId || initialData?.classRoom?.id || '');
-    const [subjectId, setSubjectId] = useState<number | string>(initialData?.subject?.id || '');
+    const [classId, setClassId] = useState<string>(preselectedClassId || initialData?.classRoom?.id || '');
+    const [subjectId, setSubjectId] = useState<string>(initialData?.subject?.id || '');
     const [day, setDay] = useState<string>(initialData?.day || prefilledSlot?.day || 'Monday');
     const [startTime, setStartTime] = useState<string>(initialData?.startTime || prefilledSlot?.startTime || '');
     const [endTime, setEndTime] = useState<string>(initialData?.endTime || '');
@@ -38,7 +38,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
     const { data: subjectsData, isLoading: loadingSubjects } = useFetchData<{ classRoom: { subjects: any[] } }>(
         ['class-subjects', String(classId)],
         `
-        query GetClassSpecificSubjects($id: Int!) {
+        query GetClassSpecificSubjects($id: String!) {
           classRoom(id: $id) {
             id
             subjects {
@@ -51,7 +51,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
           }
         }
         `,
-        { id: Number(classId) },
+        { id: String(classId) },
         { enabled: !!classId }
     );
 
@@ -109,23 +109,23 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         async (payload: any) => {
             const query = initialData
                 ? `
-                    mutation UpdateSchedule($id: Int!, $classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation UpdateSchedule($id: String!, $classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
                         updateSchedule(id: $id, classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `
                 : `
-                    mutation CreateSchedule($classId: Int!, $subjectId: Int!, $day: String!, $startTime: String!, $endTime: String!) {
+                    mutation CreateSchedule($classId: String!, $subjectId: String!, $day: String!, $startTime: String!, $endTime: String!) {
                         createSchedule(classId: $classId, subjectId: $subjectId, day: $day, startTime: $startTime, endTime: $endTime) {
                             id
                         }
                     }
                 `;
 
-            const data = await fetchData<{ createSchedule: { id: number }, updateSchedule: { id: number } }>(
+            const data = await fetchData<{ createSchedule: { id: string }, updateSchedule: { id: string } }>(
                 query,
-                initialData ? { id: Number(initialData.id), ...payload } : payload
+                initialData ? { id: String(initialData.id), ...payload } : payload
             );
 
             return data;
@@ -145,8 +145,8 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         const calculatedEndTime = calculateEndTime(startTime);
 
         const payload = {
-            classId: Number(classId),
-            subjectId: Number(subjectId),
+            classId: String(classId),
+            subjectId: String(subjectId),
             day,
             startTime,
             endTime: calculatedEndTime

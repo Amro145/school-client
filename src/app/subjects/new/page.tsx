@@ -62,9 +62,9 @@ export default function CreateSubjectPage() {
 
     const { mutateAsync: createSubject } = useMutateData(
         async (payload: any) => {
-            const data = await fetchData<{ createSubject: { id: number, name: string } }>(
+            const data = await fetchData<{ createSubject: { id: string, name: string } }>(
                 `
-                    mutation CreateSubject($name: String!, $classId: Int!, $teacherId: Int!) {
+                    mutation CreateSubject($name: String!, $classId: String!, $teacherId: String!) {
                         createSubject(name: $name, classId: $classId, teacherId: $teacherId) {
                             id
                             name
@@ -92,8 +92,8 @@ export default function CreateSubjectPage() {
         try {
             await createSubject({
                 name: data.name,
-                classId: Number(data.classId),
-                teacherId: Number(data.teacherId)
+                classId: String(data.classId),
+                teacherId: String(data.teacherId)
             });
 
             Toast.fire({

@@ -46,7 +46,7 @@ export default function StudentProfilePage() {
     const { data: profileData, isLoading: loading, error: fetchError } = useFetchData<{ student: any }>(
         ['student', id],
         `
-        query GetStudentProfile($id: Int!) {
+        query GetStudentProfile($id: String!) {
           student(id: $id) {
             id
             userName
@@ -75,7 +75,7 @@ export default function StudentProfilePage() {
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
-        async (grades: { id: number, score: number }[]) => {
+        async (grades: { id: string, score: number }[]) => {
             const data = await fetchData<{ updateBulkGrades: any[] }>(
                 `
                 mutation UpdateBulkGrades($grades: [GradeUpdateInput!]!) {
@@ -103,7 +103,7 @@ export default function StudentProfilePage() {
         return sum / validGrades.length;
     };
 
-    const handleScoreChange = (gradeId: string | number, newScore: string) => {
+    const handleScoreChange = (gradeId: string, newScore: string) => {
         const score = parseInt(newScore);
         if (isNaN(score) && newScore !== '') return;
         const validatedScore = newScore === '' ? 0 : Math.min(100, Math.max(0, score));
@@ -119,7 +119,7 @@ export default function StudentProfilePage() {
 
     const handleSaveAll = useCallback(async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: Number(gid),
+            id: String(gid),
             score
         }));
 

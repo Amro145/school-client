@@ -87,21 +87,21 @@ export default function SubjectsPage() {
     );
 
     const { mutateAsync: performDeleteSubject } = useMutateData(
-        async (id: string | number) => {
-            const data = await fetchData<{ deleteSubject: { id: number } }>(
+        async (id: string) => {
+            const data = await fetchData<{ deleteSubject: { id: string } }>(
                 `
-                    mutation DeleteSubject($id: Int!) {
+                    mutation DeleteSubject($id: String!) {
                         deleteSubject(id: $id) { id }
                     }
                 `,
-                { id: Number(id) }
+                { id: String(id) }
             );
             return data.deleteSubject;
         },
         [['admin', 'subjects'], ['teacher', 'me'], ['subjects'], ['dashboard']]
     );
 
-    const handleDeleteSubject = async (id: string | number) => {
+    const handleDeleteSubject = async (id: string) => {
         await performDeleteSubject(id);
         if (isAdmin) adminRefetch();
     };

@@ -46,7 +46,7 @@ export default function SubjectDetailPage() {
     const { data: subjectData, isLoading: loading, error: fetchError } = useFetchData<{ subject: any }>(
         ['subject', id],
         `
-        query GetSubjectDetails($id: Int!) {
+        query GetSubjectDetails($id: String!) {
           subject(id: $id) {
             id
             name
@@ -70,12 +70,12 @@ export default function SubjectDetailPage() {
           }
         }
         `,
-        { id: Number(id) }
+        { id: String(id) }
     );
 
     // Mutation Hook
     const { mutateAsync: updateGrades, isPending: isSaving } = useMutateData(
-        async (grades: { id: number, score: number }[]) => {
+        async (grades: { id: string, score: number }[]) => {
             const data = await fetchData<{ updateBulkGrades: any[] }>(
                 `
                 mutation UpdateGradesBulk($grades: [GradeUpdateInput!]!) {
@@ -133,7 +133,7 @@ export default function SubjectDetailPage() {
 
     const handleSaveAll = async () => {
         const gradesToUpdate = Object.entries(modifiedGrades).map(([gid, score]) => ({
-            id: Number(gid),
+            id: String(gid),
             score
         }));
 

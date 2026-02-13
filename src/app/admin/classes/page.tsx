@@ -38,14 +38,14 @@ export default function ClassesListPage() {
     );
 
     const { mutateAsync: performDeleteClass } = useMutateData(
-        async (classId: string | number) => {
-            const data = await fetchData<{ deleteClassRoom: { id: number } }>(
+        async (classId: string) => {
+            const data = await fetchData<{ deleteClassRoom: { id: string } }>(
                 `
-                    mutation DeleteClass($id: Int!) {
+                    mutation DeleteClass($id: String!) {
                         deleteClassRoom(id: $id) { id }
                     }
                 `,
-                { id: Number(classId) }
+                { id: String(classId) }
             );
 
             return data.deleteClassRoom;
@@ -169,7 +169,7 @@ export default function ClassesListPage() {
                                                         userId={cls.id}
                                                         userName={cls.name}
                                                         warning="Deleting a classroom might affect assigned students and subjects. Are you sure?"
-                                                        action={async (id) => {
+                                                        action={async (id: string) => {
                                                             await performDeleteClass(id);
                                                             refetch();
                                                         }}

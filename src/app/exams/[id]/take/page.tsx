@@ -83,13 +83,13 @@ export default function TakeExamPage() {
 
         setIsSubmitting(true);
         const formattedAnswers = Object.entries(answers).map(([qId, index]) => ({
-            questionId: Number(qId),
+            questionId: String(qId),
             selectedIndex: index
         }));
 
         try {
             const result = await submitExamMutation({
-                examId: Number(id),
+                examId: String(id),
                 answers: formattedAnswers
             });
             // Store result in local storage or session storage to be picked up by the result page

@@ -97,14 +97,14 @@ function SchedulesContent() {
     }, [searchParams]);
 
     const { mutateAsync: performDeleteSchedule } = useMutateData(
-        async (id: number | string) => {
-            const data = await fetchData<{ deleteSchedule: { id: number } }>(
+        async (id: string) => {
+            const data = await fetchData<{ deleteSchedule: { id: string } }>(
                 `
-                    mutation DeleteSchedule($id: Int!) {
+                    mutation DeleteSchedule($id: String!) {
                         deleteSchedule(id: $id) { id }
                     }
                 `,
-                { id: Number(id) }
+                { id: String(id) }
             );
             return data.deleteSchedule;
         },

@@ -3,57 +3,57 @@ import api from '@/lib/axios';
 import Cookies from 'js-cookie';
 
 interface User {
-    id: number | string;
+    id: string;
     email: string;
     userName: string;
     role: string;
-    schoolId: number | string | null;
+    schoolId: string | null;
     averageScore?: number;
     finalAverageScore?: number;
     midtermAverageScore?: number;
     quizAverageScore?: number;
     successRate?: number;
     subjectsTaught?: {
-        id: number | string;
+        id: string;
         name: string;
         successRate: number;
         class: {
-            id: number | string;
+            id: string;
             name: string;
         } | null;
     }[];
     class?: {
-        id: number | string;
+        id: string;
         name: string;
         subjects: {
-            id: number | string;
+            id: string;
             name: string;
         }[];
     } | null;
     grades?: {
-        id: number | string;
+        id: string;
         score: number;
         subject: {
-            id: number | string;
+            id: string;
             name: string;
         };
         type: string;
     }[];
     schedules?: {
-        id: number | string;
+        id: string;
         day: string;
         startTime: string;
         endTime: string;
         subject: {
-            id: number | string;
+            id: string;
             name: string;
             teacher?: {
-                id: number | string;
+                id: string;
                 userName: string;
             };
         };
         classRoom: {
-            id: number | string;
+            id: string;
             name: string;
         };
     }[];

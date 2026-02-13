@@ -70,9 +70,9 @@ export default function CreateUserPage() {
 
     const { mutateAsync: createUser } = useMutateData(
         async (payload: any) => {
-            const data = await fetchData<{ createUser: { id: number, userName: string } }>(
+            const data = await fetchData<{ createUser: { id: string, userName: string } }>(
                 `
-                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: Int) {
+                    mutation CreateUser($userName: String!, $email: String!, $role: String!, $password: String!, $classId: String) {
                         createUser(userName: $userName, email: $email, role: $role, password: $password, classId: $classId) {
                             id
                             userName
@@ -89,7 +89,7 @@ export default function CreateUserPage() {
     const onSubmit = async (data: CreateUserFormValues) => {
         const payload = {
             ...data,
-            classId: data.classId ? Number(data.classId) : null
+            classId: data.classId ? String(data.classId) : null
         };
 
         // Dynamic import for SweetAlert

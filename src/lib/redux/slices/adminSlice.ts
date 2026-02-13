@@ -17,9 +17,9 @@ const initialState: AdminState = {
 
 export const handleDeleteUser = createAsyncThunk(
     'admin/deleteUser',
-    async (id: string | number, { rejectWithValue }) => {
+    async (id: string, { rejectWithValue }) => {
         try {
-            await userService.deleteUser(String(id));
+            await userService.deleteUser(id);
             return id;
         } catch (error: any) {
             return rejectWithValue(error.message);
