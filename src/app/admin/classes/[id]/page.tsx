@@ -42,6 +42,9 @@ export default function ClassDetailPage() {
               }
               grades {
                 score
+                student {
+                    id
+                }
               }
             }
             students {
@@ -451,7 +454,7 @@ function StudentRow({ student, subjects }: { student: any, subjects: any[] }) {
                         {subjects.map((subject: any) => {
                             // Find the grade for this student in this subject
                             // The subject object has a `grades` array.
-                            const gradeObj = subject.grades?.find((g: any) => g.student.id.toString() === student.id.toString());
+                            const gradeObj = subject.grades?.find((g: any) => g.student?.id?.toString() === student.id.toString());
                             const grade = gradeObj ? gradeObj.score : 0;
 
                             return (

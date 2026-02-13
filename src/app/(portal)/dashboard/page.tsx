@@ -226,7 +226,7 @@ function StudentDashboard({ user }: { user: StudentUser }) {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {user.class?.subjects?.slice(0, 3).map((subject) => {
-                        const grade = grades.find((g) => g.subject.id === subject.id);
+                        const grade = grades.find((g) => g.subject?.id === subject.id);
 
                         return (
                             <div key={subject.id} className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 hover: dark:hover:bg-slate-800 hover:border-purple-200 dark:hover:border-purple-900/30 hover:shadow-xl transition-all group/card">
