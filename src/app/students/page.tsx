@@ -299,7 +299,7 @@ export default function StudentsPage() {
                                                     <div className={`relative px-6 py-3 rounded-2xl border ${styles.bg} ${styles.border} ${styles.glow} min-w-[140px] transition-all duration-500`}>
                                                         <div className="flex flex-col items-center relative z-10">
                                                             <span className={`text-2xl font-black tabular-nums ${styles.text}`}>
-                                                                {student.averageScore?.toFixed(1) || '0.0'}
+                                                                {Number(student.averageScore || 0).toFixed(1)}
                                                             </span>
                                                             <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Avg Performance</span>
                                                         </div>

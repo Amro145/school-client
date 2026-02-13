@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useFetchData, useMutateData } from '@/hooks/useFetchData';
 import axios from 'axios';
-import Cookies from 'js-cookie'; // Added this import
+import Cookies from 'js-cookie';
 import { Loader2, Calendar, Clock, BookOpen, Users, AlertCircle, X } from 'lucide-react';
 import { Schedule } from '@shared/types/models';
 
@@ -16,17 +16,19 @@ interface ScheduleFormProps {
 }
 
 export default function ScheduleForm({ initialData, preselectedClassId, prefilledSlot, onClose, onSuccess }: ScheduleFormProps) {
-    const { data: adminData } = useFetchData<{ subjects: any[], classRooms: any[] }>(
-        ['admin', 'subjects-and-classes'],
+    // Form State
+    const [classId, setClassId] = useState<number | string>(preselectedClassId || initialData?.classRoom?.id || '');
+    const [subjectId, setSubjectId] = useState<number | string>(initialData?.subject?.id || '');
+    const [day, setDay] = useState<string>(initialData?.day || prefilledSlot?.day || 'Monday');
+    const [startTime, setStartTime] = useState<string>(initialData?.startTime || prefilledSlot?.startTime || '');
+    const [endTime, setEndTime] = useState<string>(initialData?.endTime || '');
+    const [formError, setFormError] = useState<string | null>(null);
+
+    // Data Fetching
+    const { data: classData } = useFetchData<{ classRooms: any[] }>(
+        ['admin', 'class-list'],
         `
-        query GetAdminSubjectsAndClasses {
-          subjects {
-            id
-            name
-            teacher {
-              userName
-            }
-          }
+        query GetAdminClasses {
           classRooms {
             id
             name
@@ -35,16 +37,28 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         `
     );
 
-    const subjects = adminData?.subjects || [];
-    const classRooms = adminData?.classRooms || [];
+    const { data: subjectsData, isLoading: loadingSubjects } = useFetchData<{ classRoom: { subjects: any[] } }>(
+        ['class-subjects', String(classId)],
+        `
+        query GetClassSpecificSubjects($id: String!) {
+          classRoom(id: $id) {
+            id
+            subjects {
+              id
+              name
+              teacher {
+                userName
+              }
+            }
+          }
+        }
+        `,
+        { id: String(classId) },
+        { enabled: !!classId }
+    );
 
-    // Form State
-    const [classId, setClassId] = useState<number | string>(preselectedClassId || initialData?.classRoom?.id || '');
-    const [subjectId, setSubjectId] = useState<number | string>(initialData?.subject?.id || '');
-    const [day, setDay] = useState<string>(initialData?.day || prefilledSlot?.day || 'Monday');
-    const [startTime, setStartTime] = useState<string>(initialData?.startTime || prefilledSlot?.startTime || '');
-    const [endTime, setEndTime] = useState<string>(initialData?.endTime || '');
-    const [formError, setFormError] = useState<string | null>(null);
+    const classRooms = classData?.classRooms || [];
+    const subjects = subjectsData?.classRoom?.subjects || [];
 
     // Fixed Periods Configuration
     const PERIODS = [
@@ -58,8 +72,7 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
         { label: 'Period 8 (15:00 - 16:00)', value: '15:00' },
     ];
 
-    const DAYS_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']; // Match grid requirement
-
+    const DAYS_ORDER = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
 
     // Update state when initialData changes or prefilledSlot changes
     useEffect(() => {
@@ -77,6 +90,16 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
             }
         }
     }, [initialData, preselectedClassId, prefilledSlot, classId]);
+
+    // Reset subject selection when class changes during new schedule creation
+    useEffect(() => {
+        if (!initialData && classId) {
+            const isInitialLoad = !subjectsData && !loadingSubjects;
+            if (!isInitialLoad) {
+                setSubjectId('');
+            }
+        }
+    }, [classId, initialData, subjectsData, loadingSubjects]);
 
     const calculateEndTime = (start: string) => {
         const [hour, minute] = start.split(':').map(Number);
@@ -197,11 +220,18 @@ export default function ScheduleForm({ initialData, preselectedClassId, prefille
                             <select
                                 value={subjectId}
                                 onChange={(e) => setSubjectId(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none"
+                                disabled={!classId || loadingSubjects}
+                                className="w-full pl-12 pr-4 py-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-bold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all appearance-none disabled:opacity-50"
                             >
-                                <option value="">Select Subject</option>
-                                {/* avalibale subjects */}
-                                
+                                <option value="">
+                                    {!classId
+                                        ? 'First Select a Class'
+                                        : loadingSubjects
+                                            ? 'Loading Subjects...'
+                                            : subjects.length === 0
+                                                ? 'No subjects in this class'
+                                                : 'Select Subject'}
+                                </option>
                                 {subjects.map(subject => (
                                     <option key={subject.id} value={subject.id}>{subject.name} - {subject.teacher?.userName}</option>
                                 ))}

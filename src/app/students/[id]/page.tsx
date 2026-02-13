@@ -33,6 +33,7 @@ export default function StudentProfilePage() {
     const params = useParams();
     const id = params?.id ? String(params.id) : '';
     const { user: authUser } = useSelector((state: RootState) => state.auth);
+    const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
 
     const [modifiedGrades, setModifiedGrades] = useState<{ [key: string]: number }>({});
     const [showSuccess, setShowSuccess] = useState(false);
@@ -96,14 +97,27 @@ export default function StudentProfilePage() {
 
     const student = profileData?.student;
 
+    // 1. Define handlers and calculations early
+    const calculateAverage = (grades: any[]) => {
+        if (!grades || grades.length === 0) return 0;
+        const validGrades = grades.filter((g: any) => g.score !== null && typeof g.score === 'number');
+        if (validGrades.length === 0) return 0;
+        const sum = validGrades.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0);
+        return sum / validGrades.length;
+    };
+
     const handleScoreChange = (gradeId: string, newScore: string) => {
         const score = parseInt(newScore);
         if (isNaN(score) && newScore !== '') return;
         const validatedScore = newScore === '' ? 0 : Math.min(100, Math.max(0, score));
-        setModifiedGrades(prev => ({
-            ...prev,
-            [gradeId]: validatedScore
-        }));
+        setModifiedGrades(prev => {
+            // Only update if value actually changed to prevent render loops
+            if (prev[gradeId] === validatedScore) return prev;
+            return {
+                ...prev,
+                [gradeId]: validatedScore
+            };
+        });
     };
 
     const handleSaveAll = async () => {
@@ -116,6 +130,7 @@ export default function StudentProfilePage() {
 
         try {
             await updateGrades(gradesToUpdate);
+            // Reset modified grades ONLY after success
             setModifiedGrades({});
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 3000);
@@ -124,8 +139,18 @@ export default function StudentProfilePage() {
         }
     };
 
-    const isAutoSaveEnabled = useSelector((state: RootState) => state.admin.isAutoSaveEnabled);
+    // 2. Stable calculations
+    const filteredGrades = useMemo(() => {
+        if (!student?.grades) return [];
+        return student.grades.filter((g: any) => {
+            if (selectedType === 'All') return true;
+            return g.type === selectedType;
+        });
+    }, [student?.grades, selectedType]);
 
+    const computedAverage = useMemo(() => calculateAverage(filteredGrades), [filteredGrades]);
+
+    // 3. Effects
     useEffect(() => {
         if (Object.keys(modifiedGrades).length === 0 || isSaving || !isAutoSaveEnabled) return;
         const debouncedSave = setTimeout(() => {
@@ -135,44 +160,28 @@ export default function StudentProfilePage() {
     }, [modifiedGrades, isSaving, isAutoSaveEnabled]);
 
 
-    if (loading) {
+    // 4. Loading/Error States
+    if (loading && !student) {
         return (
-            <div className="space-y-12 pb-20 p-8">
-                <div className="h-40 bg-slate-100 animate-pulse rounded-[3rem]" />
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div className="lg:col-span-2 space-y-8">
-                        <div className="h-64 bg-slate-50 animate-pulse rounded-3xl" />
-                    </div>
-                </div>
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6">
+                <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+                <p className="text-slate-500 font-bold animate-pulse">Initializing Student Node...</p>
             </div>
         );
     }
 
     if (fetchError) {
         return (
-            <div className="max-w-xl mx-auto mt-20 p-10  rounded-3xl border border-rose-100 shadow-xl text-center">
+            <div className="max-w-xl mx-auto mt-20 p-10 rounded-3xl border border-rose-100 shadow-xl text-center">
                 <AlertCircle className="w-12 h-12 text-rose-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Access Denied</h3>
-                <p className="text-slate-500 dark:text-slate-400 mb-6">{(fetchError as any).message || 'An error occurred'}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Sync Error</h3>
+                <p className="text-slate-500 dark:text-slate-400 mb-6">{(fetchError as any).message || 'Connectivity interruption'}</p>
                 <Link href="/students" className="text-blue-600 font-bold hover:underline">Return to Directory</Link>
             </div>
         );
     }
 
     if (!student) return null;
-
-    const filteredGrades = student.grades ? student.grades.filter((g: any) => {
-        if (selectedType === 'All') return true;
-        return g.type === selectedType;
-    }) : [];
-
-    const computedAverage = useMemo(() => {
-        if (!filteredGrades || filteredGrades.length === 0) return 0;
-        const validGrades = filteredGrades.filter((g: any) => g.score !== null && g.score !== undefined);
-        if (validGrades.length === 0) return 0;
-        const sum = validGrades.reduce((acc: number, curr: any) => acc + (Number(curr.score) || 0), 0);
-        return sum / validGrades.length;
-    }, [filteredGrades]);
 
     return (
         <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20 p-4 md:p-8 max-w-7xl mx-auto">
